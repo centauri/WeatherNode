@@ -2486,9 +2486,8 @@ function weatherDashboard() {
                     const date = new Date(dateStr);
                     const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: tz });
                     const dateStrNorm = date.toLocaleDateString('en-CA', { timeZone: tz });
-                    if (dateStrNorm === todayStr) return 'Vnd';
-                    const days = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za'];
-                    return days[date.getDay()];
+                    if (dateStrNorm === todayStr) return t('Today');
+                    return date.toLocaleDateString(locale, { timeZone: tz, weekday: 'short' });
                 },
                 
                 // Temperature chart helpers
