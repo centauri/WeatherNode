@@ -46,6 +46,8 @@ class RealtimeTxtParser
         $windSpeed = $this->convertWind($this->getFloat($parts, 6), $windUnits);
         $windAvg = $this->convertWind($this->getFloat($parts, 5), $windUnits);
         $windGust = $this->convertWind($this->getFloat($parts, 40), $windUnits);
+        $windGustMaxDaily = $this->convertWind($this->getFloat($parts, 32), $windUnits);
+        $windDirectionAvg10m = $this->getInt($parts, 46);
 
         $rainRate = $this->convertRain($this->getFloat($parts, 8), $rainUnits);
         $rainToday = $this->convertRain($this->getFloat($parts, 9), $rainUnits);
@@ -69,7 +71,9 @@ class RealtimeTxtParser
             'wind_speed' => $windSpeed,
             'wind_speed_avg_10m' => $windAvg,
             'wind_gust' => $windGust,
+            'wind_gust_max_daily' => $windGustMaxDaily,
             'wind_direction' => $this->getInt($parts, 7),
+            'wind_direction_avg_10m' => $windDirectionAvg10m,
             'rain_rate' => $rainRate,
             'rain_daily' => $rainToday,
             'rain_monthly' => $rainMonth,
