@@ -728,7 +728,7 @@ function radarDisplay() {
                 return '';
             }
 
-            const locale = window.Meteo?.jsLocale || 'nl-NL';
+            const locale = window.Meteo?.jsLocale || 'en-US';
             const tz = window.Meteo?.stationTimezone || 'UTC';
             const date = new Date(unixTs * 1000);
             const timeLabel = date.toLocaleTimeString(locale, {
@@ -981,7 +981,7 @@ function precipForecast() {
                 if (updatedAt) {
                     try {
                         const dt = new Date(updatedAt);
-                        const locale = window.Meteo?.jsLocale || 'nl-NL';
+                        const locale = window.Meteo?.jsLocale || 'en-US';
                         this.sourceUpdatedLabel = `${@json(__('Updated'))}: ${dt.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}`;
                     } catch (e) {
                         this.sourceUpdatedLabel = '';
@@ -1008,7 +1008,7 @@ function precipForecast() {
                 const unitLabel = useImperial ? 'in' : 'mm';
                 const convert = useImperial ? 0.0393700787 : 1;
 
-                const locale = window.Meteo?.jsLocale || 'nl-NL';
+                const locale = window.Meteo?.jsLocale || 'en-US';
                 this.slots = upcoming.map((h, idx) => {
                     const timeStr = h.time || h.datetime || h.date || '';
                     const dt = new Date(timeStr);

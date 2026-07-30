@@ -79,7 +79,7 @@ const initTideChart = async () => {
         },
     ];
 
-    const locale = window.Meteo?.jsLocale || 'nl-NL';
+    const locale = window.Meteo?.jsLocale || 'en-US';
 
     const chart = new ApexCharts(el, {
         chart: {

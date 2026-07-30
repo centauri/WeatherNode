@@ -296,7 +296,7 @@
         // Update clock (station timezone; DST via IANA + Intl)
         function updateClock() {
             const now = new Date();
-            const locale = window.Meteo?.jsLocale || 'nl-NL';
+            const locale = window.Meteo?.jsLocale || 'en-US';
             const tz = stationTimezone || 'UTC';
             const opts = { timeZone: tz };
             const timeStr = now.toLocaleTimeString(locale, { ...opts, hour: '2-digit', minute: '2-digit', second: '2-digit' });

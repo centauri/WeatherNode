@@ -218,7 +218,7 @@ function forecastPage() {
         view: 'daily',
         selectedDate: null,
         loading: true,
-        locale: window.Meteo?.jsLocale || 'nl-NL',
+        locale: window.Meteo?.jsLocale || 'en-US',
         units: window.Meteo?.activeUnits || 'metric',
 
         tempUnit() {

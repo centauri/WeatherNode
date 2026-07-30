@@ -43,7 +43,7 @@ const initWaveChart = async () => {
         },
     ];
 
-    const locale = window.Meteo?.jsLocale || 'nl-NL';
+    const locale = window.Meteo?.jsLocale || 'en-US';
 
     const chart = new ApexCharts(el, {
         chart: {
@@ -160,7 +160,7 @@ const initSstChart = async () => {
 
     const chartData = series.map((p) => ({ x: p.timestamp_unix, y: p.value }));
 
-    const locale = window.Meteo?.jsLocale || 'nl-NL';
+    const locale = window.Meteo?.jsLocale || 'en-US';
 
     const chart = new ApexCharts(el, {
         chart: {

@@ -1,6 +1,6 @@
 const cfg = window.__METEO_DASHBOARD_CONFIG__ || {};
 const t = (key) => cfg.i18n?.[key] ?? key;
-const locale = window.Meteo?.jsLocale || 'nl-NL';
+const locale = window.Meteo?.jsLocale || 'en-US';
 const hybridSsrEnabled = window.__METEO_DASHBOARD_HYBRID__ === true;
 const initialPayload = (window.__METEO_DASHBOARD_INITIAL__ && typeof window.__METEO_DASHBOARD_INITIAL__ === 'object')
     ? window.__METEO_DASHBOARD_INITIAL__
@@ -3221,7 +3221,7 @@ function weatherDashboard() {
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
                         
-                        const lang = (window.Meteo?.jsLocale || 'en-GB').replace('_', '-');
+                        const lang = (window.Meteo?.jsLocale || 'en-US').replace('_', '-');
                         const dashboardUrl = '/api/weather/dashboard' + (lang ? '?lang=' + encodeURIComponent(lang) : '');
                         const res = await fetch(dashboardUrl, {
                             headers: this.getApiHeaders(),

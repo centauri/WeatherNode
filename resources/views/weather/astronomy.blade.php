@@ -638,7 +638,7 @@ function astronomyPage() {
         meteors: [],
         loading: true,
         lastUpdated: null,
-        locale: window.Meteo?.jsLocale || 'nl-NL',
+        locale: window.Meteo?.jsLocale || 'en-US',
         units: window.Meteo?.activeUnits || 'metric',
         moonPhaseLabels: {
             'New Moon': @json(__('New Moon')),

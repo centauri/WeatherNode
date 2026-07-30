@@ -250,7 +250,7 @@ function communityStations() {
         countryName(code) {
             if (!code || code === '_unknown') return communityI18n.unknownCountry;
             try {
-                const locale = window.Meteo?.jsLocale || 'en';
+                const locale = window.Meteo?.jsLocale || 'en-US';
                 return new Intl.DisplayNames([locale], { type: 'region' }).of(code);
             } catch {
                 return code;
@@ -304,7 +304,7 @@ function communityStations() {
                                 ${station.hardware ? `<p><strong>${communityI18n.hardware}:</strong> ${self.escapeHtml(station.hardware)}</p>` : ''}
                                 ${station.manufacturer ? `<p><strong>${communityI18n.manufacturer}:</strong> ${self.escapeHtml(station.manufacturer)}</p>` : ''}
                                 ${station.url ? `<p><a href="${self.escapeHtml(station.url)}" target="_blank">${communityI18n.visitStation} &rarr;</a></p>` : ''}
-                                ${station.updated_at ? `<p class="text-xs text-gray-500">${communityI18n.updated}: ${new Date(station.updated_at).toLocaleDateString(window.Meteo?.jsLocale || 'nl-NL')}</p>` : ''}
+                                ${station.updated_at ? `<p class="text-xs text-gray-500">${communityI18n.updated}: ${new Date(station.updated_at).toLocaleDateString(window.Meteo?.jsLocale || 'en-US')}</p>` : ''}
                             </div>
                         `;
 
