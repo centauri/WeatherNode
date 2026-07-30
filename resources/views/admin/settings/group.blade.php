@@ -329,7 +329,7 @@
                     // Show fields based on current provider
                     $shouldShowByDefault = false;
                     if ($group === 'radar' && $shouldHide) {
-                        $currentRadarProvider = \App\Models\Setting::getValue('radar.provider', 'knmi');
+                        $currentRadarProvider = \App\Models\Setting::getValue('radar.provider', 'rainviewer');
                         $currentRainviewerMode = \App\Models\Setting::getValue('radar.rainviewer_mode', 'api');
                         if (($isRainviewerZoom || $isRainviewerMode || $isUseProxy) && $currentRadarProvider === 'rainviewer') {
                             $shouldShowByDefault = true;

@@ -16,7 +16,7 @@ class SettingsSeeder extends Seeder
     {
         $settings = [
             // ===== Station Configuration =====
-            ['key' => 'station.name', 'value' => 'Het lokale weer en verwachting in Uitgeest', 'type' => 'string', 'group' => 'station', 'description' => 'Weather station display name'],
+            ['key' => 'station.name', 'value' => 'WeatherNode', 'type' => 'string', 'group' => 'station', 'description' => 'Weather station display name'],
             ['key' => 'station.location', 'value' => 'Waldijk - Uitgeest - Noord-Holland - Nederland', 'type' => 'string', 'group' => 'station', 'description' => 'Station location description'],
             ['key' => 'station.latitude', 'value' => '52.5163996', 'type' => 'float', 'group' => 'station', 'description' => 'Station latitude (decimal degrees)'],
             ['key' => 'station.longitude', 'value' => '4.7078991', 'type' => 'float', 'group' => 'station', 'description' => 'Station longitude (decimal degrees)'],
@@ -207,7 +207,7 @@ class SettingsSeeder extends Seeder
             // ===== Radar =====
             ['key' => 'radar.enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'radar', 'description' => 'Enable rain radar display'],
             ['key' => 'radar.url', 'value' => 'https://cdn.knmi.nl/knmi/map/page/weer/actueel-weer/neerslagradar/WWWRADARTMP_loop.gif', 'type' => 'string', 'group' => 'radar', 'description' => 'Radar animation URL'],
-            ['key' => 'radar.provider', 'value' => 'knmi', 'type' => 'select', 'group' => 'radar', 'description' => 'Radar provider', 'options' => 'knmi:KNMI,buienradar:Buienradar,rainviewer:RainViewer'],
+            ['key' => 'radar.provider', 'value' => 'rainviewer', 'type' => 'select', 'group' => 'radar', 'description' => 'Radar provider', 'options' => 'knmi:KNMI,buienradar:Buienradar,rainviewer:RainViewer'],
             ['key' => 'radar.rainviewer_zoom', 'value' => '7', 'type' => 'integer', 'group' => 'radar', 'description' => 'RainViewer map zoom level (0=world, 1-7; max 7 as of 2026)'],
             ['key' => 'radar.rainviewer_mode', 'value' => 'api', 'type' => 'select', 'group' => 'radar', 'description' => 'RainViewer display mode', 'options' => 'api:API (animated map),iframe:Iframe embed'],
             ['key' => 'radar.frame_delay', 'value' => '1000', 'type' => 'select', 'group' => 'radar', 'description' => 'Animation speed between radar frames. Slower = fewer requests, less chance of rate limiting.', 'options' => '500:Fast (500ms),800:Normal (800ms),1000:Balanced (1000ms),1500:Slow (1500ms),2000:Very slow (2000ms)'],
@@ -333,9 +333,9 @@ class SettingsSeeder extends Seeder
             ['key' => 'widgets.rows_extra', 'value' => '0', 'type' => 'integer', 'group' => 'widgets', 'description' => 'Extra rows in widget grid'],
 
             // ===== SEO & Meta =====
-            ['key' => 'seo.site_title', 'value' => 'MeteoUitgeest - Het lokale weer en verwachting in Uitgeest', 'type' => 'string', 'group' => 'seo', 'description' => 'Site title (browser tab)'],
-            ['key' => 'seo.site_description', 'value' => 'Actueel weer in Uitgeest, Noord-Holland. Live weerdata van particulier weerstation met temperatuur, wind, neerslag en verwachting.', 'type' => 'textarea', 'group' => 'seo', 'description' => 'Site meta description'],
-            ['key' => 'seo.site_keywords', 'value' => 'weer, uitgeest, weerstation, temperatuur, wind, regen, voorspelling, noord-holland, ecowitt', 'type' => 'string', 'group' => 'seo', 'description' => 'Site keywords (comma-separated)'],
+            ['key' => 'seo.site_title', 'value' => 'WeatherNode - Live weather station', 'type' => 'string', 'group' => 'seo', 'description' => 'Site title (browser tab)'],
+            ['key' => 'seo.site_description', 'value' => 'Live weather data from a local weather station: temperature, wind, precipitation, and forecast.', 'type' => 'textarea', 'group' => 'seo', 'description' => 'Site meta description'],
+            ['key' => 'seo.site_keywords', 'value' => 'weather, weather station, temperature, wind, rain, forecast, ecowitt', 'type' => 'string', 'group' => 'seo', 'description' => 'Site keywords (comma-separated)'],
             ['key' => 'seo.og_image', 'value' => '', 'type' => 'string', 'group' => 'seo', 'description' => 'Social sharing image URL'],
 
             // ===== Contact & Social =====

@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-    <title>{{ config('app.name', 'MeteoUitgeest') }} - {{ __('Admin') }}</title>
+    <title>{{ config('app.name', 'WeatherNode') }} - {{ __('Admin') }}</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -174,7 +174,7 @@
                     <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
                     </svg>
-                    <span class="text-lg font-semibold">{{ config('app.name', 'MeteoUitgeest') }}</span>
+                    <span class="text-lg font-semibold">{{ config('app.name', 'WeatherNode') }}</span>
                 </a>
                 <p class="text-xs text-slate-400 mt-1">{{ __('Admin Panel') }}</p>
             </div>

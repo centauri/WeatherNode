@@ -9,7 +9,7 @@
 @php
     $activeUnits = $activeUnits ?? 'metric';
     $unit = app(\App\Support\UnitFormatter::class);
-    $radarProvider = \App\Models\Setting::getValue('radar.provider', 'knmi');
+    $radarProvider = \App\Models\Setting::getValue('radar.provider', 'rainviewer');
     $radarUrl = \App\Models\Setting::getValue('radar.url', '');
     $stationLocation = \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName();
     $stationLat = \App\Models\Setting::latitude();

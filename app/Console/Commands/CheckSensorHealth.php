@@ -314,7 +314,7 @@ class CheckSensorHealth extends Command
         try {
             Mail::raw($message, function ($mail) use ($subject, $alertEmail) {
                 $mail->to($alertEmail)
-                     ->subject("[MeteoUitgeest] {$subject}");
+                     ->subject("[WeatherNode] {$subject}");
             });
 
             $this->info("Alert sent to: {$alertEmail}");

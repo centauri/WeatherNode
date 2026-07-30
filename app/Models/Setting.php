@@ -150,7 +150,7 @@ class Setting extends Model
      */
     public static function stationName(): string
     {
-        return static::getValue('station.name', 'MeteoUitgeest');
+        return static::getValue('station.name', 'WeatherNode');
     }
 
     public static function stationLocation(): string

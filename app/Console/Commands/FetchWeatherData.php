@@ -599,7 +599,7 @@ class FetchWeatherData extends Command
                     CURLOPT_POSTFIELDS => json_encode($payload),
                     CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
-                        'User-Agent: MeteoUitgeest/1.0',
+                        'User-Agent: WeatherNode/1.0',
                     ],
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_TIMEOUT => 10,

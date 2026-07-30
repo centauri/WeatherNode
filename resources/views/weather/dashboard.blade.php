@@ -489,7 +489,7 @@
         };
 
         $seoSiteTitleRaw = \App\Models\Setting::getValue('seo.site_title', \App\Models\Setting::stationName());
-        $seoSiteDescriptionRaw = \App\Models\Setting::getValue('seo.site_description', __('Live weather in Uitgeest, North Holland. Live weather data from a local station.'));
+        $seoSiteDescriptionRaw = \App\Models\Setting::getValue('seo.site_description', __('Live weather data from a local station.'));
         $seoSiteKeywordsRaw = \App\Models\Setting::getValue('seo.site_keywords', '');
         $seoOgImageRaw = \App\Models\Setting::getValue('seo.og_image', '');
 
@@ -715,7 +715,7 @@
         $dashboardAdsConsentRequired = $dashboardAdsConsentService->requiresConsentForCountryWithMode($dashboardAdsConsentCountryCode, $dashboardAdsConsentMode);
 
         $dashboardWidgetProvider = \App\Models\Setting::getValue('radar.widget_provider', '');
-        $dashboardRadarProvider = $dashboardWidgetProvider ?: \App\Models\Setting::getValue('radar.provider', 'knmi');
+        $dashboardRadarProvider = $dashboardWidgetProvider ?: \App\Models\Setting::getValue('radar.provider', 'rainviewer');
         $dashboardRainviewerMode = $dashboardRadarProvider === 'rainviewer'
             ? ($dashboardWidgetProvider ? \App\Models\Setting::getValue('radar.widget_rainviewer_mode', 'api') : \App\Models\Setting::getValue('radar.rainviewer_mode', 'api'))
             : 'api';
@@ -4532,7 +4532,7 @@
                         <img id="webcam-image" 
                              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
                              x-bind:data-lazy-src="imageUrl"
-                             alt="{{ __('Webcam Uitgeest') }}" 
+                             alt="{{ __('Webcam') }}" 
                              class="w-full h-full object-cover"
                              loading="lazy"
                              decoding="async"
@@ -4652,7 +4652,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold">🛰️ {{ __('Precipitation radar') }}</h3>
                     @php
-                        $radarProvider = \App\Models\Setting::getValue('radar.provider', 'knmi');
+                        $radarProvider = \App\Models\Setting::getValue('radar.provider', 'rainviewer');
                         $providerLabels = [
                             'knmi' => 'KNMI',
                             'buienradar' => 'Buienradar',
@@ -4666,7 +4666,7 @@
                     @php
                         // Check if widget has separate provider setting
                         $widgetProvider = \App\Models\Setting::getValue('radar.widget_provider', '');
-                        $radarProvider = $widgetProvider ?: \App\Models\Setting::getValue('radar.provider', 'knmi');
+                        $radarProvider = $widgetProvider ?: \App\Models\Setting::getValue('radar.provider', 'rainviewer');
                         $radarUrl = \App\Models\Setting::getValue('radar.url', '');
                         $stationLat = \App\Models\Setting::latitude();
                         $stationLon = \App\Models\Setting::longitude();

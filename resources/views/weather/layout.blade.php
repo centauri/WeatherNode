@@ -46,7 +46,7 @@
         };
 
         $seoSiteTitleRaw = \App\Models\Setting::getValue('seo.site_title', \App\Models\Setting::stationName());
-        $seoSiteDescriptionRaw = \App\Models\Setting::getValue('seo.site_description', __('Live weather in Uitgeest, North Holland. Live weather data from a local station.'));
+        $seoSiteDescriptionRaw = \App\Models\Setting::getValue('seo.site_description', __('Live weather data from a local station.'));
         $seoSiteKeywordsRaw = \App\Models\Setting::getValue('seo.site_keywords', '');
         $seoOgImageRaw = \App\Models\Setting::getValue('seo.og_image', '');
 

@@ -450,7 +450,7 @@ MAIL_ENCRYPTION=tls
             </h2>
         </div>
         <div class="p-6">
-            <p class="text-gray-600 dark:text-gray-300 mb-6">{{ __('MeteoUitgeest supports multiple ways to receive live weather data from your station:') }}</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">{{ __('WeatherNode supports multiple ways to receive live weather data from your station:') }}</p>
             
             <div class="space-y-6">
                 <!-- Ecowitt Local Upload -->
@@ -678,9 +678,9 @@ MAIL_ENCRYPTION=tls
 
             <h3 class="font-semibold text-gray-800 dark:text-white mb-3">{{ __('Add ONE cron entry:') }}</h3>
             <div class="bg-gray-900 rounded-lg p-4 mb-4 space-y-2">
-                <code class="text-green-400 text-sm block">* * * * * cd /path/to/meteouitgeest && php artisan schedule:run >> /dev/null 2>&1</code>
+                <code class="text-green-400 text-sm block">* * * * * cd /path/to/weathernode && php artisan schedule:run >> /dev/null 2>&1</code>
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">{{ __('Replace') }} <code>/path/to/meteouitgeest</code> {{ __('with your actual installation path.') }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">{{ __('Replace') }} <code>/path/to/weathernode</code> {{ __('with your actual installation path.') }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-6">
                 {{ __('Verify scheduler health and see all tasks at') }}
                 <a href="{{ route('admin.settings.group', 'scheduler') }}" class="text-blue-600 hover:underline">{{ __('Schedulers') }}</a>.
@@ -783,7 +783,7 @@ MAIL_ENCRYPTION=tls
         </div>
         <div class="p-6">
             <p class="text-gray-600 dark:text-gray-300 mb-4">
-                {{ __('MeteoUitgeest supports weather warnings from 5 worldwide services:') }}
+                {{ __('WeatherNode supports weather warnings from 5 worldwide services:') }}
             </p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

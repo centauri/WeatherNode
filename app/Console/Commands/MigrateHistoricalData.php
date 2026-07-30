@@ -27,7 +27,7 @@ class MigrateHistoricalData extends Command
         $sourcePath = $this->argument('source_path') ?? '/Users/pauladmiraal/DEV/meteouitgeest_current/public_html';
         $wudataPath = $sourcePath . '/wudata';
 
-        $this->info("🌤️  MeteoUitgeest Historical Data Migration");
+        $this->info("🌤️  WeatherNode Historical Data Migration");
         $this->line("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         $this->info("Source: {$wudataPath}");
         $this->newLine();

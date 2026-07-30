@@ -224,7 +224,7 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-app-password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=your-email@gmail.com
-MAIL_FROM_NAME="MeteoUitgeest"</pre>
+MAIL_FROM_NAME="WeatherNode"</pre>
                         <p class="mt-2 text-xs opacity-75">{{ __('Note: Gmail and Microsoft require OAuth2. App passwords are deprecated.') }}</p>
                     </div>
                 </div>
