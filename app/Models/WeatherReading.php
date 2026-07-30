@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Support\WindCompass;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class WeatherReading extends Model
 {
@@ -205,29 +206,19 @@ class WeatherReading extends Model
     }
 
     /**
-     * Get wind direction as compass point (Dutch)
+     * Get wind direction as compass point (English keys for i18n).
      */
     public function getWindDirectionCompassAttribute(): string
     {
-        if ($this->wind_direction === null) {
-            return 'N/A';
-        }
-        $directions = ['N', 'NNO', 'NO', 'ONO', 'O', 'OZO', 'ZO', 'ZZO', 'Z', 'ZZW', 'ZW', 'WZW', 'W', 'WNW', 'NW', 'NNW'];
-        $index = round($this->wind_direction / 22.5) % 16;
-        return $directions[$index];
+        return WindCompass::fromDegrees($this->wind_direction !== null ? (float) $this->wind_direction : null);
     }
 
     /**
-     * Get wind direction as compass point (English)
+     * Alias kept for backwards compatibility; same as wind_direction_compass.
      */
     public function getWindDirectionCompassEnAttribute(): string
     {
-        if ($this->wind_direction === null) {
-            return 'N/A';
-        }
-        $directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-        $index = round($this->wind_direction / 22.5) % 16;
-        return $directions[$index];
+        return $this->wind_direction_compass;
     }
 
     /**
@@ -252,55 +243,55 @@ class WeatherReading extends Model
     }
 
     /**
-     * Get Beaufort scale description (Dutch)
+     * Get Beaufort scale description (English keys for i18n).
      */
     public function getBeaufortDescriptionAttribute(): string
     {
         $descriptions = [
-            0 => 'Windstil',
-            1 => 'Zwak',
-            2 => 'Zwak',
-            3 => 'Matig',
-            4 => 'Matig',
-            5 => 'Vrij krachtig',
-            6 => 'Krachtig',
-            7 => 'Hard',
-            8 => 'Stormachtig',
-            9 => 'Storm',
-            10 => 'Zware storm',
-            11 => 'Zeer zware storm',
-            12 => 'Orkaan',
+            0 => 'Calm',
+            1 => 'Light air',
+            2 => 'Light breeze',
+            3 => 'Gentle breeze',
+            4 => 'Moderate breeze',
+            5 => 'Fresh breeze',
+            6 => 'Strong breeze',
+            7 => 'Near gale',
+            8 => 'Gale',
+            9 => 'Strong gale',
+            10 => 'Storm',
+            11 => 'Violent storm',
+            12 => 'Hurricane',
         ];
-        return $descriptions[$this->beaufort] ?? 'Onbekend';
+        return $descriptions[$this->beaufort] ?? 'Unknown';
     }
 
     /**
-     * Get UV level description (Dutch)
+     * Get UV level description (English keys for i18n).
      */
     public function getUvLevelAttribute(): string
     {
         $uv = $this->uv_index ?? 0;
-        if ($uv < 3) return 'Laag';
-        if ($uv < 6) return 'Matig';
-        if ($uv < 8) return 'Hoog';
-        if ($uv < 11) return 'Zeer hoog';
-        return 'Extreem';
+        if ($uv < 3) return 'Low';
+        if ($uv < 6) return 'Moderate';
+        if ($uv < 8) return 'High';
+        if ($uv < 11) return 'Very High';
+        return 'Extreme';
     }
 
     /**
-     * Get air quality level from PM2.5 (Dutch)
+     * Get air quality level from PM2.5 (English keys for i18n / AQI lookup tables).
      */
     public function getPm25LevelAttribute(): ?string
     {
         $pm25 = $this->pm25_ch1;
         if ($pm25 === null) return null;
         
-        if ($pm25 <= 12) return 'Goed';
-        if ($pm25 <= 35.4) return 'Matig';
-        if ($pm25 <= 55.4) return 'Ongezond voor gevoelige groepen';
-        if ($pm25 <= 150.4) return 'Ongezond';
-        if ($pm25 <= 250.4) return 'Zeer ongezond';
-        return 'Gevaarlijk';
+        if ($pm25 <= 12) return 'Good';
+        if ($pm25 <= 35.4) return 'Moderate';
+        if ($pm25 <= 55.4) return 'Unhealthy for Sensitive Groups';
+        if ($pm25 <= 150.4) return 'Unhealthy';
+        if ($pm25 <= 250.4) return 'Very Unhealthy';
+        return 'Hazardous';
     }
 
     /**

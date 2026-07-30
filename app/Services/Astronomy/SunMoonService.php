@@ -3,6 +3,7 @@
 namespace App\Services\Astronomy;
 
 use App\Models\Setting;
+use App\Support\WindCompass;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -865,8 +866,7 @@ class SunMoonService
 
     private function getDirection(float $degrees): string
     {
-        $dirs = ['N', 'NNO', 'NO', 'ONO', 'O', 'OZO', 'ZO', 'ZZO', 'Z', 'ZZW', 'ZW', 'WZW', 'W', 'WNW', 'NW', 'NNW', 'N'];
-        return $dirs[round($degrees / 22.5)];
+        return WindCompass::fromDegrees($degrees);
     }
 
     /**

@@ -199,7 +199,7 @@
                 'lines' => [
                     __('Speed') . ': ' . $ssrWindSpeedText . ' km/h',
                     __('Gust') . ': ' . $ssrWindGustText . ' km/h',
-                    __('Direction') . ': ' . ((string) ($ssrCurrent['wind_direction_compass'] ?? 'N')) . ' ' . ((string) ($ssrCurrent['wind_direction'] ?? '--')) . '°',
+                    __('Direction') . ': ' . __((string) ($ssrCurrent['wind_direction_compass'] ?? 'N')) . ' ' . ((string) ($ssrCurrent['wind_direction'] ?? '--')) . '°',
                 ],
             ];
         }
@@ -949,8 +949,11 @@
             'Storm-force wind',
             'Extreme cold',
             'Roads may be slippery',
-            'View alerts',
-        ];
+                    'View alerts',
+                    // Wind compass points (English keys; locale files may remap e.g. NNE→NNO)
+                    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+                    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+                ];
 
         $dashboardI18n = [];
         foreach ($dashboardI18nKeys as $dashboardI18nKey) {
@@ -1949,7 +1952,7 @@
                         <div class="flex-1 space-y-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-gray-400">{{ __('Direction') }}</span>
-                                <span class="font-bold" x-text="current ? (current.wind_direction_compass + ' ' + current.wind_direction + '°') : '--'">{{ isset($ssrCurrent['wind_direction']) && is_numeric($ssrCurrent['wind_direction']) ? (($ssrCurrent['wind_direction_compass'] ?? 'N') . ' ' . (int) $ssrCurrent['wind_direction'] . '°') : '--' }}</span>
+                                <span class="font-bold" x-text="current ? (translateKey(current.wind_direction_compass) + ' ' + current.wind_direction + '°') : '--'">{{ isset($ssrCurrent['wind_direction']) && is_numeric($ssrCurrent['wind_direction']) ? (__($ssrCurrent['wind_direction_compass'] ?? 'N') . ' ' . (int) $ssrCurrent['wind_direction'] . '°') : '--' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-400">{{ __('Wind gust') }}</span>
