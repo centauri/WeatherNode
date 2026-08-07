@@ -56,10 +56,13 @@ jobs:
             echo "endpoint=${ORG_ENDPOINT}" >> "$GITHUB_OUTPUT"
           fi
           echo "package=${PACKAGE_LC}" >> "$GITHUB_OUTPUT"
+          echo "owner=${OWNER}" >> "$GITHUB_OUTPUT"
 
       - name: Delete old package versions
         env:
           ENDPOINT: ${{ steps.endpoint.outputs.endpoint }}
+          OWNER: ${{ steps.endpoint.outputs.owner }}
+          PACKAGE_LC: ${{ steps.endpoint.outputs.package }}
           KEEP_RELEASES: ${{ github.event.inputs.keep_release_tags || '6' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run || 'false' }}
         run: |
@@ -72,11 +75,13 @@ jobs:
             exit 0
           fi
 
-          # Build candidate list with normalized tags.
+          # Build candidate list with normalized tags AND digest (name field).
+          # The digest is required to protect multi-arch child manifests below.
           normalized="$(echo "${versions_json}" | jq '
             sort_by(.created_at) | reverse
             | map({
                 id: .id,
+                digest: .name,
                 created_at: .created_at,
                 tags: (.metadata.container.tags // [])
               })
@@ -100,8 +105,49 @@ jobs:
 
           keep_ids="$(printf "%s\n%s\n" "${keep_latest_ids}" "${keep_release_ids}" | awk 'NF' | sort -u)"
 
+          # --- Protect multi-arch children of every tag we are keeping ---
+          #
+          # GHCR stores each platform-specific manifest (amd64, arm64, ...) of a
+          # multi-arch image as its own, UNTAGGED package version. Only the
+          # top-level manifest index carries the tag. Deleting "all untagged
+          # versions" therefore deletes the live children of tags we intend to
+          # keep, leaving the tag itself pointing at a manifest that 404s on
+          # pull ("manifest unknown") even though the tag and index look fine.
+          #
+          # Resolve each kept tag's index and collect the digests of its
+          # children so we never delete them, tagged or not.
+
+          keep_digests="$(echo "${normalized}" | jq -r --argjson ids "$(printf '%s\n' "${keep_ids}" | awk 'NF' | jq -R . | jq -s 'map(tonumber)')" '
+            [ .[] | select(.id as $id | $ids | index($id)) | .digest ] | .[]
+          ')"
+
+          protected_digests_file="$(mktemp)"
+          printf "%s\n" "${keep_digests}" > "${protected_digests_file}"
+
+          reg_token="$(curl -s "https://ghcr.io/token?scope=repository:${OWNER}/${PACKAGE_LC}:pull" | jq -r .token)"
+
+          while IFS= read -r digest; do
+            [ -n "${digest}" ] || continue
+            children="$(curl -s \
+              -H "Authorization: Bearer ${reg_token}" \
+              -H "Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json" \
+              "https://ghcr.io/v2/${OWNER}/${PACKAGE_LC}/manifests/${digest}" \
+              | jq -r '.manifests[]?.digest // empty' || true)"
+            if [ -n "${children}" ]; then
+              printf "%s\n" "${children}" >> "${protected_digests_file}"
+            fi
+          done < "${protected_digests_file}"
+
+          protected_ids="$(echo "${normalized}" | jq -r --slurpfile digests <(sort -u "${protected_digests_file}" | jq -R . | jq -s .) '
+            . as $all
+            | ($digests[0]) as $prot
+            | [ $all[] | select(.digest as $d | $prot | index($d)) | .id ] | unique | .[]
+          ' || true)"
+
+          rm -f "${protected_digests_file}"
+
           # Delete:
-          # - untagged versions
+          # - untagged versions (EXCEPT protected multi-arch children, see above)
           # - versions tagged with main-*
           # - old release-tagged versions beyond keep window
           delete_ids="$(echo "${normalized}" | jq -r '
@@ -113,8 +159,9 @@ jobs:
             | if ($tag_count == 0) or $is_main_sha or $is_release then $v.id else empty end
           ' | sort -u)"
 
-          # Filter out keep list.
-          final_delete_ids="$(comm -23 <(printf "%s\n" "${delete_ids}" | awk 'NF' | sort -u) <(printf "%s\n" "${keep_ids}" | awk 'NF' | sort -u) || true)"
+          # Filter out keep list AND protected multi-arch children.
+          exclude_ids="$(printf "%s\n%s\n" "${keep_ids}" "${protected_ids}" | awk 'NF' | sort -u)"
+          final_delete_ids="$(comm -23 <(printf "%s\n" "${delete_ids}" | awk 'NF' | sort -u) <(printf "%s\n" "${exclude_ids}") || true)"
 
           if [ -z "${final_delete_ids}" ]; then
             echo "No versions to delete after retention filtering."
