@@ -28,13 +28,13 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
+    libwebp-dev \
     libonig-dev \
     libxml2-dev \
     libcurl4-openssl-dev \
     unzip \
     git \
     && apt-get install -y --only-upgrade libgnutls30 \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) curl \
     && docker-php-ext-install -j$(nproc) pdo_sqlite \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
@@ -42,9 +42,21 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     && docker-php-ext-install -j$(nproc) xml \
     && docker-php-ext-install -j$(nproc) dom \
     && docker-php-ext-install -j$(nproc) zip \
-    && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install -j$(nproc) bcmath \
+    # gd is configured immediately before it is installed, and nothing may run
+    # between the two. docker-php-ext-configure unpacks the PHP source and
+    # leaves a .docker-delete-me marker; every docker-php-ext-install deletes
+    # that source when it finishes. Any install in between therefore throws the
+    # configured gd away, and the later `install gd` rebuilds it with no flags
+    # at all: no FreeType (OG images 500), no JPEG, no WebP.
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Fail the build rather than ship a gd that silently lost its libraries. A gd
+# without FreeType 500s on every OG image, and without JPEG or WebP the proxied
+# charts fall back to PNG at roughly four times the size.
+RUN php -r '$missing = array_filter(["FreeType Support", "JPEG Support", "PNG Support", "WebP Support"], fn ($k) => empty(gd_info()[$k])); if ($missing) { fwrite(STDERR, "gd built without: " . implode(", ", $missing) . PHP_EOL); exit(1); } echo "gd: freetype, jpeg, png and webp all present" . PHP_EOL;'
 
 # Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
