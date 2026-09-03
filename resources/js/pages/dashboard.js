@@ -2,6 +2,15 @@ const cfg = window.__METEO_DASHBOARD_CONFIG__ || {};
 const t = (key) => cfg.i18n?.[key] ?? key;
 const locale = window.Meteo?.jsLocale || 'en-US';
 const hybridSsrEnabled = window.__METEO_DASHBOARD_HYBRID__ === true;
+
+// RainViewer has radar data up to zoom 7. Ask for a tile above that and it
+// answers with a solid near-black opaque square, which would black out the
+// map, so the radar layers stop requesting new tiles there and Leaflet scales
+// the last real one instead. The map itself can go further because the street
+// map underneath has plenty more detail, and stopping at 7 left the "+" button
+// greyed out on every default install.
+const RADAR_MAX_ZOOM = 10;
+const RADAR_MAX_DATA_ZOOM = 7;
 const initialPayload = (window.__METEO_DASHBOARD_INITIAL__ && typeof window.__METEO_DASHBOARD_INITIAL__ === 'object')
     ? window.__METEO_DASHBOARD_INITIAL__
     : null;
@@ -1688,7 +1697,7 @@ function weatherDashboard() {
                     }
 
                     const configuredZoom = Number(cfg.rainviewerZoom || 7);
-                    const clampedZoom = Math.min(Math.max(configuredZoom || 7, 0), 7);
+                    const clampedZoom = Math.min(Math.max(configuredZoom || 7, 0), RADAR_MAX_ZOOM);
                     const useProxy = Boolean(cfg.radarUseProxy);
 
                     this._radarMap = L.map(radarMapWidget, {
@@ -1696,7 +1705,7 @@ function weatherDashboard() {
                         zoom: clampedZoom,
                         zoomControl: false,
                         attributionControl: false,
-                        maxZoom: 7,
+                        maxZoom: RADAR_MAX_ZOOM,
                         minZoom: 0,
                         zoomAnimation: false,
                     });
@@ -1704,7 +1713,7 @@ function weatherDashboard() {
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; OpenStreetMap contributors',
                         minZoom: 0,
-                        maxZoom: 7,
+                        maxZoom: RADAR_MAX_ZOOM,
                     }).addTo(this._radarMap);
 
                     const stationIcon = L.divIcon({
@@ -2038,12 +2047,13 @@ function weatherDashboard() {
                         const previousLayer = this._radarLayer;
                         const layerOpacity = Number.isFinite(Number(frame.opacity)) ? Number(frame.opacity) : 0.7;
                         const minZoom = Number.isFinite(Number(frame.minZoom)) ? Number(frame.minZoom) : 0;
-                        const maxZoom = Number.isFinite(Number(frame.maxZoom)) ? Number(frame.maxZoom) : 7;
+                        const maxNativeZoom = Number.isFinite(Number(frame.maxZoom)) ? Number(frame.maxZoom) : RADAR_MAX_DATA_ZOOM;
                         const nextLayer = window.L.tileLayer(frame.tileUrlTemplate, {
                             opacity: layerOpacity,
                             attribution: String(frame.attribution || 'Future radar'),
                             minZoom,
-                            maxZoom,
+                            maxZoom: RADAR_MAX_ZOOM,
+                            maxNativeZoom,
                             tms: false,
                             crossOrigin: true,
                         });
@@ -2068,7 +2078,8 @@ function weatherDashboard() {
                         opacity: 0.7,
                         attribution: 'RainViewer',
                         minZoom: 0,
-                        maxZoom: 7,
+                        maxZoom: RADAR_MAX_ZOOM,
+                        maxNativeZoom: RADAR_MAX_DATA_ZOOM,
                         tms: false,
                         crossOrigin: true,
                     });
