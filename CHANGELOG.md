@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.09.0] - 2026-09-04
+
+- Fix weather cards failing on Docker with a 500 and "undefined function imageftbbox()". The image was building GD with PNG only, losing FreeType, JPEG and WebP, because the build configured GD and then discarded that work before installing it (#87)
+- The same fault made the proxied pressure charts fall back to PNG on Docker, so those now download at roughly a quarter of the size. The image build fails now if GD comes out missing any of the four (#74)
+- Fix the PM2.5 widget showing "--" instead of the reading. A station with one sensor saw six empty rows, two of which were not sensors at all (#86)
+- The radar widget's "+" button works on a fresh install. It was greyed out because the map opened at its own maximum zoom. Zooming in now sharpens the street map and scales the radar, which only has detail to zoom 7 (#59)
+- Fix the satellite panel width on the radar page (#84)
+- More German translations, and the missing Italian sea temperature strings
+
 ## [2026.08.9] - 2026-08-23
 
 - Fix the header on a phone cutting off buttons when signed in as an admin. The row now wraps, and the header ends up shorter than it was (#78)
