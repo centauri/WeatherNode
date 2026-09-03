@@ -350,9 +350,13 @@
         }
         if ($ssrWidgetFlags['pm25']) {
             $lines = [];
-            foreach (array_slice((array) ($ssrExtraSensors['pm25'] ?? []), 0, 4, true) as $key => $pm) {
+            foreach (['ch1', 'ch2', 'ch3', 'ch4'] as $key) {
+                $pm = ($ssrExtraSensors['pm25'] ?? [])[$key] ?? null;
                 $value = is_array($pm) ? ($pm['current'] ?? null) : $pm;
-                $lines[] = (string) $key . ': ' . ($value !== null ? $value . ' µg/m³' : '--');
+                if ($value === null) {
+                    continue;
+                }
+                $lines[] = (string) $key . ': ' . $value . ' µg/m³';
             }
             $ssrHybridCards[] = ['id' => 'pm25', 'title' => __('PM2.5 Air Quality'), 'lines' => $lines ?: [__('No PM2.5 data')]];
         }
@@ -4014,7 +4018,7 @@
 	                </template>
 
 	                <!-- PM2.5 Widget -->
-	                <template x-if="isWidgetEnabled('pm25') && extraSensors?.pm25 && Object.keys(extraSensors.pm25).length > 0">
+	                <template x-if="isWidgetEnabled('pm25') && Object.keys(pm25Channels()).length > 0">
 		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
 		                     data-widget="pm25"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
@@ -4028,10 +4032,10 @@
                         <span class="text-xs text-gray-400">{{ __('Fine dust') }}</span>
                     </div>
                     <div class="space-y-3 text-sm">
-                        <template x-for="(data, key) in extraSensors?.pm25 || {}" :key="key">
+                        <template x-for="(value, key) in pm25Channels()" :key="key">
                             <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
                                 <span class="text-gray-400" x-text="getPm25Label(key)"></span>
-                                <span class="font-bold" x-text="data?.current !== undefined ? data.current + ' µg/m³' : '--'"></span>
+                                <span class="font-bold" x-text="value + ' µg/m³'"></span>
                             </div>
                         </template>
                     </div>

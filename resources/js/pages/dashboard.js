@@ -2876,6 +2876,23 @@ function weatherDashboard() {
                     return `${t('Soil')} ${id}`;
                 },
 
+                // The payload carries ch1..ch4 alongside avg_24h_ch1 and level.
+                // Only the channels are sensors, and a channel with no reading
+                // is a sensor this station does not have.
+                pm25Channels() {
+                    const source = this.extraSensors?.pm25 || {};
+                    const channels = {};
+
+                    for (const key of ['ch1', 'ch2', 'ch3', 'ch4']) {
+                        const value = source[key];
+                        if (value !== null && value !== undefined) {
+                            channels[key] = value;
+                        }
+                    }
+
+                    return channels;
+                },
+
                 getPm25Label(key) {
                     const rawKey = String(key);
                     const match = rawKey.match(/\d+/);
