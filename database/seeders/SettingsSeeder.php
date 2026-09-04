@@ -264,8 +264,11 @@ class SettingsSeeder extends Seeder
             ['key' => 'navigation.alerts_enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'navigation', 'description' => 'Show Alerts in navigation and allow route access'],
 
             // ===== Forecast Settings =====
-            ['key' => 'forecast.default_source', 'value' => 'fct_yrno_block.php', 'type' => 'select', 'group' => 'forecast', 'description' => 'Default forecast source', 'options' => 'fct_yrno_block.php:Yr.no,fct_wu_block.php:Weather Underground,fct_darksky_block.php:OpenWeatherMap,fct_wxsim_block.php:WXSIM,fct_ec_block.php:Environment Canada,fct_tempest_block.php:WeatherFlow Tempest,fct_aemet_block.php:AEMET'],
+            ['key' => 'forecast.default_source', 'value' => 'fct_yrno_block.php', 'type' => 'select', 'group' => 'forecast', 'description' => 'Default forecast source', 'options' => 'fct_yrno_block.php:Yr.no,fct_wu_block.php:Weather Underground,fct_darksky_block.php:OpenWeatherMap,fct_wxsim_block.php:WXSIM,fct_ec_block.php:Environment Canada,fct_tempest_block.php:WeatherFlow Tempest,fct_aemet_block.php:AEMET,fct_dwd_block.php:DWD'],
             ['key' => 'forecast.sky_source', 'value' => 'ccn_metar_block.php', 'type' => 'select', 'group' => 'forecast', 'description' => 'Sky conditions source', 'options' => 'ccn_metar_block.php:METAR,ccn_ec_block.php:Environment Canada,ccn_noaa_block.php:NOAA'],
+            // DWD MOSMIX. The station is optional: left empty the nearest one
+            // to the station coordinates is used.
+            ['key' => 'dwd.station_id', 'value' => '', 'type' => 'string', 'group' => 'dwd', 'description' => 'DWD MOSMIX station id, e.g. 10382 for Berlin-Tegel. Leave empty to use the nearest station'],
             // WXSIM plaintext forecast integration
             ['key' => 'wxsim.enabled', 'value' => '0', 'type' => 'boolean', 'group' => 'wxsim', 'description' => 'Enable WXSIM plaintext forecast integration'],
             ['key' => 'wxsim.file_path', 'value' => storage_path('app/wxsim/plaintext.txt'), 'type' => 'string', 'group' => 'wxsim', 'description' => 'Path to WXSIM plaintext forecast file (plaintext.txt). Leave as default if you copy the file into storage/app/wxsim/plaintext.txt'],
