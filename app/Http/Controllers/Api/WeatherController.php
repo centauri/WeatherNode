@@ -116,6 +116,7 @@ class WeatherController extends Controller
             'fct_ec_block.php' => "ec_forecast_{$latitude}_{$longitude}",
             'fct_tempest_block.php' => 'tempest_forecast_' . ($stationId !== '' ? $stationId : '0'),
             'fct_aemet_block.php' => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
+            'fct_dwd_block.php' => 'dwd_forecast_' . Setting::getValue('dwd.station_id', ''),
         ];
 
         $forecastData = Cache::get($sourceKeys[$source] ?? null);
@@ -302,6 +303,7 @@ class WeatherController extends Controller
             'fct_ec_block.php' => 'Environment Canada',
             'fct_tempest_block.php' => 'WeatherFlow Tempest',
             'fct_aemet_block.php' => 'AEMET (Agencia Estatal de Meteorología)',
+            'fct_dwd_block.php' => 'DWD (Deutscher Wetterdienst)',
         ];
         $sourceName = $sourceNames[$source] ?? 'Yr.no (Norwegian Meteorological Institute)';
 

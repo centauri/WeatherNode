@@ -31,7 +31,7 @@ class DwdProvider extends BaseProvider
 
     public function isImplemented(): bool
     {
-        return false;
+        return true;
     }
 
     public function getApiUrl(): ?string

@@ -1,0 +1,8 @@
+ID    ICAO NAME                 LAT    LON     ELEV
+----- ---- -------------------- -----  ------- -----
+01001 ENJA JAN MAYEN             70.56   -8.40    10
+06240 EHAM AMSTERDAM             52.18    4.46    -4
+10381 ---- BERLIN-DAHLEM         52.28   13.18    58
+10382 EDDT BERLIN-TEGEL          52.34   13.19    37
+10384 EDDI BERLIN-TEMPELHOF      52.28   13.24    50
+10385 EDDB BERLIN-BRANDENBURG    52.23   13.31    47
