@@ -274,7 +274,7 @@
                 </details>
 
                 <!-- DATA SOURCES -->
-                <details class="sidebar-section" {{ request()->is('admin/settings/ecowitt') || request()->is('admin/settings/wunderground') || request()->is('admin/settings/weatherflow') || request()->is('admin/settings/weatherlink') || request()->is('admin/settings/ambient') || request()->is('admin/settings/openweathermap') || request()->is('admin/settings/yrno') || request()->is('admin/settings/wxsim') || request()->is('admin/settings/environment_canada') || request()->is('admin/settings/airquality') || request()->is('admin/settings/pollen') || request()->is('admin/settings/aviation') || request()->is('admin/settings/tide') || request()->is('admin/settings/waves') || request()->is('admin/settings/rivers') || request()->is('admin/settings/opendata') ? 'open' : '' }}>
+                <details class="sidebar-section" {{ request()->is('admin/settings/ecowitt') || request()->is('admin/settings/wunderground') || request()->is('admin/settings/weatherflow') || request()->is('admin/settings/weatherlink') || request()->is('admin/settings/ambient') || request()->is('admin/settings/openweathermap') || request()->is('admin/settings/yrno') || request()->is('admin/settings/wxsim') || request()->is('admin/settings/environment_canada') || request()->is('admin/settings/airquality') || request()->is('admin/settings/pollen') || request()->is('admin/settings/aviation') || request()->is('admin/settings/tide') || request()->is('admin/settings/waves') || request()->is('admin/settings/rivers') || request()->is('admin/settings/opendata') || request()->is('admin/settings/aemet') || request()->is('admin/settings/dwd') ? 'open' : '' }}>
                     <summary class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer flex items-center justify-between hover:text-slate-300">
                         {{ __('Data Sources') }}
                         <svg class="w-4 h-4 sidebar-chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,6 +318,20 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <span>{{ __('Yr.no') }}</span>
+                        </a>
+                        <a href="{{ route('admin.settings.group', 'dwd') }}"
+                           class="flex items-center space-x-2 px-3 py-1.5 rounded-lg {{ request()->is('admin/settings/dwd') ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span>{{ __('DWD') }}</span>
+                        </a>
+                        <a href="{{ route('admin.settings.group', 'aemet') }}"
+                           class="flex items-center space-x-2 px-3 py-1.5 rounded-lg {{ request()->is('admin/settings/aemet') ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span>{{ __('AEMET') }}</span>
                         </a>
                         <a href="{{ route('admin.settings.group', 'wxsim') }}" 
                            class="flex items-center space-x-2 px-3 py-1.5 rounded-lg {{ request()->is('admin/settings/wxsim') ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700' }}">

@@ -97,6 +97,13 @@ class SettingsController extends Controller
             'color' => 'amber',
             'category' => 'datasources',
         ],
+        'dwd' => [
+            'label' => 'DWD',
+            'description' => 'Deutscher Wetterdienst MOSMIX forecast station',
+            'icon' => 'sun',
+            'color' => 'amber',
+            'category' => 'datasources',
+        ],
         'ecowitt' => [
             'label' => 'Ecowitt',
             'description' => 'Ecowitt local push or cloud API settings',
