@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.09.1] - 2026-09-04
+
+- Add DWD as a forecast source. Deutscher Wetterdienst publishes MOSMIX, a forecast for each of its stations, as open data with no key or account needed. Switch DWD on in Admin > Settings > Open Data and it appears in the forecast source list; nothing changes over on its own (#81)
+- With no station picked, the nearest one is found automatically. MOSMIX covers stations worldwide, not only German ones, so this is useful outside Germany too
+- Corrections to 29 German strings, including "Ecowitt Datum Endpunkt" which meant date rather than data, and the air quality grade "Fair" which read as moderate instead of good
+
 ## [2026.09.0] - 2026-09-04
 
 - Fix weather cards failing on Docker with a 500 and "undefined function imageftbbox()". The image was building GD with PNG only, losing FreeType, JPEG and WebP, because the build configured GD and then discarded that work before installing it (#87)
