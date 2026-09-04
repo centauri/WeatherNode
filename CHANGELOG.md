@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.09.2] - 2026-09-04
+
+- DWD can now actually be selected. It shipped in v2026.09.1 as a working forecast service with no way to reach it: it was missing from the forecast source dropdown, so the only way to pick it was editing the database by hand (#81)
+- New Settings > DWD page for the station id. Leave it empty and the nearest MOSMIX station to your coordinates is used
+- AEMET finally has a link in the admin menu. Its settings page has existed since v2026.08.7 but was reachable only by typing the address
+- Existing installs get the new dropdown entry from a migration, so run `php artisan migrate` after updating
+
 ## [2026.09.1] - 2026-09-04
 
 - Add DWD as a forecast source. Deutscher Wetterdienst publishes MOSMIX, a forecast for each of its stations, as open data with no key or account needed. Switch DWD on in Admin > Settings > Open Data and it appears in the forecast source list; nothing changes over on its own (#81)
