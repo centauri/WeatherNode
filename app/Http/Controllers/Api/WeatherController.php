@@ -107,21 +107,12 @@ class WeatherController extends Controller
         $latitude = Setting::latitude();
         $longitude = Setting::longitude();
         $source = Setting::getValue('forecast.default_source', 'fct_yrno_block.php');
-        $stationId = Setting::getValue('weatherflow.station_id', '');
-        $sourceKeys = [
-            'fct_yrno_block.php' => "yrno_forecast_{$latitude}_{$longitude}",
-            'fct_darksky_block.php' => "openweathermap_forecast_{$latitude}_{$longitude}",
-            'fct_wu_block.php' => "wunderground_forecast_{$latitude}_{$longitude}",
-            'fct_wxsim_block.php' => "wxsim_forecast_" . md5(Setting::getValue('wxsim.file_path', '')),
-            'fct_ec_block.php' => "ec_forecast_{$latitude}_{$longitude}",
-            'fct_tempest_block.php' => 'tempest_forecast_' . ($stationId !== '' ? $stationId : '0'),
-            'fct_aemet_block.php' => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
-            'fct_dwd_block.php' => 'dwd_forecast_' . Setting::getValue('dwd.station_id', ''),
-        ];
+        $forecastData = Cache::get(\App\Support\ForecastCacheKeys::forSource($source, $latitude, $longitude));
 
-        $forecastData = Cache::get($sourceKeys[$source] ?? null);
-        if (!$forecastData) {
-            $forecastData = Cache::get("forecast_{$latitude}_{$longitude}");
+        // An empty payload is a miss, not a hit. A source that cached a
+        // well formed but empty envelope used to block this fallback.
+        if (!$forecastData || empty($forecastData['forecast'])) {
+            $forecastData = Cache::get(\App\Support\ForecastCacheKeys::generic($latitude, $longitude)) ?: $forecastData;
         }
 
         $forecast = is_array($forecastData) ? ($forecastData['forecast'] ?? null) : null;

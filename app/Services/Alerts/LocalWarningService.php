@@ -132,15 +132,8 @@ class LocalWarningService
         $lon    = Setting::longitude();
         $source = Setting::getValue('forecast.default_source', 'fct_yrno_block.php');
 
-        $sourceKeys = [
-            'fct_yrno_block.php'    => "yrno_forecast_{$lat}_{$lon}",
-            'fct_darksky_block.php' => "openweathermap_forecast_{$lat}_{$lon}",
-            'fct_wu_block.php'      => "wunderground_forecast_{$lat}_{$lon}",
-            'fct_ec_block.php'      => "ec_forecast_{$lat}_{$lon}",
-            'fct_aemet_block.php'   => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
-        ];
 
-        $forecastData = Cache::get($sourceKeys[$source] ?? null)
+        $forecastData = Cache::get(\App\Support\ForecastCacheKeys::forSource($source, $lat, $lon))
                      ?? Cache::get("forecast_{$lat}_{$lon}");
 
         if (!is_array($forecastData)) return null;
@@ -521,15 +514,8 @@ class LocalWarningService
         $lon    = Setting::longitude();
         $source = Setting::getValue('forecast.default_source', 'fct_yrno_block.php');
 
-        $sourceKeys = [
-            'fct_yrno_block.php'    => "yrno_forecast_{$lat}_{$lon}",
-            'fct_darksky_block.php' => "openweathermap_forecast_{$lat}_{$lon}",
-            'fct_wu_block.php'      => "wunderground_forecast_{$lat}_{$lon}",
-            'fct_ec_block.php'      => "ec_forecast_{$lat}_{$lon}",
-            'fct_aemet_block.php'   => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
-        ];
 
-        $forecastData = Cache::get($sourceKeys[$source] ?? null)
+        $forecastData = Cache::get(\App\Support\ForecastCacheKeys::forSource($source, $lat, $lon))
                      ?? Cache::get("forecast_{$lat}_{$lon}");
 
         if (!is_array($forecastData)) return null;
@@ -634,15 +620,8 @@ class LocalWarningService
         $lon    = Setting::longitude();
         $source = Setting::getValue('forecast.default_source', 'fct_yrno_block.php');
 
-        $sourceKeys = [
-            'fct_yrno_block.php'    => "yrno_forecast_{$lat}_{$lon}",
-            'fct_darksky_block.php' => "openweathermap_forecast_{$lat}_{$lon}",
-            'fct_wu_block.php'      => "wunderground_forecast_{$lat}_{$lon}",
-            'fct_ec_block.php'      => "ec_forecast_{$lat}_{$lon}",
-            'fct_aemet_block.php'   => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
-        ];
 
-        $forecastData = Cache::get($sourceKeys[$source] ?? null)
+        $forecastData = Cache::get(\App\Support\ForecastCacheKeys::forSource($source, $lat, $lon))
                      ?? Cache::get("forecast_{$lat}_{$lon}");
 
         if (!is_array($forecastData)) return null;

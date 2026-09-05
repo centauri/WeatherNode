@@ -7,6 +7,7 @@ namespace App\Services\Forecast;
 use App\Contracts\Forecast\ForecastServiceInterface;
 use App\Models\Setting;
 use App\Support\CacheFreshness;
+use App\Support\ForecastCacheKeys;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -39,7 +40,7 @@ class DwdService implements ForecastServiceInterface
             return null;
         }
 
-        return CacheFreshness::remember("dwd_forecast_{$station}", self::CACHE_TTL, function () use ($station) {
+        return CacheFreshness::remember(ForecastCacheKeys::forSource('fct_dwd_block.php'), self::CACHE_TTL, function () use ($station) {
             $url = self::BASE_URL."/{$station}/kml/MOSMIX_L_LATEST_{$station}.kmz";
 
             try {
@@ -218,6 +219,10 @@ class DwdService implements ForecastServiceInterface
         }
 
         return [
+            'updated_at' => now()->toIso8601String(),
+            // 'forecast' is the key the poller and both readers look for. Without
+            // it the payload is dropped on every poll, however good it is.
+            'forecast' => $hourly,
             'station' => [
                 'id' => (string) (($xml->xpath('//kml:Placemark/kml:name')[0] ?? '')),
                 'name' => (string) (($xml->xpath('//kml:Placemark/kml:description')[0] ?? '')),

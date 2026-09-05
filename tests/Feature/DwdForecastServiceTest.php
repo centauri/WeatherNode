@@ -161,6 +161,37 @@ class DwdForecastServiceTest extends TestCase
         Http::assertSent(fn ($request) => str_contains($request->url(), '06240'));
     }
 
+    /**
+     * Issue #99. The poller and both readers require a top-level 'forecast'
+     * key, so an envelope with only 'hourly' was thrown away on every poll.
+     */
+    public function test_the_payload_carries_a_forecast_key_like_every_other_source(): void
+    {
+        $this->fakeMosmix();
+
+        $forecast = app(DwdService::class)->fetchForecast();
+
+        $this->assertIsArray($forecast);
+        $this->assertArrayHasKey('forecast', $forecast, 'the poller drops anything without this');
+        $this->assertNotEmpty($forecast['forecast']);
+        $this->assertArrayHasKey('updated_at', $forecast);
+    }
+
+    /** The reader built the key from the setting, the writer from the resolved station. */
+    public function test_the_cache_key_matches_the_one_the_page_reads(): void
+    {
+        Setting::setValue('dwd.station_id', '', 'string', 'dwd');
+        $this->fakeCatalogue();
+        $this->fakeMosmix();
+
+        app(DwdService::class)->fetchForecast();
+
+        $this->assertNotNull(
+            \Illuminate\Support\Facades\Cache::get(\App\Support\ForecastCacheKeys::forSource('fct_dwd_block.php')),
+            'the page looks here and found nothing'
+        );
+    }
+
     public function test_a_failed_download_returns_nothing_rather_than_throwing(): void
     {
         Http::fake(['opendata.dwd.de/*' => Http::response('gone', 404)]);

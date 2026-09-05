@@ -202,7 +202,14 @@ class CheckSensorHealth extends Command
     {
         $latitude = Setting::latitude();
         $longitude = Setting::longitude();
-        $cacheKey = "yrno_forecast_{$latitude}_{$longitude}";
+        // Whatever source is configured, not always Yr.no. This is why every
+        // other source showed "Offline" about an hour after being selected,
+        // and sent an alert titled "Forecast Data (Yr.no)". Issue #99.
+        $cacheKey = \App\Support\ForecastCacheKeys::forSource(
+            (string) Setting::getValue('forecast.default_source', 'fct_yrno_block.php'),
+            $latitude,
+            $longitude
+        );
 
         $forecastData = Cache::get($cacheKey);
 
@@ -210,7 +217,7 @@ class CheckSensorHealth extends Command
         $isStale = $this->healthStatus['forecast']['is_stale'];
 
         if ($isStale && $forecastData === null) {
-            $this->sendAlertIfNeeded('forecast', 'Forecast Data (Yr.no)', 'Forecast data not available.');
+            $this->sendAlertIfNeeded('forecast', 'Forecast Data', 'Forecast data not available.');
         } else {
             $this->clearAlertIfNeeded('forecast', 'Forecast Data');
         }
