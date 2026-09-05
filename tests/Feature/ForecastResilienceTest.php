@@ -35,6 +35,21 @@ class ForecastResilienceTest extends TestCase
         Setting::setValue('station.longitude', '13.32', 'float', 'station');
     }
 
+    /** One forecast entry shaped the way the readers expect. */
+    private static function entry(): array
+    {
+        return [
+            'time' => now()->toIso8601String(),
+            'temperature' => 12.0,
+            'symbol' => 'clearsky_day',
+            'wind_speed' => 3.0,
+            'wind_direction' => 180,
+            'precipitation_1h' => 0.0,
+            'humidity' => 60,
+            'cloud_cover' => 10,
+        ];
+    }
+
     private function encryptedRow(string $key, string $rawValue): void
     {
         Setting::create([
@@ -84,12 +99,53 @@ class ForecastResilienceTest extends TestCase
         $this->assertInstanceOf(OpenWeatherMapService::class, ForecastServiceFactory::make());
     }
 
+    /**
+     * The badge read the Yr.no key whatever source was chosen, so every other
+     * source went "Offline" about an hour after being selected.
+     */
+    public function test_the_health_check_follows_the_configured_source(): void
+    {
+        Setting::setValue('forecast.default_source', 'fct_aemet_block.php', 'string', 'forecast');
+        Setting::setValue('aemet.municipio', '28079', 'string', 'aemet');
+
+        $fresh = ['updated_at' => now()->toIso8601String(), 'forecast' => [self::entry()]];
+        \App\Support\CacheFreshness::put('aemet_forecast_28079', $fresh, now()->addHours(2));
+
+        $this->artisan('weather:check-sensor-health')->run();
+
+        $health = Cache::get('data_source_health');
+        $this->assertNotNull($health, 'the health check wrote nothing');
+        $this->assertFalse(
+            $health['forecast']['is_stale'] ?? true,
+            'AEMET data is fresh, so the badge must not say the forecast is stale'
+        );
+    }
+
+    /** A source that cached a well formed but empty payload blocked the fallback. */
+    public function test_an_empty_payload_falls_back_to_the_shared_forecast(): void
+    {
+        Setting::setValue('forecast.default_source', 'fct_wu_block.php', 'string', 'forecast');
+
+        $good = ['updated_at' => now()->toIso8601String(), 'forecast' => [self::entry()]];
+        Cache::put('wunderground_forecast_52.57_13.32', ['updated_at' => now()->toIso8601String(), 'forecast' => []], now()->addHour());
+        Cache::put('forecast_52.57_13.32', $good, now()->addHour());
+
+        $response = $this->withoutMiddleware(\App\Http\Middleware\ApiKeyMiddleware::class)
+            ->getJson('/api/weather/forecast');
+
+        $response->assertOk();
+        $this->assertNotEmpty(
+            $response->json('data.daily') ?: $response->json('data.hourly') ?: [],
+            'the empty payload hid the forecast that was still there'
+        );
+    }
+
     /** The poller cleared the cache first, so a failed fetch lost the last good forecast. */
     public function test_a_failed_poll_keeps_the_forecast_it_already_had(): void
     {
         Setting::setValue('forecast.default_source', 'fct_yrno_block.php', 'string', 'forecast');
 
-        $good = ['updated_at' => now()->toIso8601String(), 'forecast' => [['time' => 'now', 'temperature' => 12]]];
+        $good = ['updated_at' => now()->toIso8601String(), 'forecast' => [self::entry()]];
         Cache::put('forecast_52.57_13.32', $good, now()->addHours(2));
         Cache::put('yrno_forecast_52.57_13.32', $good, now()->addHours(2));
 
