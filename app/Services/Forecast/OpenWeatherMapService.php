@@ -64,7 +64,7 @@ class OpenWeatherMapService implements ForecastServiceInterface
     /**
      * Parse OpenWeatherMap API response into simplified structure
      */
-    private function parseForecast(array $data): array
+    private function parseForecast(array $data): ?array
     {
         $list = $data['list'] ?? [];
         $forecast = [];
@@ -102,6 +102,12 @@ class OpenWeatherMapService implements ForecastServiceInterface
                 'precipitation_1h' => $precipitation / 3, // Convert 3h to 1h estimate
                 'precipitation_6h' => $precipitation * 2, // Estimate for 6h
             ];
+        }
+
+        // Same reason as Weather Underground: an empty forecast cached under the
+        // source key is truthy, so it blocks the fallback to the last good one.
+        if ($forecast === []) {
+            return null;
         }
 
         return [

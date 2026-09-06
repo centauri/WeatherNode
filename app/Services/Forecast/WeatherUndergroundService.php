@@ -78,7 +78,27 @@ class WeatherUndergroundService implements ForecastServiceInterface
     /**
      * Parse Weather Underground API response into simplified structure
      */
-    private function parseForecast(array $dailyData, ?array $hourlyData): array
+    /**
+     * One day's values out of daypart, which interleaves daytime and night.
+     * Index 2i is the day, 2i+1 the night; the day is null once it has passed.
+     *
+     * @param array<string, array<int, mixed>> $daypart
+     * @return array<string, mixed>
+     */
+    private function daypartValues(array $daypart, int $day): array
+    {
+        $fields = ['windSpeed', 'windDirectionCardinal', 'iconCode', 'cloudCover', 'relativeHumidity'];
+        $values = [];
+
+        foreach ($fields as $field) {
+            $series = $daypart[$field] ?? [];
+            $values[$field] = $series[$day * 2] ?? $series[$day * 2 + 1] ?? null;
+        }
+
+        return $values;
+    }
+
+    private function parseForecast(array $dailyData, ?array $hourlyData): ?array
     {
         $forecast = [];
         
@@ -124,43 +144,52 @@ class WeatherUndergroundService implements ForecastServiceInterface
                 ];
             }
         } else {
-            // Fallback to daily data
+            // Daily data. In API v3 the wind, icon and wind direction are not at the
+            // top level: they sit in daypart, which holds two entries per day, the
+            // daytime then the night. Reading them from the top level found nothing
+            // and produced an empty forecast from a perfectly good response.
             $dayOfWeek = $dailyData['dayOfWeek'] ?? [];
-            $narrative = $dailyData['narrative'] ?? [];
             $temperatureMax = $dailyData['temperatureMax'] ?? [];
             $temperatureMin = $dailyData['temperatureMin'] ?? [];
-            $windSpeed = $dailyData['windSpeed'] ?? [];
-            $windDirection = $dailyData['windDirectionCardinal'] ?? [];
-            $windDirectionDeg = $dailyData['windDirection'] ?? [];
             $qpf = $dailyData['qpf'] ?? [];
-            $iconCode = $dailyData['iconCode'] ?? [];
             $validTimeUtc = $dailyData['validTimeUtc'] ?? [];
+            $daypart = $dailyData['daypart'][0] ?? [];
 
-            $count = min(
-                count($dayOfWeek),
-                count($temperatureMax),
-                count($windSpeed)
-            );
+            $count = min(count($dayOfWeek), count($validTimeUtc));
 
             for ($i = 0; $i < $count; $i++) {
-                $time = date('Y-m-d\TH:i:s\Z', $validTimeUtc[$i] ?? time());
-                $windSpeedKmh = $windSpeed[$i] ?? null;
-                $windDir = $windDirectionDeg[$i] ?? $this->cardinalToDegrees($windDirection[$i] ?? null);
+                // Today's daytime entry is null once the afternoon has passed, so
+                // fall back to that night. Same reason temperatureMax can be null.
+                $part = $this->daypartValues($daypart, $i);
 
-                // Create a single entry per day (midday)
+                $high = $temperatureMax[$i] ?? null;
+                $low = $temperatureMin[$i] ?? null;
+                $mean = ($high !== null && $low !== null) ? ($high + $low) / 2 : ($high ?? $low);
+
+                $dailyRain = $qpf[$i] ?? 0;
+
                 $forecast[] = [
-                    'time' => $time,
-                    'temperature' => ($temperatureMax[$i] + $temperatureMin[$i]) / 2 ?? null,
-                    'humidity' => null,
+                    'time' => date('Y-m-d\TH:i:s\Z', $validTimeUtc[$i] ?? time()),
+                    'temperature' => $mean,
+                    'temp_high' => $high,
+                    'temp_low' => $low,
+                    'humidity' => $part['relativeHumidity'],
                     'pressure' => null,
-                    'wind_speed' => $windSpeedKmh,
-                    'wind_direction' => $windDir,
-                    'cloud_cover' => null,
-                    'symbol' => $this->mapIconCodeToSymbol($iconCode[$i] ?? null),
-                    'precipitation_1h' => ($qpf[$i] ?? 0) / 24, // Daily total divided by 24
-                    'precipitation_6h' => ($qpf[$i] ?? 0) / 4, // Daily total divided by 4
+                    'wind_speed' => $part['windSpeed'],
+                    'wind_direction' => $this->cardinalToDegrees($part['windDirectionCardinal']),
+                    'cloud_cover' => $part['cloudCover'],
+                    'symbol' => $this->mapIconCodeToSymbol($part['iconCode']),
+                    'precipitation_1h' => $dailyRain / 24,
+                    'precipitation_6h' => $dailyRain / 4,
                 ];
             }
+        }
+
+        // An empty forecast is a failure, not data. Returning the envelope
+        // anyway got it cached for half an hour and, being truthy, it also
+        // blocked the reader's fallback to the last good forecast.
+        if ($forecast === []) {
+            return null;
         }
 
         return [
