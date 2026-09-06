@@ -778,13 +778,32 @@ class PollExternalData extends Command
             $cacheKey = "forecast_{$latitude}_{$longitude}";
             $sourceCacheKey = $this->getSourceCacheKey($source, $latitude, $longitude);
 
+            // Keep what we have. The forget below is what stops the service
+            // handing back its own cached copy, but a failed fetch used to
+            // leave both keys empty and the message below was a lie: one bad
+            // poll turned into an empty forecast until the next good one.
+            $previous = [
+                $sourceCacheKey => Cache::get($sourceCacheKey),
+                $cacheKey => Cache::get($cacheKey),
+            ];
+
             // Force fresh API fetch: clear cache so the service doesn't return stale data
             // (otherwise we keep re-caching the same old forecast and "today" drifts, leaving fewer days)
             Cache::forget($sourceCacheKey);
             Cache::forget($cacheKey);
 
-            $service = ForecastServiceFactory::make();
-            $data = $service->fetchForecast();
+            try {
+                $service = ForecastServiceFactory::make();
+                $data = $service->fetchForecast();
+            } catch (\Throwable $e) {
+                // Throwable, not Exception: an unreadable API key used to reach
+                // a typed property and throw a TypeError right here.
+                $this->restoreForecast($previous);
+                $this->error("   Error building {$sourceName}: {$e->getMessage()} (kept existing cache)");
+                Log::error('Poll forecast failed', ['error' => $e->getMessage(), 'source' => $source]);
+
+                return false;
+            }
 
             if ($data && isset($data['forecast']) && count($data['forecast']) > 0) {
                 CacheFreshness::put($sourceCacheKey, $data, now()->addMinutes($this->cacheTTLs['forecast']));
@@ -793,10 +812,12 @@ class PollExternalData extends Command
                 return true;
             }
 
-            $this->warn('   No forecast data received (keeping existing cache)');
+            $this->restoreForecast($previous);
+            $this->warn('   No forecast data received (kept existing cache)');
             return false;
-        } catch (\Exception $e) {
-            $this->error("   Error: {$e->getMessage()} (keeping existing cache)");
+        } catch (\Throwable $e) {
+            $this->restoreForecast($previous ?? []);
+            $this->error("   Error: {$e->getMessage()} (kept existing cache)");
             Log::error('Poll forecast failed', ['error' => $e->getMessage(), 'source' => $source]);
             return false;
         }
@@ -852,19 +873,25 @@ class PollExternalData extends Command
         return $names[$source] ?? 'forecast service';
     }
 
+    /**
+     * Put back what was there before the forced refresh, so a failed poll
+     * costs nothing. Only non-empty payloads are restored: an empty one is
+     * what we were trying to replace.
+     *
+     * @param array<string, mixed> $previous
+     */
+    private function restoreForecast(array $previous): void
+    {
+        foreach ($previous as $key => $payload) {
+            if (is_array($payload) && !empty($payload['forecast'])) {
+                CacheFreshness::put($key, $payload, now()->addMinutes($this->cacheTTLs['forecast']));
+            }
+        }
+    }
+
     private function getSourceCacheKey(string $source, float $latitude, float $longitude): string
     {
-        $stationId = Setting::getValue('weatherflow.station_id', '');
-        $keys = [
-            'fct_yrno_block.php' => "yrno_forecast_{$latitude}_{$longitude}",
-            'fct_darksky_block.php' => "openweathermap_forecast_{$latitude}_{$longitude}",
-            'fct_wu_block.php' => "wunderground_forecast_{$latitude}_{$longitude}",
-            'fct_wxsim_block.php' => "wxsim_forecast_" . md5(Setting::getValue('wxsim.file_path', '')),
-            'fct_ec_block.php' => "ec_forecast_{$latitude}_{$longitude}",
-            'fct_tempest_block.php' => 'tempest_forecast_' . ($stationId !== '' ? $stationId : '0'),
-            'fct_aemet_block.php' => "aemet_forecast_" . Setting::getValue('aemet.municipio', ''),
-        ];
-        return $keys[$source] ?? "forecast_{$latitude}_{$longitude}";
+        return \App\Support\ForecastCacheKeys::forSource($source, $latitude, $longitude);
     }
 
     private function pollAirQuality(): bool

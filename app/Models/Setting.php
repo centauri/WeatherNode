@@ -34,7 +34,17 @@ class Setting extends Model
             return $default;
         }
 
-        return $setting->getCastedValue();
+        $value = $setting->getCastedValue();
+
+        // An encrypted row reads back as null when it is empty or cannot be
+        // decrypted, which happens when APP_KEY changes. Callers that asked for
+        // a default want that default, not a null they were not expecting: it
+        // used to reach typed string properties and throw.
+        if ($value === null && $default !== null) {
+            return $default;
+        }
+
+        return $value;
     }
 
     /**
