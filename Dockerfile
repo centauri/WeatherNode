@@ -1,5 +1,14 @@
 # stage 1: build frontend assets
-FROM node:20-alpine AS frontend
+#
+# Pinned to the machine doing the building, not the machine being built for.
+# This stage emits nothing but JS and CSS, byte for byte identical whichever
+# architecture compiles it, and only /app/public/build is copied onward. Left
+# unpinned it was compiled once per target architecture, so a two-architecture
+# release ran the whole npm install and Vite build twice for the same bytes,
+# the second one under emulation. That copy is also where release builds failed
+# with ETXTBSY: esbuild's install spawns the binary it has just written, which
+# emulation makes far likelier to still be busy.
+FROM --platform=$BUILDPLATFORM node:20-alpine AS frontend
 
 WORKDIR /app
 
