@@ -52,6 +52,14 @@ class EcowittService
                 'api_key' => $this->apiKey,
                 'mac' => $this->macAddress,
                 'call_back' => 'all',
+                // Readings are always stored in metric (see convertLocalToApiFormat()
+                // and EcowittPushParser for the other two data sources); request the
+                // same units from the cloud API so extractValue() never has to guess.
+                'temp_unitid' => 1,               // °C
+                'pressure_unitid' => 3,            // hPa
+                'wind_speed_unitid' => 7,          // km/h
+                'rainfall_unitid' => 12,           // mm
+                'solar_irradiance_unitid' => 16,   // W/m²
             ]);
 
             if ($response->successful()) {

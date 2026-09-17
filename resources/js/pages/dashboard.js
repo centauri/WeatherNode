@@ -3370,25 +3370,49 @@ function weatherDashboard() {
                         'batt_leak': t('Leak Sensor'),
                         'batt_soil': t('Soil Sensor'),
                         'co2_batt': t('CO2 Sensor'),
+                        'haptic_array_battery': t('WS90 Batteries (AA)'),
+                        'haptic_array_capacitor': t('WS90 Solar Capacitor'),
                     };
                     return labels[key] || key;
                 },
-                
-                getBatteryIcon(value) {
+
+                getBatteryIcon(key, value) {
                     // For most Ecowitt sensors: 0 = OK, 1+ = low
                     // WH57 lightning sensor: 0-5 battery level (5 = full)
+                    // WS90 haptic array: real voltage readings, not a 0/1 flag
                     if (typeof value === 'undefined' || value === null) return '❓';
+                    if (key === 'haptic_array_battery') {
+                        return value <= 2.7 ? '🪫' : '🔋';
+                    }
+                    if (key === 'haptic_array_capacitor') {
+                        return value <= 2.5 ? '🪫' : '⚡';
+                    }
                     if (value === 0) return '🔋'; // Good
                     if (value <= 2) return '🪫'; // Low/medium
                     return '⚡'; // High value (WH57 style - higher is better)
                 },
-                
+
                 getBatteryStatus(key, value) {
                     // WH57 uses 0-5 scale where 5 is full
                     if (key === 'wh57batt') {
                         if (value >= 4) return { text: t('Full'), class: 'text-green-400' };
                         if (value >= 2) return { text: t('Moderate'), class: 'text-yellow-400' };
                         return { text: t('Low'), class: 'text-red-400' };
+                    }
+                    // WS90 AA battery pack: real voltage (V), not a 0/1 flag.
+                    // Low-battery threshold per Ecowitt WS90 manual: 2.7V (alkaline/lithium,
+                    // the conservative default since we don't know which chemistry is in use).
+                    if (key === 'haptic_array_battery') {
+                        return value <= 2.7
+                            ? { text: t('Low'), class: 'text-red-400' }
+                            : { text: t('Good'), class: 'text-green-400' };
+                    }
+                    // WS90 solar-charged supercapacitor: voltage naturally dips overnight
+                    // without indicating a fault, so this only flags a persistently low panel.
+                    if (key === 'haptic_array_capacitor') {
+                        return value <= 2.5
+                            ? { text: t('Low'), class: 'text-red-400' }
+                            : { text: t('Good'), class: 'text-green-400' };
                     }
                     // Other sensors: 0 = OK, 1+ = low
                     if (value === 0) return { text: t('Good'), class: 'text-green-400' };

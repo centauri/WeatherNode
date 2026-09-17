@@ -3916,7 +3916,7 @@
                         <template x-for="(value, key) in batteryStatus" :key="key">
                             <div class="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
                                 <span class="text-gray-400 flex items-center gap-2">
-                                    <span x-text="getBatteryIcon(value)"></span>
+                                    <span x-text="getBatteryIcon(key, value)"></span>
                                     <span x-text="getBatteryLabel(key)"></span>
                                 </span>
                                 <span class="font-medium" 
