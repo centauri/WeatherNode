@@ -37,9 +37,14 @@ class GenerateNlg extends Command
 
         $generatedCount = 0;
 
+        // Both temperature scales, because readers choose their own units and
+        // the text has the temperature written into it. This pass is pure
+        // computation, so the second scale costs nothing but cache entries.
         foreach ($locales as $locale) {
-            $this->line("Generating NLG for locale: {$locale}");
-            $generatedCount += $cacheService->cacheDraftsForLocale($entries, $locale, $narrator);
+            foreach (ForecastNlgCacheService::SCALE_UNITS as $units) {
+                $this->line("Generating NLG for locale: {$locale} ({$units})");
+                $generatedCount += $cacheService->cacheDraftsForLocale($entries, $locale, $narrator, $units);
+            }
         }
 
         $this->info("Successfully generated {$generatedCount} deterministic NLG texts for " . count($locales) . " languages");

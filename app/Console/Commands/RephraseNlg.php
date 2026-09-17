@@ -105,29 +105,40 @@ class RephraseNlg extends Command
             $force ? ' with force' : '',
         ));
 
+        // Each temperature scale is rephrased in its own units, rather than one
+        // being rewritten from the other, because by this point the text is
+        // prose and there is no reliable way to convert a number back out of
+        // it. Calls only happen when the forecast itself changed, and the
+        // provider budget still gates them: when it is spent, the second scale
+        // keeps its deterministic draft rather than failing.
         foreach ($locales as $locale) {
-            $this->line("Rephrasing NLG for locale: {$locale}");
+            foreach (ForecastNlgCacheService::SCALE_UNITS as $units) {
+                $this->line("Rephrasing NLG for locale: {$locale} ({$units})");
 
-            $result = $cacheService->rephraseForLocale(
-                $entries,
-                $locale,
-                $narrator,
-                $rephraser,
-                $tone,
-                $force,
-                $budget,
-                $providerId,
-            );
+                $result = $cacheService->rephraseForLocale(
+                    $entries,
+                    $locale,
+                    $narrator,
+                    $rephraser,
+                    $tone,
+                    $force,
+                    $budget,
+                    $providerId,
+                    $units,
+                );
 
-            $updated += $result['updated'];
-            $skipped += $result['skipped'];
-            $fallback += $result['fallback'];
+                $updated += $result['updated'];
+                $skipped += $result['skipped'];
+                $fallback += $result['fallback'];
 
-            // The budget is shared per provider, so once a window is exhausted no later
-            // locale will succeed this run. Stop early and keep deterministic text.
-            if ($result['budgetExhausted'] ?? false) {
-                $budgetExhausted = true;
-                break;
+                // The budget is shared per provider, so once a window is exhausted no later
+                // locale or scale will succeed this run. Stop both loops and keep
+                // deterministic text for everything still outstanding.
+                if ($result['budgetExhausted'] ?? false) {
+                    $budgetExhausted = true;
+
+                    break 2;
+                }
             }
         }
 

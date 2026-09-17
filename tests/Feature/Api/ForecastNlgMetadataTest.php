@@ -20,6 +20,7 @@ class ForecastNlgMetadataTest extends TestCase
         $this->withoutMiddleware(ApiKeyMiddleware::class);
 
         Setting::setValue('display.language', 'en-us', 'string', 'display');
+        Setting::setValue('display.unit_system', 'metric', 'select', 'display');
         Setting::setValue('station.timezone', 'UTC', 'string', 'station');
         Setting::setValue('station.latitude', 52.5, 'float', 'station');
         Setting::setValue('station.longitude', 4.7, 'float', 'station');
@@ -57,12 +58,12 @@ class ForecastNlgMetadataTest extends TestCase
         ], now()->addHour());
 
         Cache::put(
-            ForecastNlgCacheService::draftCacheKey('en-us', $date),
+            ForecastNlgCacheService::draftCacheKey('en-us', $date, 'metric'),
             'Expect overcast conditions with a chance of rain.',
             now()->addMinutes(ForecastNlgCacheService::CACHE_TTL_MINUTES)
         );
         Cache::put(
-            ForecastNlgCacheService::finalCacheKey('en-us', $date),
+            ForecastNlgCacheService::finalCacheKey('en-us', $date, 'metric'),
             'Cloudy through the day with a light chance of rain and a moderate southwest breeze.',
             now()->addMinutes(ForecastNlgCacheService::CACHE_TTL_MINUTES)
         );
