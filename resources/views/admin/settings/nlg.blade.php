@@ -306,6 +306,25 @@
                     </p>
                 </div>
 
+                <!-- Both temperature scales -->
+                <div class="flex items-start justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-900 dark:text-white">{{ __('Polish both temperature scales') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            {{ __('The forecast paragraph is written once in Celsius and once in Fahrenheit, so readers see their own units. The AI pass rewrites prose, which cannot be converted afterwards, so polishing both means asking the provider twice.') }}
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            {{ __('Off: only :scale is polished, and readers who switch units get the plain sentence in the right units. On: both are polished, and token use roughly doubles.', ['scale' => \App\Models\Setting::getValue('display.unit_system', 'metric') === 'imperial' ? __('Fahrenheit') : __('Celsius')]) }}
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                        <input type="checkbox" name="nlg_rephrase_both_units" value="1"
+                               {{ \App\Services\Nlg\ForecastNlgCacheService::rephrasesBothScales() ? 'checked' : '' }}
+                               class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+
                 <!-- AI Languages -->
                 <div>
                     <div class="flex items-start justify-between gap-4 mb-2">

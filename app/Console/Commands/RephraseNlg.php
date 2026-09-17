@@ -108,11 +108,17 @@ class RephraseNlg extends Command
         // Each temperature scale is rephrased in its own units, rather than one
         // being rewritten from the other, because by this point the text is
         // prose and there is no reliable way to convert a number back out of
-        // it. Calls only happen when the forecast itself changed, and the
-        // provider budget still gates them: when it is spent, the second scale
-        // keeps its deterministic draft rather than failing.
+        // it. That means a second scale costs a second call, so by default only
+        // the site's own scale is polished and the other keeps its
+        // deterministic sentence. Admin > Settings > NLG turns both on.
+        //
+        // Calls only happen when the forecast itself changed, and the provider
+        // budget still gates them: when it is spent, whatever is left keeps its
+        // deterministic draft rather than failing.
+        $scales = ForecastNlgCacheService::scalesToRephrase();
+
         foreach ($locales as $locale) {
-            foreach (ForecastNlgCacheService::SCALE_UNITS as $units) {
+            foreach ($scales as $units) {
                 $this->line("Rephrasing NLG for locale: {$locale} ({$units})");
 
                 $result = $cacheService->rephraseForLocale(

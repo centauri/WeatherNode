@@ -3,6 +3,7 @@
 namespace App\Services\Nlg;
 
 use App\Contracts\Nlg\BatchRephraser;
+use App\Models\Setting;
 use App\Contracts\Nlg\Narrator;
 use App\Contracts\Nlg\Rephraser;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +22,36 @@ class ForecastNlgCacheService
      * two of these and not four.
      */
     public const SCALE_UNITS = ['metric', 'imperial'];
+
+    /**
+     * Whether the AI pass polishes both temperature scales or only the one the
+     * site is set to.
+     *
+     * Prose cannot be converted back into numbers, so a second scale means
+     * asking the provider a second time. That is a bill rather than a detail,
+     * so it is the owner's call, and it is off unless they say otherwise: an
+     * install upgrading into this should not find its token use doubled
+     * without anyone choosing it. With it off, a reader who switches units
+     * still gets the right units, just the plainer sentence.
+     */
+    public static function rephrasesBothScales(): bool
+    {
+        return (bool) Setting::getValue('nlg.rephrase_both_units', false);
+    }
+
+    /**
+     * The unit systems the AI pass should run for.
+     *
+     * @return list<string>
+     */
+    public static function scalesToRephrase(): array
+    {
+        if (self::rephrasesBothScales()) {
+            return self::SCALE_UNITS;
+        }
+
+        return [(string) Setting::getValue('display.unit_system', 'metric')];
+    }
 
     /**
      * @param  array<int, array<string, mixed>>  $daily
