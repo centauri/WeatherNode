@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\Lang;
 
 class ForecastNarrator implements Narrator
 {
+    /** Celsius unless the reader asked for imperial. Set per narrate() call. */
+    private string $scale = 'c';
+
+    /**
+     * Which temperature scale a unit system reads in.
+     *
+     * Only imperial uses Fahrenheit: metric, UK and Scandinavia are all
+     * Celsius. Narratives are therefore cached per scale rather than per unit
+     * system, which is two variants instead of four.
+     */
+    public static function temperatureScale(?string $units): string
+    {
+        return $units === 'imperial' ? 'f' : 'c';
+    }
+
     /**
      * Generate a forecast narrative from structured payload.
      * Delegates to daily() or periods() based on payload structure.
@@ -18,6 +33,12 @@ class ForecastNarrator implements Narrator
         if (isset($options['locale'])) {
             app()->setLocale($options['locale']);
         }
+
+        // The temperature scale is decided here, where the number still is a
+        // number. Once this returns it is prose, and an optional AI pass may
+        // rewrite it, so nothing downstream can be sure how a temperature ends
+        // up written.
+        $this->scale = self::temperatureScale($options['units'] ?? null);
         
         if (isset($payload['periods']) && is_array($payload['periods']) && count($payload['periods']) > 0) {
             return $this->periods($payload);
@@ -590,8 +611,14 @@ class ForecastNarrator implements Narrator
         if (!is_numeric($t)) {
             return null;
         }
-        $n = round((float)$t);
-        return "{$n}°C";
+
+        $celsius = (float) $t;
+
+        if ($this->scale === 'f') {
+            return round($celsius * 9 / 5 + 32) . '°F';
+        }
+
+        return round($celsius) . '°C';
     }
 
     /**

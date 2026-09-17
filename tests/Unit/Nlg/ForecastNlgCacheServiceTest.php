@@ -68,8 +68,8 @@ class ForecastNlgCacheServiceTest extends TestCase
         $count = $service->cacheDraftsForLocale($entries, 'nl-nl', $narrator);
 
         $this->assertSame(1, $count);
-        $this->assertSame('nl-nl:2026-03-13', Cache::get(ForecastNlgCacheService::draftCacheKey('nl-nl', '2026-03-13')));
-        $this->assertSame('nl-nl:2026-03-13', Cache::get(ForecastNlgCacheService::finalCacheKey('nl-nl', '2026-03-13')));
+        $this->assertSame('nl-nl:2026-03-13', Cache::get(ForecastNlgCacheService::draftCacheKey('nl-nl', '2026-03-13', 'metric')));
+        $this->assertSame('nl-nl:2026-03-13', Cache::get(ForecastNlgCacheService::finalCacheKey('nl-nl', '2026-03-13', 'metric')));
     }
 
     public function test_rephrase_for_locale_skips_unchanged_entries_after_success(): void
@@ -107,7 +107,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $this->assertSame(['updated' => 1, 'skipped' => 0, 'fallback' => 0, 'budgetExhausted' => false], $first);
         $this->assertSame(['updated' => 0, 'skipped' => 1, 'fallback' => 0, 'budgetExhausted' => false], $second);
         $this->assertSame(1, $rephraser->calls);
-        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')));
+        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')));
     }
 
     public function test_rephrase_for_locale_force_bypasses_unchanged_hash_skip(): void
@@ -145,7 +145,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $this->assertSame(['updated' => 1, 'skipped' => 0, 'fallback' => 0, 'budgetExhausted' => false], $first);
         $this->assertSame(['updated' => 1, 'skipped' => 0, 'fallback' => 0, 'budgetExhausted' => false], $second);
         $this->assertSame(2, $rephraser->calls);
-        $this->assertSame('draft:2026-03-13:ai:2', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')));
+        $this->assertSame('draft:2026-03-13:ai:2', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')));
     }
 
     public function test_cache_drafts_for_locale_preserves_existing_ai_final_when_draft_is_unchanged(): void
@@ -164,12 +164,12 @@ class ForecastNlgCacheServiceTest extends TestCase
         ];
 
         $service->cacheDraftsForLocale($entries, 'en-us', $narrator);
-        Cache::put(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13'), 'draft:2026-03-13:ai', now()->addMinutes(45));
+        Cache::put(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric'), 'draft:2026-03-13:ai', now()->addMinutes(45));
 
         $service->cacheDraftsForLocale($entries, 'en-us', $narrator);
 
-        $this->assertSame('draft:2026-03-13', Cache::get(ForecastNlgCacheService::draftCacheKey('en-us', '2026-03-13')));
-        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')));
+        $this->assertSame('draft:2026-03-13', Cache::get(ForecastNlgCacheService::draftCacheKey('en-us', '2026-03-13', 'metric')));
+        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')));
     }
 
     public function test_rephrase_for_locale_reruns_when_hash_matches_but_final_has_fallen_back_to_draft(): void
@@ -203,7 +203,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $service->rephraseForLocale($entries, 'en-us', $narrator, $rephraser, 'brief');
 
         Cache::put(
-            ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13'),
+            ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric'),
             'draft:2026-03-13',
             now()->addMinutes(45)
         );
@@ -212,7 +212,7 @@ class ForecastNlgCacheServiceTest extends TestCase
 
         $this->assertSame(['updated' => 1, 'skipped' => 0, 'fallback' => 0, 'budgetExhausted' => false], $result);
         $this->assertSame(2, $rephraser->calls);
-        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')));
+        $this->assertSame('draft:2026-03-13:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')));
     }
 
     public function test_rephrase_for_locale_keeps_draft_when_budget_is_exhausted(): void
@@ -259,7 +259,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $this->assertSame(0, $rephraser->calls, 'rephraser must not be called when the budget is exhausted');
         $this->assertSame(
             'draft:2026-03-13',
-            Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')),
+            Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')),
             'the deterministic draft is kept as the final text',
         );
     }
@@ -317,7 +317,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $this->assertSame(1, $rephraser->batchCalls, 'all days for a locale must go out in one request');
         $this->assertSame(0, $rephraser->rewriteCalls, 'the per-entry path must not be used for batch rephrasers');
         $this->assertSame(['updated' => 3, 'skipped' => 0, 'fallback' => 0, 'budgetExhausted' => false], $result);
-        $this->assertSame('draft:2026-03-14:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-14')));
+        $this->assertSame('draft:2026-03-14:ai', Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-14', 'metric')));
     }
 
     public function test_batch_rephrase_keeps_drafts_and_flags_exhaustion_when_budget_denies(): void
@@ -373,7 +373,7 @@ class ForecastNlgCacheServiceTest extends TestCase
         $this->assertTrue($result['budgetExhausted']);
         $this->assertSame(
             'draft:2026-03-13',
-            Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13')),
+            Cache::get(ForecastNlgCacheService::finalCacheKey('en-us', '2026-03-13', 'metric')),
             'the deterministic draft is kept when the budget denies the batch',
         );
     }

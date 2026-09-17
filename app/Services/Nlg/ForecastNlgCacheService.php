@@ -3,6 +3,7 @@
 namespace App\Services\Nlg;
 
 use App\Contracts\Nlg\BatchRephraser;
+use App\Models\Setting;
 use App\Contracts\Nlg\Narrator;
 use App\Contracts\Nlg\Rephraser;
 use Illuminate\Support\Facades\Cache;
@@ -14,6 +15,43 @@ class ForecastNlgCacheService
     public const HASH_TTL_HOURS = 6;
 
     public const DEFAULT_AI_DAYS = 3;
+
+    /**
+     * One unit system per temperature scale, for the passes that pre-generate
+     * every variant. Metric stands in for every Celsius system, so there are
+     * two of these and not four.
+     */
+    public const SCALE_UNITS = ['metric', 'imperial'];
+
+    /**
+     * Whether the AI pass polishes both temperature scales or only the one the
+     * site is set to.
+     *
+     * Prose cannot be converted back into numbers, so a second scale means
+     * asking the provider a second time. That is a bill rather than a detail,
+     * so it is the owner's call, and it is off unless they say otherwise: an
+     * install upgrading into this should not find its token use doubled
+     * without anyone choosing it. With it off, a reader who switches units
+     * still gets the right units, just the plainer sentence.
+     */
+    public static function rephrasesBothScales(): bool
+    {
+        return (bool) Setting::getValue('nlg.rephrase_both_units', false);
+    }
+
+    /**
+     * The unit systems the AI pass should run for.
+     *
+     * @return list<string>
+     */
+    public static function scalesToRephrase(): array
+    {
+        if (self::rephrasesBothScales()) {
+            return self::SCALE_UNITS;
+        }
+
+        return [(string) Setting::getValue('display.unit_system', 'metric')];
+    }
 
     /**
      * @param  array<int, array<string, mixed>>  $daily
@@ -47,16 +85,16 @@ class ForecastNlgCacheService
     /**
      * @param  array<int, array{date: string, payload: array<string, mixed>}>  $entries
      */
-    public function cacheDraftsForLocale(array $entries, string $locale, Narrator $narrator): int
+    public function cacheDraftsForLocale(array $entries, string $locale, Narrator $narrator, ?string $units = null): int
     {
         $count = 0;
         $ttl = now()->addMinutes(self::CACHE_TTL_MINUTES);
 
         foreach ($entries as $entry) {
             $date = $entry['date'];
-            $draftKey = self::draftCacheKey($locale, $date);
-            $finalKey = self::finalCacheKey($locale, $date);
-            $draft = $narrator->narrate($entry['payload'], ['locale' => $locale]);
+            $draftKey = self::draftCacheKey($locale, $date, $units);
+            $finalKey = self::finalCacheKey($locale, $date, $units);
+            $draft = $narrator->narrate($entry['payload'], ['locale' => $locale, 'units' => $units]);
             $existingDraft = Cache::get($draftKey);
             $existingFinal = Cache::get($finalKey);
 
@@ -91,11 +129,12 @@ class ForecastNlgCacheService
         bool $force = false,
         ?RephraseBudget $budget = null,
         string $providerId = '',
+        ?string $units = null,
     ): array {
         // Rephrasers that support batching send a whole locale's days in one request, which keeps
         // the request rate far under strict free-tier per-minute quotas (e.g. Cerebras 5 RPM).
         if ($rephraser instanceof BatchRephraser) {
-            return $this->rephraseBatchForLocale($entries, $locale, $narrator, $rephraser, $tone, $force, $budget, $providerId);
+            return $this->rephraseBatchForLocale($entries, $locale, $narrator, $rephraser, $tone, $force, $budget, $providerId, $units);
         }
 
         $updated = 0;
@@ -107,13 +146,13 @@ class ForecastNlgCacheService
 
         foreach ($entries as $entry) {
             $date = $entry['date'];
-            $draftKey = self::draftCacheKey($locale, $date);
-            $finalKey = self::finalCacheKey($locale, $date);
-            $hashKey = self::hashCacheKey($locale, $date);
+            $draftKey = self::draftCacheKey($locale, $date, $units);
+            $finalKey = self::finalCacheKey($locale, $date, $units);
+            $hashKey = self::hashCacheKey($locale, $date, $units);
 
             $draft = Cache::get($draftKey);
             if (! is_string($draft) || trim($draft) === '') {
-                $draft = $narrator->narrate($entry['payload'], ['locale' => $locale]);
+                $draft = $narrator->narrate($entry['payload'], ['locale' => $locale, 'units' => $units]);
                 Cache::put($draftKey, $draft, $ttl);
             }
 
@@ -190,6 +229,7 @@ class ForecastNlgCacheService
         bool $force,
         ?RephraseBudget $budget,
         string $providerId,
+        ?string $units = null,
     ): array {
         $updated = 0;
         $skipped = 0;
@@ -205,13 +245,13 @@ class ForecastNlgCacheService
 
         foreach ($entries as $entry) {
             $date = $entry['date'];
-            $draftKey = self::draftCacheKey($locale, $date);
-            $finalKey = self::finalCacheKey($locale, $date);
-            $hashKey = self::hashCacheKey($locale, $date);
+            $draftKey = self::draftCacheKey($locale, $date, $units);
+            $finalKey = self::finalCacheKey($locale, $date, $units);
+            $hashKey = self::hashCacheKey($locale, $date, $units);
 
             $draft = Cache::get($draftKey);
             if (! is_string($draft) || trim($draft) === '') {
-                $draft = $narrator->narrate($entry['payload'], ['locale' => $locale]);
+                $draft = $narrator->narrate($entry['payload'], ['locale' => $locale, 'units' => $units]);
                 Cache::put($draftKey, $draft, $ttl);
             }
 
@@ -389,19 +429,27 @@ class ForecastNlgCacheService
         return $expanded;
     }
 
-    public static function finalCacheKey(string $locale, string $date): string
+    /**
+     * Keys carry the temperature scale, because the text has the temperature
+     * written into it and readers pick their own units. Without it the first
+     * reader of the day decided what everybody after them saw.
+     *
+     * The scale, not the unit system: metric, UK and Scandinavia all read
+     * Celsius, so they share one text and there are two variants, not four.
+     */
+    public static function finalCacheKey(string $locale, string $date, ?string $units): string
     {
-        return "nlg_{$locale}_{$date}";
+        return "nlg_{$locale}_" . ForecastNarrator::temperatureScale($units) . "_{$date}";
     }
 
-    public static function draftCacheKey(string $locale, string $date): string
+    public static function draftCacheKey(string $locale, string $date, ?string $units): string
     {
-        return "nlg_draft_{$locale}_{$date}";
+        return "nlg_draft_{$locale}_" . ForecastNarrator::temperatureScale($units) . "_{$date}";
     }
 
-    public static function hashCacheKey(string $locale, string $date): string
+    public static function hashCacheKey(string $locale, string $date, ?string $units): string
     {
-        return "nlg_hash_{$locale}_{$date}";
+        return "nlg_hash_{$locale}_" . ForecastNarrator::temperatureScale($units) . "_{$date}";
     }
 
     /**

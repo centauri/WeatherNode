@@ -142,6 +142,9 @@ class WeatherController extends Controller
         // Add NLG text to all daily forecasts
         // Try to get pre-generated cached NLG first, fall back to on-demand generation
         $currentLocale = app()->getLocale();
+        // The paragraph has temperatures written into it, so it belongs to the
+        // reader's units the same way every other number on the page does.
+        $currentUnits = view()->shared('activeUnits') ?? 'metric';
         $nlgEnabled = (bool) Setting::getValue('nlg.llm_enabled', false);
         $nlgProvider = Setting::getValue('nlg.provider', 'openai');
         $providers = config('nlg.providers', []);
@@ -159,8 +162,8 @@ class WeatherController extends Controller
 
         if (is_array($forecast)) {
             foreach ($daily as $dayIndex => &$day) {
-                $draftNlg = Cache::get(ForecastNlgCacheService::draftCacheKey($currentLocale, $day['date']));
-                $finalNlg = Cache::get(ForecastNlgCacheService::finalCacheKey($currentLocale, $day['date']));
+                $draftNlg = Cache::get(ForecastNlgCacheService::draftCacheKey($currentLocale, $day['date'], $currentUnits));
+                $finalNlg = Cache::get(ForecastNlgCacheService::finalCacheKey($currentLocale, $day['date'], $currentUnits));
 
                 if (is_string($finalNlg) && trim($finalNlg) !== '') {
                     $day['nlg_text'] = $finalNlg;
@@ -184,7 +187,7 @@ class WeatherController extends Controller
                             'precip_mm' => $day['precipitation'] ?? 0,
                             'precip_type' => ($day['precipitation'] ?? 0) > 0 ? 'rain' : 'none',
                         ];
-                        $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale]);
+                        $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale, 'units' => $currentUnits]);
                     } else {
                         $periods = [];
                         foreach ($dayHours as $hour) {
@@ -254,7 +257,7 @@ class WeatherController extends Controller
                                 'date' => $day['date'],
                                 'periods' => $preparedPeriods,
                             ];
-                            $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale]);
+                            $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale, 'units' => $currentUnits]);
                         } else {
                             $payload = [
                                 'date' => $day['date'],
@@ -264,11 +267,11 @@ class WeatherController extends Controller
                                 'precip_mm' => $day['precipitation'] ?? 0,
                                 'precip_type' => ($day['precipitation'] ?? 0) > 0 ? 'rain' : 'none',
                             ];
-                            $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale]);
+                            $day['nlg_text'] = $narrator->narrate($payload, ['locale' => $currentLocale, 'units' => $currentUnits]);
                         }
                     }
 
-                    $this->storeDeterministicNlg($currentLocale, $day['date'], $day['nlg_text']);
+                    $this->storeDeterministicNlg($currentLocale, $day['date'], $day['nlg_text'], $currentUnits);
                     $draftNlg = $day['nlg_text'];
                     $finalNlg = $day['nlg_text'];
                 }
@@ -1732,12 +1735,12 @@ class WeatherController extends Controller
         ]);
     }
 
-    private function storeDeterministicNlg(string $locale, string $date, string $text): void
+    private function storeDeterministicNlg(string $locale, string $date, string $text, ?string $units): void
     {
         $ttl = now()->addMinutes(ForecastNlgCacheService::CACHE_TTL_MINUTES);
 
-        Cache::put(ForecastNlgCacheService::draftCacheKey($locale, $date), $text, $ttl);
-        Cache::put(ForecastNlgCacheService::finalCacheKey($locale, $date), $text, $ttl);
+        Cache::put(ForecastNlgCacheService::draftCacheKey($locale, $date, $units), $text, $ttl);
+        Cache::put(ForecastNlgCacheService::finalCacheKey($locale, $date, $units), $text, $ttl);
     }
 
     private function buildForecastDayNlgMeta(

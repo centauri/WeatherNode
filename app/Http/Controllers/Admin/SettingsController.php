@@ -2124,6 +2124,7 @@ class SettingsController extends Controller
         Setting::setValue('nlg.llm_enabled', $request->boolean('nlg_llm_enabled'), 'boolean', 'nlg');
         Setting::setValue('nlg.provider', $request->input('nlg_provider', 'openai'), 'string', 'nlg');
         Setting::setValue('nlg.default_tone', $request->input('nlg_default_tone', 'brief'), 'string', 'nlg');
+        Setting::setValue('nlg.rephrase_both_units', $request->boolean('nlg_rephrase_both_units'), 'boolean', 'nlg');
 
         $availableLocales = array_keys(config('localization.locales', []));
         $aiLocales = $request->input('nlg_ai_locales', []);
