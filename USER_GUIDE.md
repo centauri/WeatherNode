@@ -19,4 +19,4 @@ Admin documentation: see `ADMIN_GUIDE.md`.
 
 Use the colour-mode selector in the public header to choose **Light**, **Dark**, or **System** (follow your device). **Station default** removes your override and follows the owner's setting. Your choice is remembered in this browser for this station; it does not change the admin panel. If browser storage is unavailable, the selector still works for the current page.
 
-The station owner chooses the colour palette and FX/Flat presentation. Colour mode does not change weather data or warning categories.
+The station owner chooses the default colour palette and FX/Flat presentation. If the owner enables visitor theme choices, a separate palette selector offers those themes plus **Station default**. Your palette and colour-mode choices are remembered independently. If the owner removes your selected theme, the next page load returns to the station default. Colour mode and palette do not change weather data or warning categories.

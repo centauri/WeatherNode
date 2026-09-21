@@ -1336,6 +1336,8 @@ class SettingsController extends Controller
             'publicAppearance' => PublicAppearance::settings(),
             'palettes' => PublicAppearance::PALETTES,
             'customTheme' => CustomTheme::stored(),
+            'publishedCustomTheme' => CustomTheme::stored(true),
+            'visitorPalettes' => PublicAppearance::visitorPalettes(),
             'allGroups' => $this->groups,
         ]);
     }
@@ -1349,10 +1351,17 @@ class SettingsController extends Controller
             'appearance_theme' => ['required', 'in:fx,flat'],
             'appearance_palette' => ['sometimes', 'required', Rule::in(array_merge(array_keys(PublicAppearance::PALETTES), CustomTheme::stored() ? ['custom'] : []))],
             'appearance_color_mode' => ['sometimes', 'required', Rule::in(PublicAppearance::MODES)],
+            'appearance_visitor_palettes_present' => ['sometimes', 'accepted'],
+            'appearance_visitor_palettes' => ['sometimes', 'array', 'max:5'],
+            'appearance_visitor_palettes.*' => ['required', 'string', 'distinct', Rule::in(array_merge(array_keys(PublicAppearance::PALETTES), CustomTheme::stored(true) ? ['custom'] : []))],
         ]);
         // Older clients posting only FX/Flat retain their existing colour settings.
         DB::transaction(function () use ($validated) {
-            if (($validated['appearance_palette'] ?? null) === 'custom') {
+            if (isset($validated['appearance_visitor_palettes_present']) || array_key_exists('appearance_visitor_palettes', $validated)) {
+                Setting::setValue('appearance.visitor_palettes', array_values($validated['appearance_visitor_palettes'] ?? []), 'json', 'appearance');
+            }
+            // Saving visitor permissions or modes must not publish a newer draft.
+            if (($validated['appearance_palette'] ?? null) === 'custom' && ! isset(PublicAppearance::settings()['custom'])) {
                 Setting::setValue('appearance.active_custom_theme', CustomTheme::stored(), 'json', 'appearance');
             }
             foreach (['theme', 'palette', 'color_mode'] as $field) {

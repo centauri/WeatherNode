@@ -2934,5 +2934,9 @@
     "White button text": "Weißer Schaltflächentext",
     "Solar Flare": "Sonneneruption",
     "FX off (static)": "FX aus (statisch)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Kompakte Vorschau mit Dashboard-Stilen. Layout, Wetterdaten und Widget-Darstellungen können von deiner Website abweichen."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Kompakte Vorschau mit Dashboard-Stilen. Layout, Wetterdaten und Widget-Darstellungen können von deiner Website abweichen.",
+    "Visitor theme choices": "Themenauswahl für Besucher",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Wähle die Themen aus, die Besucher verwenden dürfen. Ohne Auswahl wird nur die Stationspalette verwendet.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Eigene Themen verwenden die zuletzt angewendete Version. Wende ein Thema einmal an, um es hier anzubieten; gespeicherte Entwürfe bleiben unveröffentlicht.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Besucher speichern ihre Auswahl auf ihrem Gerät. Entfernte Optionen werden beim nächsten Laden durch den Stationsstandard ersetzt."
 }

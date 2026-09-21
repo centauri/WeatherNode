@@ -1081,7 +1081,7 @@
                             <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 shrink-0 ml-auto">
+                    <div class="flex flex-wrap justify-end items-center gap-2 min-w-0 ml-auto">
                         <x-public-theme-select />
                         @if(($siteTheme ?? 'fx') !== 'flat')
                         <!-- FX button: visible to all visitors (toggles rain/snow/fog etc.; preference saved in localStorage) -->
@@ -1151,7 +1151,7 @@
                     <span class="text-ui-secondary" x-text="currentDate">{{ $ssrDateLabel }}</span>
                     <span class="text-ui-subtle text-xs ml-1" x-show="currentTimeZoneLabel" x-text="'( ' + currentTimeZoneLabel + ' )'"></span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap justify-end items-center gap-2">
                     <x-public-theme-select />
                         @if(($siteTheme ?? 'fx') !== 'flat')
                     <!-- FX button: visible to all visitors (toggles rain/snow/fog etc.; preference saved in localStorage) -->

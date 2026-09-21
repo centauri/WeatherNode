@@ -2916,5 +2916,9 @@
     "White button text": "Hvid knaptekst",
     "Solar Flare": "Soludbrud",
     "FX off (static)": "FX fra (statisk)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Kompakt eksempel med dashboardets stilarter. Layout, vejrdata og widgetvisninger kan afvige fra dit websted."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Kompakt eksempel med dashboardets stilarter. Layout, vejrdata og widgetvisninger kan afvige fra dit websted.",
+    "Visitor theme choices": "Temavalg for besøgende",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Vælg de temaer, besøgende må vælge. Lad alle felter være umarkerede for kun at bruge stationens palet.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Tilpassede temaer bruger den senest anvendte version. Anvend et tema én gang for at tilbyde det her; gemte kladder forbliver upublicerede.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Besøgende gemmer deres valg på deres enhed. Fjernede valg vender tilbage til stationens standard, næste gang siden indlæses."
 }

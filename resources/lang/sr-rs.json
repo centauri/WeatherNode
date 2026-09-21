@@ -2916,5 +2916,9 @@
     "White button text": "Бели текст дугмади",
     "Solar Flare": "Сунчева бакља",
     "FX off (static)": "FX искључен (статично)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Компактан пример са стиловима контролне табле. Распоред, временски подаци и изглед виџета могу се разликовати од вашег сајта."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Компактан пример са стиловима контролне табле. Распоред, временски подаци и изглед виџета могу се разликовати од вашег сајта.",
+    "Visitor theme choices": "Избор тема за посетиоце",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Изаберите теме које посетиоци могу да користе. Оставите све неозначено да бисте користили само палету станице.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Прилагођене теме користе последњу примењену верзију. Примените тему једном да бисте је понудили овде; сачувани нацрти остају необјављени.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Посетиоци чувају избор на свом уређају. Уклоњени избори враћају се на подразумевану тему станице при следећем учитавању странице."
 }

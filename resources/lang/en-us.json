@@ -3420,5 +3420,9 @@
     "White button text": "White button text",
     "Solar Flare": "Solar Flare",
     "FX off (static)": "FX off (static)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.",
+    "Visitor theme choices": "Visitor theme choices",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Select themes visitors may choose. Leave all unchecked to use only the station palette.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Visitors keep their choice on their device. Removed choices return to the station default on their next page load."
 }

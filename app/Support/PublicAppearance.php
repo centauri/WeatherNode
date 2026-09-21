@@ -11,6 +11,30 @@ final class PublicAppearance
 
     public const MODES = ['dark', 'light', 'system'];
 
+    /** Only published custom colours may be offered; saving a draft never exposes it. */
+    public static function visitorPalettes(): array
+    {
+        try {
+            $allowed = Setting::getValue('appearance.visitor_palettes', []);
+        } catch (Throwable) {
+            return [];
+        }
+        if (! is_array($allowed)) {
+            return [];
+        }
+        $choices = [];
+        foreach (self::PALETTES as $id => $label) {
+            if (in_array($id, $allowed, true)) {
+                $choices[$id] = __($label);
+            }
+        }
+        if (in_array('custom', $allowed, true) && ($custom = CustomTheme::stored(true))) {
+            $choices['custom'] = $custom['name'];
+        }
+
+        return $choices;
+    }
+
     public static function settings(): array
     {
         try {

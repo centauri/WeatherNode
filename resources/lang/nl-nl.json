@@ -3366,5 +3366,9 @@
     "White button text": "Witte knoptekst",
     "Solar Flare": "Zonnevlam",
     "FX off (static)": "FX uit (statisch)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Compact voorbeeld met dashboardstijlen. Indeling, weergegevens en widgetvisualisaties kunnen afwijken van je site."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Compact voorbeeld met dashboardstijlen. Indeling, weergegevens en widgetvisualisaties kunnen afwijken van je site.",
+    "Visitor theme choices": "Themakeuzes voor bezoekers",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Selecteer de thema’s waaruit bezoekers mogen kiezen. Laat alles uitgevinkt om alleen het stationspalet te gebruiken.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Aangepaste thema’s gebruiken de laatst toegepaste versie. Pas een thema eenmaal toe om het hier aan te bieden; opgeslagen concepten blijven ongepubliceerd.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Bezoekers bewaren hun keuze op hun apparaat. Verwijderde keuzes vallen bij de volgende paginalading terug op de stationsstandaard."
 }

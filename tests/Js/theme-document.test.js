@@ -21,7 +21,7 @@ test('contrast checks both modes, includes button text, and flags unreadable pai
 test('preview CSS is scoped to public modes and never emits names or weather token overrides', () => {
     const theme=document();theme.name='</style><script>bad</script>';
     const css=themeCss(theme);
-    assert.ok(css.includes('html[data-public-theme][data-color-mode="light"]'));
+    assert.ok(css.includes('html[data-public-theme][data-custom-theme][data-color-mode="light"]'));
     assert.ok(css.includes('--wn-card:0 0 0;'));
     assert.ok(!css.includes('<script>'));
     assert.ok(!css.includes('--wn-data-'));

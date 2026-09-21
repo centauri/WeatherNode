@@ -320,6 +320,14 @@ UPDATER_ALLOW_GIT=true
 - Verify the route is accessible: `/admin/settings/updates`
 
 
+### Visitor theme choices
+
+Under **Settings → Appearance → Visitor theme choices**, check the palettes visitors may select. Leave every box unchecked to keep the station palette for everyone. This is opt-in and does not change the station default, colour mode, or FX/Flat setting.
+
+Visitors get a separate palette selector with **Station default** and only the enabled choices. Their selection stays in their browser. When you remove a choice, they return to the station default on their next page load. Dark/Light/System remains a separate preference.
+
+You may also offer your custom theme after applying it at least once. Visitors receive its last applied snapshot; saving or importing a draft does not publish it. To publish an updated version, use **Save and apply** in the creator. You can then select a different station default in Appearance while continuing to offer the custom theme to visitors.
+
 ### Theme creator
 
 Open **Settings → Appearance → Theme creator** to start from WeatherNode, Ocean, Forest or Solar Flare. Edit the dark and light colours independently with a colour picker or six-digit hex value. **More colours** exposes secondary surfaces, overlays, dividers and chart grids. The isolated preview is a compact sample using shared dashboard styles, with FX on, FX off (static), and Flat options. Layout, weather data and widget visuals can differ from the actual dashboard; it does not change the public site or admin palette. Contrast warnings check common text/surface pairs against 4.5:1 and do not block saving.
