@@ -2916,5 +2916,9 @@
     "White button text": "Λευκό κείμενο κουμπιών",
     "Solar Flare": "Ηλιακή έκλαμψη",
     "FX off (static)": "FX ανενεργά (στατικό)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Συνοπτικό δείγμα με τα στυλ του πίνακα ελέγχου. Η διάταξη, τα δεδομένα καιρού και τα γραφικά των widget ενδέχεται να διαφέρουν από τον ιστότοπό σας."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Συνοπτικό δείγμα με τα στυλ του πίνακα ελέγχου. Η διάταξη, τα δεδομένα καιρού και τα γραφικά των widget ενδέχεται να διαφέρουν από τον ιστότοπό σας.",
+    "Visitor theme choices": "Επιλογές θεμάτων για επισκέπτες",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Επιλέξτε τα θέματα που μπορούν να επιλέγουν οι επισκέπτες. Αφήστε τα όλα μη επιλεγμένα για χρήση μόνο της παλέτας του σταθμού.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Τα προσαρμοσμένα θέματα χρησιμοποιούν την τελευταία εφαρμοσμένη έκδοση. Εφαρμόστε ένα θέμα μία φορά για να το προσφέρετε εδώ· τα αποθηκευμένα προσχέδια παραμένουν αδημοσίευτα.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Οι επισκέπτες αποθηκεύουν την επιλογή στη συσκευή τους. Οι καταργημένες επιλογές επιστρέφουν στην προεπιλογή του σταθμού κατά την επόμενη φόρτωση σελίδας."
 }

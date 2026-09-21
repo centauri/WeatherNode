@@ -117,7 +117,7 @@ final class CustomTheme
         $theme = self::validate($document);
         $css = '';
         foreach ($theme['modes'] as $mode => $tokens) {
-            $css .= 'html[data-public-theme][data-color-mode="'.$mode.'"]{--wn-custom:1;';
+            $css .= 'html[data-public-theme][data-custom-theme][data-color-mode="'.$mode.'"]{--wn-custom:1;';
             foreach ($tokens as $key => $hex) {
                 $rgb = implode(' ', array_map('hexdec', str_split(substr($hex, 1), 2)));
                 $css .= "--wn-$key:$rgb;";

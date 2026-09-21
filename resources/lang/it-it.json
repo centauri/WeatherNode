@@ -4015,5 +4015,9 @@
     "White button text": "Testo bianco dei pulsanti",
     "Solar Flare": "Eruzione solare",
     "FX off (static)": "FX disattivati (statico)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Anteprima compatta con gli stili della dashboard. Disposizione, dati meteo e grafica dei widget possono differire dal tuo sito."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Anteprima compatta con gli stili della dashboard. Disposizione, dati meteo e grafica dei widget possono differire dal tuo sito.",
+    "Visitor theme choices": "Temi disponibili per i visitatori",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Seleziona i temi che i visitatori possono scegliere. Lascia tutto deselezionato per usare solo la tavolozza della stazione.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "I temi personalizzati usano l’ultima versione applicata. Applica un tema una volta per offrirlo qui; le bozze salvate restano non pubblicate.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "I visitatori conservano la scelta sul proprio dispositivo. Le opzioni rimosse tornano al tema predefinito della stazione al caricamento successivo."
 }

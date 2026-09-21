@@ -35,7 +35,7 @@
                 <span class="text-ui-subtle text-xs ml-1" id="currentTimeZoneLabel"></span>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap justify-end items-center gap-2">
                 <x-public-theme-select />
                 <a href="{{ route('home') }}" class="px-3 py-1 text-xs bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded transition-colors">
                     ← {{ __('Home') }}

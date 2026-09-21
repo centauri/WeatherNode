@@ -36,7 +36,7 @@ export function contrastIssues(theme) {
 export function themeCss(theme) {
     // Call only after schema validation. These aliases keep the custom palette independent of preset compatibility colours.
     const aliases = {body:'fg', faint:'subtle', disabled:'soft', inactive:'soft', divider:'border', 'slate-deep':'deep', 'slate-soft':'soft', 'slate-border':'border', action:'accent', 'action-deep':'accent-strong'};
-    return ['dark', 'light'].map(mode => `html[data-public-theme][data-color-mode="${mode}"]{--wn-custom:1;`
+    return ['dark', 'light'].map(mode => `html[data-public-theme][data-custom-theme][data-color-mode="${mode}"]{--wn-custom:1;`
         + Object.entries(theme.modes[mode]).map(([key, value]) => `--wn-${key}:${rgb(value).join(' ')};`).join('')
         + Object.entries(aliases).map(([key, value]) => `--wn-${key}:var(--wn-${value});`).join('')
         + `--wn-browser-color:${theme.modes[mode].card};}`).join('');

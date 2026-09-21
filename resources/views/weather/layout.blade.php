@@ -237,7 +237,7 @@
                             <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                         </div>
                     </a>
-                    <div class="flex items-center gap-2 shrink-0 ml-auto">
+                    <div class="flex flex-wrap justify-end items-center gap-2 min-w-0 ml-auto">
                         <x-public-theme-select />
                         @auth
                             @if(auth()->user()->is_admin)
@@ -301,7 +301,7 @@
                     <span class="text-ui-secondary" id="currentDate">--</span>
                     <span class="text-ui-subtle text-xs ml-1" id="currentTimeZoneLabel"></span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap justify-end items-center gap-2">
                     <x-public-theme-select />
                         @auth
                         @if(auth()->user()->is_admin)

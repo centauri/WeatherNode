@@ -2916,5 +2916,9 @@
     "White button text": "Text blanc dels botons",
     "Solar Flare": "Erupció solar",
     "FX off (static)": "FX desactivats (estàtic)",
-    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Mostra compacta amb els estils del tauler. La disposició, les dades meteorològiques i els gràfics dels ginys poden diferir del teu lloc web."
+    "Compact sample using dashboard styles. Layout, weather data and widget visuals may differ from your site.": "Mostra compacta amb els estils del tauler. La disposició, les dades meteorològiques i els gràfics dels ginys poden diferir del teu lloc web.",
+    "Visitor theme choices": "Temes disponibles per als visitants",
+    "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Selecciona els temes que poden triar els visitants. Deixa-ho tot desmarcat per utilitzar només la paleta de l’estació.",
+    "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Els temes personalitzats utilitzen l’última versió aplicada. Aplica un tema una vegada per oferir-lo aquí; els esborranys desats no es publiquen.",
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Els visitants desen la tria al seu dispositiu. Les opcions eliminades tornen al tema predeterminat de l’estació en carregar una altra pàgina."
 }

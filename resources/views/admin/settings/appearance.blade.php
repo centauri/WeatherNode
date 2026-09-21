@@ -81,7 +81,7 @@
                     <label class="block rounded-lg border border-gray-600 p-4 cursor-pointer">
                         <span class="flex items-center gap-2 text-white">
                             <input type="radio" name="appearance_palette" value="custom" @checked(old('appearance_palette', isset($publicAppearance['custom']) ? 'custom' : $publicAppearance['palette']) === 'custom')>
-                            {{ $customTheme['name'] }}
+                            {{ $publicAppearance['custom']['name'] ?? $customTheme['name'] }}
                         </span>
                         <span class="text-xs text-gray-400">{{ __('Custom theme') }}</span>
                     </label>
@@ -99,6 +99,29 @@
             </select>
             <p class="text-sm text-gray-400 mt-3">{{ __('Visitors can override this on the public site. System follows their device preference. The admin theme is separate.') }}</p>
         </div>
+
+        <fieldset class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
+            <legend class="text-lg font-semibold text-white px-2">{{ __('Visitor theme choices') }}</legend>
+            <input type="hidden" name="appearance_visitor_palettes_present" value="1">
+            <p class="text-sm text-gray-400 mb-4">{{ __('Select themes visitors may choose. Leave all unchecked to use only the station palette.') }}</p>
+            @php($selectedVisitorPalettes = old('appearance_visitor_palettes_present') ? old('appearance_visitor_palettes', []) : array_keys($visitorPalettes))
+            <div class="grid gap-3 sm:grid-cols-2">
+                @foreach($palettes as $id => $label)
+                    <label class="flex items-center gap-3 text-white">
+                        <input type="checkbox" name="appearance_visitor_palettes[]" value="{{ $id }}" @checked(in_array($id, (array) $selectedVisitorPalettes, true))>
+                        {{ __($label) }}
+                    </label>
+                @endforeach
+                @if($publishedCustomTheme)
+                    <label class="flex items-center gap-3 text-white">
+                        <input type="checkbox" name="appearance_visitor_palettes[]" value="custom" @checked(in_array('custom', (array) $selectedVisitorPalettes, true))>
+                        {{ $publishedCustomTheme['name'] }} <span class="text-xs text-gray-400">{{ __('Custom theme') }}</span>
+                    </label>
+                @endif
+            </div>
+            <p class="text-sm text-gray-400 mt-4">{{ __('Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.') }}</p>
+            <p class="text-sm text-gray-400 mt-2">{{ __('Visitors keep their choice on their device. Removed choices return to the station default on their next page load.') }}</p>
+        </fieldset>
 
         <div class="flex justify-end">
             <button type="submit" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors">
