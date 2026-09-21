@@ -484,3 +484,16 @@ html[data-public-theme] [data-theme-surface="dark"] {
 html[data-public-theme][data-color-mode="light"] [data-weather-colour-text] {
     color: rgb(var(--wn-fg)) !important;
 }
+
+/* Coloured surfaces need their own foreground; data-text tokens are for cards. */
+html[data-public-theme][data-color-mode="light"] .weather-offline-badge {
+    color: #fff;
+    background-color: #b91c1c;
+    animation: none;
+}
+html[data-public-theme][data-color-mode="light"] .weather-section-tab.bg-green-600 { background-color: #15803d; }
+html[data-public-theme][data-color-mode="light"] .weather-section-tab.bg-sky-600 { background-color: #0369a1; }
+html[data-public-theme][data-color-mode="light"] .weather-section-tab.bg-cyan-600 { background-color: #0e7490; }
+html[data-public-theme][data-color-mode="light"] .weather-section-tab.bg-orange-500 { background-color: #c2410c; }
+/* Transparent annotation labels sit on the chart surface. Keep threshold lines coloured. */
+html[data-public-theme][data-color-mode="light"] .weather-chart-label { fill: rgb(var(--wn-fg)); }

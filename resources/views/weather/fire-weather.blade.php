@@ -77,7 +77,7 @@
             <div class="text-5xl">🔥</div>
             <div class="text-sm uppercase tracking-widest text-ui-muted">{{ __('Fire Danger') }}</div>
             <div class="px-6 py-3 rounded-xl border {{ $bgClass }} flex flex-col items-center gap-1">
-                <span class="text-3xl font-black {{ $textClass }}">{{ $levelLabel }}</span>
+                <span data-weather-colour-text class="text-3xl font-black {{ $textClass }}">{{ $levelLabel }}</span>
                 @if($index !== null)
                     <span class="text-xs text-ui-muted">{{ __('Angström') }}: {{ $formatNum($index, 2) }}</span>
                 @endif

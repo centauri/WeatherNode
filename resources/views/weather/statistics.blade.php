@@ -216,7 +216,7 @@
                 <div id="gdd-period-chart" class="w-full"></div>
             </div>
             <div class="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
-                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-data-amber-200/80">{{ __('Best :days-day period', ['days' => $gddWindowDays]) }}</div>
+                <div data-weather-colour-text class="text-xs font-semibold uppercase tracking-[0.2em] text-data-amber-200/80">{{ __('Best :days-day period', ['days' => $gddWindowDays]) }}</div>
                 <div class="mt-3 text-lg font-semibold text-ui-fg">
                     {{ $gddBestStart->translatedFormat('j M') }}
                     @if($gddBestPeriod['start_date'] !== $gddBestPeriod['end_date'])
@@ -224,7 +224,7 @@
                     @endif
                 </div>
                 <div class="mt-3 text-3xl font-bold text-data-amber-300">{{ number_format($gddBestPeriod['total'], 1) }} GDD</div>
-                <div class="mt-1 text-sm text-data-amber-100/80">{{ __('Average per day') }}: {{ number_format($gddBestPeriod['average_per_day'], 1) }} GDD</div>
+                <div data-weather-colour-text class="mt-1 text-sm text-data-amber-100/80">{{ __('Average per day') }}: {{ number_format($gddBestPeriod['average_per_day'], 1) }} GDD</div>
             </div>
         </div>
         @endif

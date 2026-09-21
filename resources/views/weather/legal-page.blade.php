@@ -9,7 +9,7 @@
     .legal-content h2,
     .legal-content h3,
     .legal-content h4 {
-        color: rgb(255 255 255);
+        color: rgb(var(--wn-fg));
         font-weight: 700;
         margin-top: 1.25rem;
         margin-bottom: 0.75rem;
@@ -27,7 +27,7 @@
 
     .legal-content p,
     .legal-content li {
-        color: rgb(209 213 219);
+        color: rgb(var(--wn-secondary));
         line-height: 1.7;
     }
 
@@ -39,7 +39,7 @@
     }
 
     .legal-content a {
-        color: rgb(96 165 250);
+        color: rgb(var(--wn-link));
         text-decoration: underline;
     }
 
@@ -66,7 +66,7 @@
 
         <div class="legal-content space-y-4">
             @if(!empty($pageContentText))
-                <pre class="whitespace-pre-wrap break-words text-sm text-ui-body bg-black/30 border border-ui-line/10 rounded-xl p-4">{{ $pageContentText }}</pre>
+                <pre class="whitespace-pre-wrap break-words text-sm text-ui-body bg-ui-overlay/5 border border-ui-line/10 rounded-xl p-4">{{ $pageContentText }}</pre>
             @else
                 {!! $pageContentHtml !!}
             @endif

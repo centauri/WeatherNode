@@ -38,7 +38,7 @@ const initWaveChart = async () => {
                 text: '▸ now',
                 orientation: 'horizontal',
                 position: 'top',
-                style: { color: '#94a3b8', background: 'transparent', fontSize: '10px' },
+                style: { color: '#94a3b8', background: 'transparent', cssClass: 'weather-chart-label', fontSize: '10px' },
             },
         },
     ];
@@ -229,7 +229,7 @@ const initSstChart = async () => {
                     text: '▸ now',
                     orientation: 'horizontal',
                     position: 'top',
-                    style: { color: '#94a3b8', background: 'transparent', fontSize: '9px' },
+                    style: { color: '#94a3b8', background: 'transparent', cssClass: 'weather-chart-label', fontSize: '9px' },
                 },
             }],
         },

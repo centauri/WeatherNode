@@ -9,8 +9,8 @@
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #0b1220;
-            color: #e5e7eb;
+            background: rgb(var(--wn-bg));
+            color: rgb(var(--wn-secondary));
         }
         .wrap {
             max-width: 980px;
@@ -18,8 +18,8 @@
             padding: 0 16px 32px;
         }
         .card {
-            background: #111a2b;
-            border: 1px solid #25324b;
+            background: rgb(var(--wn-card));
+            border: 1px solid rgb(var(--wn-border) / .3);
             border-radius: 14px;
             padding: 16px;
             margin-bottom: 16px;
@@ -30,15 +30,15 @@
             margin: 0 0 10px;
         }
         .muted {
-            color: #9ca3af;
+            color: rgb(var(--wn-muted));
             font-size: 14px;
             margin: 0 0 8px;
         }
         #ads-test-slot {
             min-height: 140px;
             width: 100%;
-            background: #0b1322;
-            border: 1px dashed #334155;
+            background: rgb(var(--wn-raised));
+            border: 1px dashed rgb(var(--wn-border));
             border-radius: 10px;
             padding: 8px;
             box-sizing: border-box;
@@ -47,11 +47,11 @@
             margin: 0;
             white-space: pre-wrap;
             word-break: break-word;
-            background: #0b1322;
-            border: 1px solid #25324b;
+            background: rgb(var(--wn-raised));
+            border: 1px solid rgb(var(--wn-border) / .3);
             border-radius: 10px;
             padding: 12px;
-            color: #cbd5e1;
+            color: rgb(var(--wn-secondary));
             font-size: 12px;
             line-height: 1.45;
         }

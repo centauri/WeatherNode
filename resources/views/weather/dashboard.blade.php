@@ -1519,7 +1519,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -1729,7 +1729,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -2146,7 +2146,7 @@
                         </div>
                         <!-- Offline Badge (Centered) -->
                         <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                            <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                            <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                 </svg>
@@ -2414,7 +2414,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.forecast?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -3057,7 +3057,7 @@
                         </div>
                         <!-- Offline Badge (Centered) -->
                         <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                            <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                            <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                 </svg>
@@ -3175,7 +3175,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.astronomy?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -3399,7 +3399,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -3441,7 +3441,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.airquality?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -3669,7 +3669,7 @@
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 weather-offline-badge text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -5216,7 +5216,7 @@
                         @if($alertsFeatureEnabled)
                         <a href="{{ route('alerts') }}"
                            class="text-[10px] mt-1 inline-block hover:underline"
-                           :style="'color:'+toast.color">{{ __('View alerts') }} →</a>
+                           data-weather-colour-text :style="'color:'+toast.color">{{ __('View alerts') }} →</a>
                         @endif
                     </div>
                     <button @click="dismissWeatherToast(toast.id)"

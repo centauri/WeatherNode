@@ -56,7 +56,7 @@
         @endif
         <a href="{{ route('pollen') }}"
            class="px-4 py-2 text-sm font-medium rounded-t-lg transition-colors
-                  {{ $activeTab === 'pollen' ? 'bg-green-600 text-on-accent text-ui-fg shadow-lg shadow-green-600/20' : 'text-ui-muted hover:text-ui-fg hover:bg-ui-overlay/5' }}">
+                  {{ $activeTab === 'pollen' ? 'weather-section-tab bg-green-600 text-on-accent text-ui-fg shadow-lg shadow-green-600/20' : 'text-ui-muted hover:text-ui-fg hover:bg-ui-overlay/5' }}">
             🌿 {{ __('Pollen') }}
         </a>
     </div>
@@ -679,7 +679,7 @@
                     </div>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold" style="color: {{ $overallColor }}">{{ $translateRisk($overall) }}</h2>
+                    <h2 data-weather-colour-text class="text-2xl font-semibold" style="color: {{ $overallColor }}">{{ $translateRisk($overall) }}</h2>
                     <p class="text-ui-muted">{{ __('Overall Pollen Risk') }}</p>
                     @if(isset($p['updated_at']))
                     <p class="text-xs text-ui-subtle mt-1">{{ __('Last update') }}: <time class="local-time" data-utc="{{ $p['updated_at'] }}">{{ \Carbon\Carbon::parse($p['updated_at'])->format('H:i') }} UTC</time></p>

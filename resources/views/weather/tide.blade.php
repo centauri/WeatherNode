@@ -127,9 +127,9 @@
         ? 'bg-{c}-600 shadow-lg shadow-{c}-600/30 text-ui-fg'  // replaced per-tab below
         : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20';
     $tabClass = [
-        'tides'  => $activeTab === 'tides'  ? 'bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg'      : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
+        'tides'  => $activeTab === 'tides'  ? 'weather-section-tab bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg'      : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
         'waves'  => $activeTab === 'waves'  ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30 text-ui-fg'      : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
-        'temp'   => $activeTab === 'temp'   ? 'bg-orange-500 text-on-accent shadow-lg shadow-orange-500/30 text-ui-fg'  : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
+        'temp'   => $activeTab === 'temp'   ? 'weather-section-tab bg-orange-500 text-on-accent shadow-lg shadow-orange-500/30 text-ui-fg'  : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
         'rivers' => $activeTab === 'rivers' ? 'bg-emerald-600 text-on-accent shadow-lg shadow-emerald-600/30 text-ui-fg': 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
     ];
 @endphp
@@ -141,7 +141,7 @@
         ✈ {{ __('Aviation') }}
     </a>
     <a href="{{ route('water') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg">
+       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors weather-section-tab bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg">
         🌊 {{ __('Water') }}
     </a>
 </div>

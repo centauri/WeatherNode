@@ -44,6 +44,7 @@ const initTideChart = async () => {
             style: {
                 color: t.type === 'high' ? '#22d3ee' : '#60a5fa',
                 background: 'transparent',
+                cssClass: 'weather-chart-label',
                 fontSize: '10px',
                 fontWeight: 600,
                 padding: { top: 2, bottom: 2, left: 4, right: 4 },
@@ -61,7 +62,7 @@ const initTideChart = async () => {
             text: '▸ now',
             orientation: 'horizontal',
             position: 'top',
-            style: { color: '#94a3b8', background: 'transparent', fontSize: '10px' },
+            style: { color: '#94a3b8', background: 'transparent', cssClass: 'weather-chart-label', fontSize: '10px' },
         },
     });
 
@@ -74,7 +75,7 @@ const initTideChart = async () => {
             strokeDashArray: 4,
             label: {
                 text: `${datumLabel} 0`,
-                style: { color: '#64748b', background: 'transparent', fontSize: '10px' },
+                style: { color: '#64748b', background: 'transparent', cssClass: 'weather-chart-label', fontSize: '10px' },
             },
         },
     ];
