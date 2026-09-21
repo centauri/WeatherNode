@@ -79,6 +79,7 @@ class AppearanceSettingsTest extends TestCase
             ->assertSee('appearance_palette')->assertSee('Ocean')->assertSee('appearance_color_mode')
             ->assertDontSee('js/public-theme.js', false);
     }
+
     public function test_guest_pages_render_owner_settings_and_mode_controls(): void
     {
         Setting::setValue('appearance.palette', 'ocean');
@@ -93,5 +94,4 @@ class AppearanceSettingsTest extends TestCase
             ->assertSee('data-public-theme="ocean"', false)
             ->assertSee('data-color-mode="light"', false);
     }
-
 }

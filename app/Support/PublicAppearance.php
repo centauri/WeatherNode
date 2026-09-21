@@ -7,7 +7,8 @@ use Throwable;
 
 final class PublicAppearance
 {
-    public const PALETTES = ['weathernode' => 'WeatherNode', 'ocean' => 'Ocean', 'forest' => 'Forest'];
+    public const PALETTES = ['weathernode' => 'WeatherNode', 'ocean' => 'Ocean', 'forest' => 'Forest', 'solar-flare' => 'Solar Flare'];
+
     public const MODES = ['dark', 'light', 'system'];
 
     public static function settings(): array
@@ -19,6 +20,10 @@ final class PublicAppearance
             // Error and first-run pages must work before settings are available.
             $palette = 'weathernode';
             $mode = 'dark';
+        }
+
+        if ($palette === 'custom' && ($custom = CustomTheme::stored(true))) {
+            return ['palette' => $custom['base'], 'mode' => in_array($mode, self::MODES, true) ? $mode : 'dark', 'custom' => $custom];
         }
 
         return [

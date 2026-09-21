@@ -942,7 +942,7 @@ function weatherDashboard() {
                     // Axis lines
                     for (let i = 0; i < 16; i++) {
                         const rad = toRad(i * 22.5);
-                        svgParts.push(`<line x1="${cx}" y1="${cy}" x2="${(cx + 75 * Math.sin(rad)).toFixed(1)}" y2="${(cy - 75 * Math.cos(rad)).toFixed(1)}" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>`);
+                        svgParts.push(`<line x1="${cx}" y1="${cy}" x2="${(cx + 75 * Math.sin(rad)).toFixed(1)}" y2="${(cy - 75 * Math.cos(rad)).toFixed(1)}" stroke="rgb(var(--wn-fg) / 0.05)" stroke-width="0.5"/>`);
                     }
                     // Petal segments (annular sectors)
                     for (const petal of petals) {
@@ -955,8 +955,8 @@ function weatherDashboard() {
                     }
                     // Direction labels
                     const labels = [
-                        [cx, 22, 'white', 10, 'bold', 'N'], [cx+88, cy+4, 'white', 10, 'bold', 'E'],
-                        [cx, cy+96, 'white', 10, 'bold', 'S'], [cx-88, cy+4, 'white', 10, 'bold', 'W'],
+                        [cx, 22, 'rgb(var(--wn-fg))', 10, 'bold', 'N'], [cx+88, cy+4, 'rgb(var(--wn-fg))', 10, 'bold', 'E'],
+                        [cx, cy+96, 'rgb(var(--wn-fg))', 10, 'bold', 'S'], [cx-88, cy+4, 'rgb(var(--wn-fg))', 10, 'bold', 'W'],
                         [cx+45, cy-76, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'NE'],
                         [cx+80, cy-40, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'ENE'],
                         [cx+80, cy+48, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'ESE'],
@@ -973,7 +973,7 @@ function weatherDashboard() {
                     // Center calm
                     svgParts.push(`<circle cx="${cx}" cy="${cy}" r="11" fill="rgb(var(--wn-card) / 0.8)" stroke="rgb(var(--wn-fg) / 0.15)" stroke-width="0.5"/>`);
                     svgParts.push(`<text x="${cx}" y="${cy-2}" text-anchor="middle" fill="rgb(var(--wn-fg) / 0.6)" font-size="5.5">${t('Calm')}</text>`);
-                    svgParts.push(`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="white" font-size="7" font-weight="bold">${calmPct}%</text>`);
+                    svgParts.push(`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="rgb(var(--wn-fg))" font-size="7" font-weight="bold">${calmPct}%</text>`);
 
                     const svgMarkup = `<svg viewBox="0 0 220 220" class="w-full mx-auto" style="max-width:280px;">${svgParts.join('')}</svg>`;
 
@@ -3665,7 +3665,7 @@ function weatherDashboard() {
                         type === 'success' ? 'bg-green-500/90' : 
                         type === 'error' ? 'bg-red-500/90' : 
                         'bg-blue-500/90'
-                    } text-ui-fg font-medium backdrop-blur-sm`;
+                    } text-on-accent font-medium backdrop-blur-sm`;
                     toast.textContent = message;
                     document.body.appendChild(toast);
                     

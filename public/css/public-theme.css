@@ -93,6 +93,49 @@ html[data-public-theme="forest"][data-color-mode="light"] {
     --wn-browser-color: #ffffff;
 }
 
+/* Solar Flare: hot orange, magenta and plum inspired by an intense sunset. */
+html[data-public-theme="solar-flare"] {
+    --wn-bg: 26 12 36;
+    --wn-card: 44 24 56;
+    --wn-raised: 59 34 73;
+    --wn-deep: 33 15 44;
+    --wn-soft: 83 50 87;
+    --wn-fg: 255 247 237;
+    --wn-secondary: 241 212 224;
+    --wn-muted: 201 175 199;
+    --wn-subtle: 187 160 187;
+    --wn-overlay: 255 247 237;
+    --wn-line: 255 214 165;
+    --wn-border: 137 103 133;
+    --wn-accent: 249 115 22;
+    --wn-accent-strong: 194 65 12;
+    --wn-link: 253 186 116;
+    --wn-accent-end: 244 114 182;
+    --wn-gradient-mid: 87 32 68;
+    --wn-gradient-end: 120 53 30;
+    --wn-grid: 105 63 93;
+    --wn-browser-color: #2c1838;
+}
+html[data-public-theme="solar-flare"][data-color-mode="light"] {
+    --wn-bg: 255 241 214;
+    --wn-card: 255 250 240;
+    --wn-raised: 255 237 221;
+    --wn-deep: 245 215 203;
+    --wn-soft: 234 192 188;
+    --wn-fg: 66 22 44;
+    --wn-secondary: 98 50 75;
+    --wn-muted: 121 82 100;
+    --wn-subtle: 121 82 100;
+    --wn-overlay: 66 22 44;
+    --wn-line: 66 22 44;
+    --wn-border: 155 104 116;
+    --wn-link: 154 52 18;
+    --wn-gradient-mid: 255 216 168;
+    --wn-gradient-end: 249 184 196;
+    --wn-grid: 231 193 181;
+    --wn-browser-color: #fffaf0;
+}
+
 html[data-public-theme][data-color-mode="dark"] {
     --wn-data-red-100: 254 226 226;
     --wn-data-red-200: 254 202 202;

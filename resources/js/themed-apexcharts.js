@@ -15,7 +15,7 @@ export function chartChrome(options, original = originalColours(options)) {
     const style = getComputedStyle(root);
     const colour = (name, fallback) => `rgb(${(style.getPropertyValue(`--wn-${name}`).trim() || fallback).split(/\s+/).join(', ')})`;
     const mode = root.classList.contains('dark') ? 'dark' : 'light';
-    const classicDark = root.dataset.publicTheme === 'weathernode' && mode === 'dark';
+    const classicDark = root.dataset.publicTheme === 'weathernode' && mode === 'dark' && style.getPropertyValue('--wn-custom').trim() !== '1';
     const foreground = classicDark ? original.foreground : colour('secondary', '71 85 105');
     const axis = (value, originalAxis) => ({
         ...value,

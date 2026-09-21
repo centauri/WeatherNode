@@ -16,6 +16,7 @@ use App\Services\Nlg\NlgProviderModelDiscovery;
 use App\Services\OpenData\OpenDataProviderRegistry;
 use App\Services\Radar\RadarFutureFramesService;
 use App\Services\Tide\TideServiceFactory;
+use App\Support\CustomTheme;
 use App\Support\MenuFeatureMap;
 use App\Support\PublicAppearance;
 use App\Support\StatTileRegistry;
@@ -1334,6 +1335,7 @@ class SettingsController extends Controller
         return view('admin.settings.appearance', [
             'publicAppearance' => PublicAppearance::settings(),
             'palettes' => PublicAppearance::PALETTES,
+            'customTheme' => CustomTheme::stored(),
             'allGroups' => $this->groups,
         ]);
     }
@@ -1345,11 +1347,14 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'appearance_theme' => ['required', 'in:fx,flat'],
-            'appearance_palette' => ['sometimes', 'required', Rule::in(array_keys(PublicAppearance::PALETTES))],
+            'appearance_palette' => ['sometimes', 'required', Rule::in(array_merge(array_keys(PublicAppearance::PALETTES), CustomTheme::stored() ? ['custom'] : []))],
             'appearance_color_mode' => ['sometimes', 'required', Rule::in(PublicAppearance::MODES)],
         ]);
         // Older clients posting only FX/Flat retain their existing colour settings.
         DB::transaction(function () use ($validated) {
+            if (($validated['appearance_palette'] ?? null) === 'custom') {
+                Setting::setValue('appearance.active_custom_theme', CustomTheme::stored(), 'json', 'appearance');
+            }
             foreach (['theme', 'palette', 'color_mode'] as $field) {
                 if (array_key_exists('appearance_'.$field, $validated)) {
                     Setting::setValue('appearance.'.$field, $validated['appearance_'.$field], 'select', 'appearance');

@@ -445,3 +445,12 @@ make release
 ```
 
 WeatherNode Dark preserves the original shipped colours, including muted text, measurement colours and Flat styling. Do not brighten or recolour this preset as part of theme improvements; use an optional palette instead. Contrast improvements apply to the new palettes and light modes. The theme tests pin representative original colours, and the chart adapter restores each chart's original dark label colours after mode changes.
+
+
+### Portable custom themes
+
+Theme creator endpoints use the existing admin middleware and CSRF protection. `CustomTheme` validates a strict, versioned JSON document (`format: "weathernode-theme"`, integer `version: 1`, `name`, built-in `base`, and complete `dark`/`light` objects under `modes`). Each mode contains the 19 allowlisted interface tokens as six-digit hex strings. Unknown fields, weather/alert token overrides, unsupported versions, missing colours, arbitrary CSS/URLs and documents over 20,000 bytes are rejected. The name is at most 80 characters. Files are never executed or stored on disk.
+
+`appearance.custom_theme` is the saved draft; `appearance.active_custom_theme` is the applied snapshot. `appearance.palette=custom` selects that snapshot. Invalid stored themes fall back to the original preset. No schema migration is needed. Public CSS is emitted only after validation; the name never enters CSS. Public roots identify custom themes so legacy Flat overrides and chart compatibility colours do not mask their interface colours. The original presets and data colours remain intact.
+
+The admin editor previews in a separate, authenticated iframe. It accepts messages only from its same-origin parent and validates the schema again before changing CSS. Import/export validates on the server as well as in the browser. `ThemeCreatorTest` covers permissions, schema rejection, round trips, snapshot behaviour, reset and public shells; `theme-document.test.js` checks browser validation and contrast calculations. Theme creator strings are included in all 18 locale files.

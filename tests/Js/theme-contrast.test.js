@@ -21,7 +21,7 @@ function paletteTokens(palette, mode) {
 const luminance = rgb => rgb.map(c => c / 255).map(c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
     .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
 const contrast = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
-for (const palette of ['weathernode', 'ocean', 'forest']) for (const mode of ['dark', 'light']) {
+for (const palette of ['weathernode', 'ocean', 'forest', 'solar-flare']) for (const mode of ['dark', 'light']) {
     test(`${palette} ${mode}: primary interface text and filled buttons meet AA text contrast`, () => {
         const tokens = paletteTokens(palette, mode);
         const originalDark = palette === 'weathernode' && mode === 'dark';

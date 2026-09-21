@@ -113,7 +113,7 @@ Detailed admin operations live in [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 
 🎨 Customization
 
-- FX and Flat visual modes, with WeatherNode, Ocean, and Forest colour palettes and visitor-selectable light/dark/system modes.
+- FX and Flat visual modes, with WeatherNode, Ocean, Forest, and Solar Flare colour palettes and visitor-selectable light/dark/system modes.
 - Admin drag and drop widget ordering on the dashboard.
 - Optional visual effects like rain, snow, wind, lightning, and fog.
 

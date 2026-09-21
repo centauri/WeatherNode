@@ -56,12 +56,13 @@
         <fieldset class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
             <legend class="text-lg font-semibold text-white px-2">{{ __('Colour palette') }}</legend>
             <p class="text-sm text-gray-400 mb-4">{{ __('Each palette supports light and dark modes with either FX or Flat.') }}</p>
-            <div class="grid gap-4 sm:grid-cols-3">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 @foreach($palettes as $id => $label)
                     @php
                         $swatch = match ($id) {
                             'ocean' => ['#132830', '#0f766e', '#f0fdfa'],
                             'forest' => ['#1b2a21', '#15803d', '#f0fdf4'],
+                            'solar-flare' => ['#2c1838', '#f97316', '#fff1d6'],
                             default => ['#1a2332', '#2563eb', '#f1f5f9'],
                         };
                     @endphp
@@ -70,13 +71,23 @@
                             @foreach($swatch as $colour)<span class="flex-1" style="background: {{ $colour }}"></span>@endforeach
                         </span>
                         <span class="flex items-center gap-2 text-white">
-                            <input type="radio" name="appearance_palette" value="{{ $id }}" @checked(old('appearance_palette', $publicAppearance['palette']) === $id)>
+                            <input type="radio" name="appearance_palette" value="{{ $id }}" @checked(old('appearance_palette', isset($publicAppearance['custom']) ? 'custom' : $publicAppearance['palette']) === $id)>
                             {{ __($label) }}
                             @if($id === 'weathernode')<span class="text-xs text-gray-400">{{ __('Original / default') }}</span>@endif
                         </span>
                     </label>
                 @endforeach
+                @if($customTheme)
+                    <label class="block rounded-lg border border-gray-600 p-4 cursor-pointer">
+                        <span class="flex items-center gap-2 text-white">
+                            <input type="radio" name="appearance_palette" value="custom" @checked(old('appearance_palette', isset($publicAppearance['custom']) ? 'custom' : $publicAppearance['palette']) === 'custom')>
+                            {{ $customTheme['name'] }}
+                        </span>
+                        <span class="text-xs text-gray-400">{{ __('Custom theme') }}</span>
+                    </label>
+                @endif
             </div>
+            <a href="{{ route('admin.settings.theme-creator') }}" class="inline-block mt-4 text-cyan-400 hover:underline">{{ __('Theme creator') }} →</a>
         </fieldset>
 
         <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
