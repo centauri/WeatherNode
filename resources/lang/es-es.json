@@ -2940,5 +2940,7 @@
     "Visitor theme choices": "Temas disponibles para visitantes",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Selecciona los temas que pueden elegir los visitantes. Deja todo sin marcar para usar solo la paleta de la estación.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Los temas personalizados usan la última versión aplicada. Aplica un tema una vez para ofrecerlo aquí; los borradores guardados no se publican.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Los visitantes guardan su elección en su dispositivo. Las opciones eliminadas vuelven al tema predeterminado de la estación al cargar otra página."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Los visitantes guardan su elección en su dispositivo. Las opciones eliminadas vuelven al tema predeterminado de la estación al cargar otra página.",
+    "Language": "Idioma",
+    "Units": "Unidades"
 }

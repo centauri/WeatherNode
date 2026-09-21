@@ -2918,5 +2918,7 @@
     "Visitor theme choices": "Temas disponíveis para visitantes",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Selecione os temas que os visitantes podem escolher. Deixe tudo desmarcado para usar apenas a paleta da estação.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Os temas personalizados usam a última versão aplicada. Aplique um tema uma vez para o disponibilizar aqui; os rascunhos guardados não são publicados.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Os visitantes guardam a escolha no dispositivo. As opções removidas voltam ao tema predefinido da estação no próximo carregamento da página."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Os visitantes guardam a escolha no dispositivo. As opções removidas voltam ao tema predefinido da estação no próximo carregamento da página.",
+    "Language": "Idioma",
+    "Units": "Unidades"
 }

@@ -53,7 +53,7 @@ that has just been seeded for the first time.
   - Tune intensity and test-mode options
 - **Appearance** (`/admin/settings/appearance`)
   - **Colour palette**: choose WeatherNode (original/default blue), Ocean (optional teal), Forest (green), or Solar Flare (plum, orange and apricot). Each has light and dark versions and works with both FX and Flat.
-  - **Default colour mode**: Dark, Light, or System. Visitors can override it in the public header or return to the station default. Existing installations keep WeatherNode Dark until changed. The admin panel keeps its own theme preference.
+  - **Default colour mode**: Dark, Light, or System. Visitors can override it through **Menu** in the public header or return to the station default. Existing installations keep WeatherNode Dark until changed. The admin panel keeps its own theme preference.
   - Custom colour editing and palette import/export are not included.
   - Visual effects: choose **FX** (glass, blur, animations) or **Flat** (simplified design, no glass/blur/animations) for the entire public site. Data and functionality are unchanged; only the visual style switches. Useful for performance, accessibility, or a minimal look.
 - **Social Sharing Cards** (`/admin/settings/og`)
@@ -324,7 +324,7 @@ UPDATER_ALLOW_GIT=true
 
 Under **Settings → Appearance → Visitor theme choices**, check the palettes visitors may select. Leave every box unchecked to keep the station palette for everyone. This is opt-in and does not change the station default, colour mode, or FX/Flat setting.
 
-Visitors get a separate palette selector with **Station default** and only the enabled choices. Their selection stays in their browser. When you remove a choice, they return to the station default on their next page load. Dark/Light/System remains a separate preference.
+Visitors get a separate palette selector under **Menu**, with **Station default** and only the enabled choices. Their selection stays in their browser. When you remove a choice, they return to the station default on their next page load. Dark/Light/System remains a separate preference.
 
 You may also offer your custom theme after applying it at least once. Visitors receive its last applied snapshot; saving or importing a draft does not publish it. To publish an updated version, use **Save and apply** in the creator. You can then select a different station default in Appearance while continuing to offer the custom theme to visitors.
 
@@ -335,3 +335,7 @@ Open **Settings → Appearance → Theme creator** to start from WeatherNode, Oc
 **Save theme** stores a draft in the station's single custom-theme slot. **Save and apply** also publishes a snapshot to the public site. Subsequent draft edits do not alter that snapshot until applied again. The saved custom theme is also available in Appearance alongside the protected presets. The station's default mode, visitor mode choice and FX/Flat selection remain independent.
 
 **Export theme** downloads the current draft as JSON. **Import theme** validates a JSON file and loads it into the editor for review; it does not save or apply it. Export before replacing a custom theme if you want to keep multiple designs. Weather measurements and warning colours cannot be edited. **Restore original theme** switches back to WeatherNode Dark, retaining the saved custom theme and FX preference.
+
+### Public header menu
+
+The public header keeps the station identity, clock and one **Menu** button visible. Theme, colour mode, visual effects, language and units live in the settings drawer on desktop and mobile. Signed-in admins also get **Admin** and, on the dashboard, **Edit**. Editing closes the drawer; **Done** stays visible beside Menu until editing is finished. The existing weather navigation is unchanged.

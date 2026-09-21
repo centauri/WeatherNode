@@ -2920,5 +2920,7 @@
     "Visitor theme choices": "Wybór motywów dla odwiedzających",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Wybierz motywy dostępne dla odwiedzających. Nie zaznaczaj żadnego, aby używać tylko palety stacji.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Motywy niestandardowe używają ostatnio zastosowanej wersji. Zastosuj motyw raz, aby go tutaj udostępnić; zapisane szkice pozostają nieopublikowane.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Odwiedzający zapisują wybór na swoim urządzeniu. Usunięte opcje wracają do domyślnego motywu stacji przy następnym wczytaniu strony."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Odwiedzający zapisują wybór na swoim urządzeniu. Usunięte opcje wracają do domyślnego motywu stacji przy następnym wczytaniu strony.",
+    "Language": "Język",
+    "Units": "Jednostki"
 }

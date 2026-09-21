@@ -2920,5 +2920,7 @@
     "Visitor theme choices": "Επιλογές θεμάτων για επισκέπτες",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Επιλέξτε τα θέματα που μπορούν να επιλέγουν οι επισκέπτες. Αφήστε τα όλα μη επιλεγμένα για χρήση μόνο της παλέτας του σταθμού.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Τα προσαρμοσμένα θέματα χρησιμοποιούν την τελευταία εφαρμοσμένη έκδοση. Εφαρμόστε ένα θέμα μία φορά για να το προσφέρετε εδώ· τα αποθηκευμένα προσχέδια παραμένουν αδημοσίευτα.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Οι επισκέπτες αποθηκεύουν την επιλογή στη συσκευή τους. Οι καταργημένες επιλογές επιστρέφουν στην προεπιλογή του σταθμού κατά την επόμενη φόρτωση σελίδας."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Οι επισκέπτες αποθηκεύουν την επιλογή στη συσκευή τους. Οι καταργημένες επιλογές επιστρέφουν στην προεπιλογή του σταθμού κατά την επόμενη φόρτωση σελίδας.",
+    "Language": "Γλώσσα",
+    "Units": "Μονάδες"
 }
