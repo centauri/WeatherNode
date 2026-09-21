@@ -52,7 +52,10 @@ that has just been seeded for the first time.
   - Configure global weather effects (rain/snow/wind/lightning/fog)
   - Tune intensity and test-mode options
 - **Appearance** (`/admin/settings/appearance`)
-  - Site theme: choose **FX** (glass, blur, animations) or **Flat** (simplified design, no glass/blur/animations) for the entire public site. Data and functionality are unchanged; only the visual style switches. Useful for performance, accessibility, or a minimal look.
+  - **Colour palette**: choose WeatherNode (original/default blue), Ocean (optional teal), or Forest (green). Each has light and dark versions and works with both FX and Flat.
+  - **Default colour mode**: Dark, Light, or System. Visitors can override it in the public header or return to the station default. Existing installations keep WeatherNode Dark until changed. The admin panel keeps its own theme preference.
+  - Custom colour editing and palette import/export are not included.
+  - Visual effects: choose **FX** (glass, blur, animations) or **Flat** (simplified design, no glass/blur/animations) for the entire public site. Data and functionality are unchanged; only the visual style switches. Useful for performance, accessibility, or a minimal look.
 - **Social Sharing Cards** (`/admin/settings/og`)
   - Enable/disable dynamic Open Graph images for social media previews
   - Shows which image driver (GD / Imagick) is available on the server

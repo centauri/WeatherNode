@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ $jsLocale ?? app()->getLocale() }}" class="dark has-weather-bg">
+<html data-public-theme="{{ $publicAppearance['palette'] ?? 'weathernode' }}" data-default-color-mode="{{ $publicAppearance['mode'] ?? 'dark' }}" data-color-mode="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? 'light' : 'dark' }}" lang="{{ $jsLocale ?? app()->getLocale() }}" class="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? '' : 'dark' }} has-weather-bg">
 @php
     $activeLocale = $activeLocale ?? app()->getLocale();
     $activeUnits = $activeUnits ?? 'metric';
@@ -468,6 +468,7 @@
     $alertsFeatureEnabled = $menuFeatures['alerts'] ?? true;
 @endphp
 <head>
+    <x-public-theme-head />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
@@ -1014,9 +1015,9 @@
         {!! $customHeadCode !!}
     @endif
 </head>
-<body class="has-weather-bg text-white min-h-screen font-sans {{ ($siteTheme ?? 'fx') === 'flat' ? 'theme-flat effects-disabled' : '' }}"
+<body class="has-weather-bg text-ui-fg min-h-screen font-sans {{ ($siteTheme ?? 'fx') === 'flat' ? 'theme-flat effects-disabled' : '' }}"
       data-side-rails="enabled"
-      :class="(@json($siteTheme ?? 'fx') !== 'flat') ? { 'effects-disabled': !backgroundEffectsEnabled } : {}"
+      :class="(@js($siteTheme ?? 'fx') !== 'flat') ? { 'effects-disabled': !backgroundEffectsEnabled } : {}"
       x-data="weatherDashboard()"
       x-init="init()">
     <!-- Site wrapper: clips weather effects overflow without affecting AdSense side rail ads -->
@@ -1024,7 +1025,7 @@
 
     <!-- Fixed background layer (never blocks body scroll) -->
     <div class="weather-bg"
-         :class="(@json($siteTheme ?? 'fx') !== 'flat') ? (backgroundEffectsEnabled ? 'weather-bg--animated' : 'weather-bg--static') : 'weather-bg--static'"
+         :class="(@js($siteTheme ?? 'fx') !== 'flat') ? (backgroundEffectsEnabled ? 'weather-bg--animated' : 'weather-bg--static') : 'weather-bg--static'"
          google-side-rail-overlap="true"
          aria-hidden="true"></div>
 
@@ -1063,127 +1064,129 @@
     @endif
     
     <!-- Top Bar: Compact Header -->
-    <header id="site-header" class="glass border-b border-white/10 sticky top-0 z-50 floating-header" google-side-rail-overlap="false">
+    <header id="site-header" class="glass border-b border-ui-line/10 sticky top-0 z-50 floating-header" google-side-rail-overlap="false">
         <div class="max-w-7xl mx-auto px-4 py-2">
             <!-- Mobile: Two rows -->
             <div class="flex flex-col gap-2 sm:hidden">
                 <!-- Row 1: Logo and controls -->
                 <div class="flex flex-wrap items-center justify-between gap-y-2">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-8 h-8 bg-gradient-to-br from-ui-accent to-ui-accent-end rounded-lg flex items-center justify-center shadow-lg shadow-ui-accent/30">
+                            <svg class="w-5 h-5 text-on-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
                             </svg>
                         </div>
                         <div>
                             <h1 class="text-lg font-bold" x-text="station.name">{{ \App\Models\Setting::stationName() }}</h1>
-                            <p class="text-xs text-gray-400">{{ \App\Models\Setting::stationLocation() }}</p>
+                            <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0 ml-auto">
+                        <x-public-theme-select />
                         @if(($siteTheme ?? 'fx') !== 'flat')
                         <!-- FX button: visible to all visitors (toggles rain/snow/fog etc.; preference saved in localStorage) -->
-                        <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-gray-600 hover:bg-gray-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
+                        <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 text-on-accent hover:bg-emerald-500' : 'bg-ui-disabled hover:bg-ui-inactive'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                            <span x-text="backgroundEffectsEnabled ? 'FX' : 'FX'" class="relative"><span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
+                            <span class="relative">FX<span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
                         </button>
                         @endif
                         @auth
                             @if(auth()->user()->is_admin)
-                                <button @click="toggleEditMode()" :class="editMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-violet-600 hover:bg-violet-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1">
+                                <button @click="toggleEditMode()" :class="editMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-violet-600 text-on-accent hover:bg-violet-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1">
                                     <svg x-show="!editMode" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     <svg x-show="editMode" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     <span x-text="(editMode ? doneLabel : editLabel) || (editMode ? $el.dataset.doneFallback : $el.dataset.editFallback)" data-edit-fallback="{{ __('Edit') }}" data-done-fallback="{{ __('Done') }}">{{ __('Edit') }}</span>
                                 </button>
-                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors">{{ __('Admin') }}</a>
+                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-ui-accent-strong text-on-accent hover:bg-ui-action rounded transition-colors">{{ __('Admin') }}</a>
                             @endif
                         @endauth
                         <div class="relative" x-data="{ openLang: false }">
-                            <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openLang = !openLang">
+                            <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openLang = !openLang">
                                 {{ $localeOptions[$activeLocale]['short'] ?? strtoupper($activeLocale) }}
                             </button>
-                            <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
+                            <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
                                 @foreach($localeOptions as $code => $meta)
-                                    <a href="{{ request()->fullUrlWithQuery(['lang' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeLocale === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                    <a href="{{ request()->fullUrlWithQuery(['lang' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeLocale === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                                 @endforeach
                             </div>
                         </div>
                         <div class="relative" x-data="{ openUnits: false }">
-                            <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openUnits = !openUnits">
+                            <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openUnits = !openUnits">
                                 {{ $unitShort }}
                             </button>
-                            <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
+                            <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
                                 @foreach($unitOptions as $code => $meta)
-                                    <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeUnits === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                    <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeUnits === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                                 @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Row 2: Time/date (mobile) -->
-                <div class="flex items-center justify-center gap-2 text-sm border-t border-white/5 pt-2">
-                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></span>
-                    <span class="text-gray-300 font-display" x-text="currentTime">--:--:--</span>
-                    <span class="text-gray-500">|</span>
-                    <span class="text-gray-300" x-text="currentDate">{{ $ssrDateLabel }}</span>
-                    <span class="text-gray-500 text-xs ml-1" x-show="currentTimeZoneLabel" x-text="'( ' + currentTimeZoneLabel + ' )'"></span>
+                <div class="flex items-center justify-center gap-2 text-sm border-t border-ui-line/5 pt-2">
+                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full shadow-lg shadow-green-500/50"></span>
+                    <span class="text-ui-secondary font-display" x-text="currentTime">--:--:--</span>
+                    <span class="text-ui-subtle">|</span>
+                    <span class="text-ui-secondary" x-text="currentDate">{{ $ssrDateLabel }}</span>
+                    <span class="text-ui-subtle text-xs ml-1" x-show="currentTimeZoneLabel" x-text="'( ' + currentTimeZoneLabel + ' )'"></span>
                 </div>
             </div>
             <!-- Desktop: Single row -->
             <div class="hidden sm:flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 bg-gradient-to-br from-ui-accent to-ui-accent-end rounded-lg flex items-center justify-center shadow-lg shadow-ui-accent/30">
+                        <svg class="w-5 h-5 text-on-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
                         </svg>
                     </div>
                     <div>
                         <h1 class="text-lg font-bold" x-text="station.name">{{ \App\Models\Setting::stationName() }}</h1>
-                        <p class="text-xs text-gray-400">{{ \App\Models\Setting::stationLocation() }}</p>
+                        <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 text-sm">
-                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></span>
-                    <span class="text-gray-300 font-display" x-text="currentTime">--:--:--</span>
-                    <span class="text-gray-500">|</span>
-                    <span class="text-gray-300" x-text="currentDate">{{ $ssrDateLabel }}</span>
-                    <span class="text-gray-500 text-xs ml-1" x-show="currentTimeZoneLabel" x-text="'( ' + currentTimeZoneLabel + ' )'"></span>
+                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full shadow-lg shadow-green-500/50"></span>
+                    <span class="text-ui-secondary font-display" x-text="currentTime">--:--:--</span>
+                    <span class="text-ui-subtle">|</span>
+                    <span class="text-ui-secondary" x-text="currentDate">{{ $ssrDateLabel }}</span>
+                    <span class="text-ui-subtle text-xs ml-1" x-show="currentTimeZoneLabel" x-text="'( ' + currentTimeZoneLabel + ' )'"></span>
                 </div>
                 <div class="flex items-center gap-2">
-                    @if(($siteTheme ?? 'fx') !== 'flat')
+                    <x-public-theme-select />
+                        @if(($siteTheme ?? 'fx') !== 'flat')
                     <!-- FX button: visible to all visitors (toggles rain/snow/fog etc.; preference saved in localStorage) -->
-                    <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-gray-600 hover:bg-gray-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
+                    <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 text-on-accent hover:bg-emerald-500' : 'bg-ui-disabled hover:bg-ui-inactive'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                        <span x-text="backgroundEffectsEnabled ? 'FX' : 'FX'" class="relative"><span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
+                        <span class="relative">FX<span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
                     </button>
                     @endif
                     @auth
                         @if(auth()->user()->is_admin)
-                            <button @click="toggleEditMode()" :class="editMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-violet-600 hover:bg-violet-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1">
+                            <button @click="toggleEditMode()" :class="editMode ? 'bg-amber-500 hover:bg-amber-400' : 'bg-violet-600 text-on-accent hover:bg-violet-500'" class="px-3 py-1 text-xs rounded transition-colors flex items-center gap-1">
                                 <svg x-show="!editMode" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 <svg x-show="editMode" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 <span x-text="(editMode ? doneLabel : editLabel) || (editMode ? $el.dataset.doneFallback : $el.dataset.editFallback)" data-edit-fallback="{{ __('Edit') }}" data-done-fallback="{{ __('Done') }}">{{ __('Edit') }}</span>
                             </button>
-                            <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors">{{ __('Admin') }}</a>
+                            <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-ui-accent-strong text-on-accent hover:bg-ui-action rounded transition-colors">{{ __('Admin') }}</a>
                         @endif
                     @endauth
                     <div class="relative" x-data="{ openLang: false }">
-                        <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openLang = !openLang">
+                        <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openLang = !openLang">
                             {{ $localeOptions[$activeLocale]['short'] ?? strtoupper($activeLocale) }}
                         </button>
-                        <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs">
+                        <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs">
                             @foreach($localeOptions as $code => $meta)
-                                <a href="{{ request()->fullUrlWithQuery(['lang' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeLocale === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                <a href="{{ request()->fullUrlWithQuery(['lang' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeLocale === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                             @endforeach
                         </div>
                     </div>
                     <div class="relative" x-data="{ openUnits: false }">
-                        <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openUnits = !openUnits">
+                        <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openUnits = !openUnits">
                             {{ $unitShort }}
                         </button>
-                        <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs">
+                        <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs">
                             @foreach($unitOptions as $code => $meta)
-                                <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeUnits === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeUnits === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -1197,7 +1200,7 @@
     <main id="main-content" class="max-w-7xl mx-auto px-4 py-4 relative z-10 side-rail-safe">
         @if($ssrDashboard)
             <noscript>
-                <div class="mb-4 px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-sm text-gray-200">
+                <div class="mb-4 px-3 py-2 rounded-lg border border-ui-line/10 bg-ui-overlay/5 text-sm text-ui-body">
                     {{ __('Current weather') }}:
                     {{ __('Temperature') }} {{ $ssrTemperatureText }}°C,
                     {{ __('Humidity') }} {{ $ssrHumidityText }},
@@ -1210,13 +1213,13 @@
         <!-- Status Bar: Last Updated, Alert summary & Refresh -->
         {{-- On mobile wraps to 2 rows: row-1 = status+button, row-2 = alert summary --}}
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-4 px-3 py-2 rounded-lg border transition-colors"
-             :class="alerts.length === 0 ? 'bg-white/5 border-white/10' : ''"
+             :class="alerts.length === 0 ? 'bg-ui-overlay/5 border-ui-line/10' : ''"
              :style="alerts.length > 0 ? 'background:' + (alerts[0]?.severity_color||'#FBEA55') + '14; border-color:' + (alerts[0]?.severity_color||'#FBEA55') + '40' : ''">
 
             <!-- Left: refresh / last-updated / live — row 1 left on mobile, row 1 left on desktop -->
             <div class="flex items-center gap-2 flex-shrink-0 order-1">
                 <!-- Refresh Indicator -->
-                <div x-show="isRefreshing" class="flex items-center gap-1.5 text-blue-400">
+                <div x-show="isRefreshing" class="flex items-center gap-1.5 text-data-blue-400">
                     <svg class="w-3 h-3 refresh-indicator" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
@@ -1224,7 +1227,7 @@
                 </div>
 
                 <!-- Last Updated -->
-                <div x-show="!isRefreshing && lastUpdateTime" class="flex items-center gap-1.5 text-gray-400">
+                <div x-show="!isRefreshing && lastUpdateTime" class="flex items-center gap-1.5 text-ui-muted">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
@@ -1237,27 +1240,27 @@
 
                 <!-- Live indicator dot -->
                 <div x-show="!isRefreshing && !dataIsStale" class="flex items-center gap-1.5">
-                    <div class="w-2 h-2 bg-green-500 rounded-full live-indicator"></div>
-                    <span class="text-xs text-green-400">{{ __('Live') }}</span>
+                    <div class="w-2 h-2 bg-green-500 text-on-accent rounded-full live-indicator"></div>
+                    <span class="text-xs text-data-green-400">{{ __('Live') }}</span>
                 </div>
             </div>
 
             <!-- Centre: alert summary — row 2 (full-width) on mobile, inline flex-1 on desktop -->
-            <div class="flex items-center gap-1.5 min-w-0 w-full order-3 md:order-2 md:flex-1 md:w-auto md:border-l md:border-white/10 md:pl-3">
+            <div class="flex items-center gap-1.5 min-w-0 w-full order-3 md:order-2 md:flex-1 md:w-auto md:border-l md:border-ui-line/10 md:pl-3">
                 <template x-if="alerts.length > 0">
                     <span class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
                           :style="'background:' + (alerts[0]?.severity_color||'#FBEA55')"></span>
                 </template>
                 <template x-if="alerts.length === 0">
-                    <span class="w-2 h-2 rounded-full flex-shrink-0 bg-emerald-500"></span>
+                    <span class="w-2 h-2 rounded-full flex-shrink-0 bg-emerald-500 text-on-accent"></span>
                 </template>
                 <span class="text-xs truncate"
-                      :class="alerts.length > 0 ? 'font-medium' : 'text-gray-500'"
+                      :class="alerts.length > 0 ? 'font-medium' : 'text-ui-subtle'"
                       :style="alerts.length > 0 ? 'color:' + (alerts[0]?.severity_color||'#FBEA55') : ''"
                       x-text="alerts.length > 0 ? alertBannerText() : '{{ __('No active alerts') }}'">{{ $ssrAlertSummary }}</span>
                 @if($menuFeatures['alerts'] ?? true)
                     <a href="{{ route('alerts') }}"
-                       class="text-xs text-gray-500 hover:text-white flex-shrink-0 whitespace-nowrap ml-1">
+                       class="text-xs text-ui-subtle hover:text-ui-fg flex-shrink-0 whitespace-nowrap ml-1">
                         {{ __('Alerts') }} →
                     </a>
                 @endif
@@ -1266,7 +1269,7 @@
             <!-- Right: refresh button — row 1 right (ml-auto) on mobile, row 1 rightmost on desktop -->
             <button @click="fetchData()"
                     x-bind:disabled="isRefreshing"
-                    class="ml-auto flex-shrink-0 order-2 md:order-3 px-2.5 py-0.5 text-xs bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed rounded transition-colors flex items-center gap-1.5">
+                    class="ml-auto flex-shrink-0 order-2 md:order-3 px-2.5 py-0.5 text-xs bg-ui-accent-strong text-on-accent hover:bg-ui-action disabled:bg-ui-disabled disabled:cursor-not-allowed rounded transition-colors flex items-center gap-1.5">
                 <svg class="w-3 h-3" :class="{ 'refresh-indicator': isRefreshing }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
@@ -1284,12 +1287,12 @@
              x-transition:enter-end="opacity-100 transform translate-y-0"
              class="stale-data-banner mb-4 p-4 bg-yellow-900/50 border border-yellow-500/50 rounded-lg">
             <div class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-data-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
                 <div class="flex-1">
-                    <div class="font-semibold text-yellow-200">{{ __('Stale data') }}</div>
-                    <div class="text-sm text-yellow-300">{{ __('The last update was more than 10 minutes ago. Check your internet connection.') }}</div>
+                    <div class="font-semibold text-data-yellow-200">{{ __('Stale data') }}</div>
+                    <div class="text-sm text-data-yellow-300">{{ __('The last update was more than 10 minutes ago. Check your internet connection.') }}</div>
                 </div>
                 <button @click="fetchData()" class="px-3 py-1 bg-yellow-600 hover:bg-yellow-500 rounded text-sm font-medium">
                     {{ __('Refresh now') }}
@@ -1308,13 +1311,13 @@
                         @if($ssrDashboard && count($ssrFallbackGroups['sortable-left-column'] ?? []) > 0)
                             @foreach($ssrFallbackGroups['sortable-left-column'] as $ssrCard)
                                 <article x-show="ssrFallbackVisible"
-                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                                          data-widget="{{ $ssrCard['id'] ?? 'widget' }}">
                                     <div class="flex items-center justify-between mb-3">
                                         <h2 class="font-semibold">{{ $ssrCard['title'] ?? __('Weather') }}</h2>
-                                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">SSR</span>
+                                        <span class="text-[10px] text-ui-subtle uppercase tracking-wide">SSR</span>
                                     </div>
-                                    <div class="space-y-1.5 text-sm text-gray-300">
+                                    <div class="space-y-1.5 text-sm text-ui-secondary">
                                         @foreach(($ssrCard['lines'] ?? []) as $ssrLine)
                                             <p class="leading-snug">{{ $ssrLine }}</p>
                                         @endforeach
@@ -1326,7 +1329,7 @@
 		                <!-- Temperature Card - Hero -->
 		                @php $tempVisualization = \App\Models\Setting::getValue('widgets.temp_visualization', 'gradient'); @endphp
 		                <template x-if="isWidgetEnabled('current')">
-		                <div class="sortable-widget bg-gradient-to-br from-weather-card to-weather-card/50 card-3d rounded-2xl p-4 md:p-6 glow border border-white/10 relative overflow-hidden"
+		                <div class="sortable-widget bg-gradient-to-br from-weather-card to-weather-card/50 card-3d rounded-2xl p-4 md:p-6 glow border border-ui-line/10 relative overflow-hidden"
 		                     data-widget="current"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     
@@ -1335,7 +1338,7 @@
 		                        <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getWeatherIcon() + '.svg'"
 		                             class="w-12 h-12 md:w-16 md:h-16 opacity-60"
 		                             alt="Weather condition">
-                        <div class="text-xs md:text-sm text-gray-300 mt-2" x-text="getWeatherDescription()" style="opacity: 0.8;"></div>
+                        <div class="text-xs md:text-sm text-ui-secondary mt-2" x-text="getWeatherDescription()" style="opacity: 0.8;"></div>
                     </div>
 
 	                    @if($tempVisualization === 'thermometer')
@@ -1638,14 +1641,14 @@
 
                     <!-- Widget Content (on top of visualization) -->
                     <div class="relative" style="position: relative; z-index: 10; width: 100%; contain: layout;">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -1654,7 +1657,7 @@
                         </div>
                     </div>
                     <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/30 backdrop-blur-sm px-1.5 py-0.5 rounded z-10" style="top: -1rem;">
+                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp-raised backdrop-blur-sm px-1.5 py-0.5 rounded z-10" style="top: -1rem;">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -1666,36 +1669,36 @@
                                  data-field="temperature"
                                  :class="{ 'field-updated': changedFields.has('temperature') }">
                                 <span x-text="formatTempValue(current?.temperature)">{{ $ssrTemperatureText }}</span>
-                                <span class="text-2xl md:text-3xl text-gray-400" x-text="tempUnit()"></span>
+                                <span class="text-2xl md:text-3xl text-ui-muted" x-text="tempUnit()"></span>
                             </div>
                             <div class="flex items-start gap-6 mt-2">
-                                <div class="text-gray-400 text-xs space-y-0.5">
-                                    <div>{{ __('Feels like') }} <span class="text-white font-medium" x-text="formatTemp(current?.feels_like)">{{ isset($ssrCurrent['feels_like']) && is_numeric($ssrCurrent['feels_like']) ? round((float) $ssrCurrent['feels_like'], 1) . '°' : '--' }}</span></div>
-                                    <div>{{ __('Dewpoint') }} <span class="text-white font-medium" x-text="formatTemp(current?.dew_point)">{{ isset($ssrCurrent['dew_point']) && is_numeric($ssrCurrent['dew_point']) ? round((float) $ssrCurrent['dew_point'], 1) . '°' : '--' }}</span></div>
-                                    <div>{{ __('Wet Bulb') }} <span class="text-white font-medium" x-text="formatTemp(current?.wet_bulb)">{{ isset($ssrCurrent['wet_bulb']) && is_numeric($ssrCurrent['wet_bulb']) ? round((float) $ssrCurrent['wet_bulb'], 1) . '°' : '--' }}</span></div>
-                                    <div class="hidden md:block text-xs text-gray-400 mt-1" x-show="metar && metar[0]?.clouds?.length > 0" x-text="formatMetarClouds(metar[0]?.clouds)"></div>
+                                <div class="text-ui-muted text-xs space-y-0.5">
+                                    <div>{{ __('Feels like') }} <span class="text-ui-fg font-medium" x-text="formatTemp(current?.feels_like)">{{ isset($ssrCurrent['feels_like']) && is_numeric($ssrCurrent['feels_like']) ? round((float) $ssrCurrent['feels_like'], 1) . '°' : '--' }}</span></div>
+                                    <div>{{ __('Dewpoint') }} <span class="text-ui-fg font-medium" x-text="formatTemp(current?.dew_point)">{{ isset($ssrCurrent['dew_point']) && is_numeric($ssrCurrent['dew_point']) ? round((float) $ssrCurrent['dew_point'], 1) . '°' : '--' }}</span></div>
+                                    <div>{{ __('Wet Bulb') }} <span class="text-ui-fg font-medium" x-text="formatTemp(current?.wet_bulb)">{{ isset($ssrCurrent['wet_bulb']) && is_numeric($ssrCurrent['wet_bulb']) ? round((float) $ssrCurrent['wet_bulb'], 1) . '°' : '--' }}</span></div>
+                                    <div class="hidden md:block text-xs text-ui-muted mt-1" x-show="metar && metar[0]?.clouds?.length > 0" x-text="formatMetarClouds(metar?.[0]?.clouds)"></div>
                                 </div>
                             </div>
                             <!-- Mobile: Show weather description and cloud coverage below -->
                             <div class="md:hidden mt-2">
-                                <div class="text-xs text-gray-300" x-text="getWeatherDescription()">{{ __('Loading...') }}</div>
-                                <div class="text-[10px] text-gray-400 mt-1" x-show="metar && metar[0]?.clouds?.length > 0" x-text="formatMetarClouds(metar[0]?.clouds)"></div>
+                                <div class="text-xs text-ui-secondary" x-text="getWeatherDescription()">{{ __('Loading...') }}</div>
+                                <div class="text-[10px] text-ui-muted mt-1" x-show="metar && metar[0]?.clouds?.length > 0" x-text="formatMetarClouds(metar?.[0]?.clouds)"></div>
                             </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 md:gap-4 mt-4 pt-4 border-t border-white/10">
+                    <div class="grid grid-cols-3 gap-2 md:gap-4 mt-4 pt-4 border-t border-ui-line/10">
                         <div>
-                            <div class="text-[10px] md:text-xs text-gray-400">{{ __('Humidity') }}</div>
+                            <div class="text-[10px] md:text-xs text-ui-muted">{{ __('Humidity') }}</div>
                             <div class="text-lg md:text-xl font-bold data-value"
                                  data-field="humidity"
                                  :class="{ 'field-updated': changedFields.has('humidity') }"
                                  x-text="current?.humidity ? Math.round(current.humidity) + '%' : '--%'">{{ $ssrHumidityText }}</div>
                         </div>
                         <div>
-                            <div class="text-[10px] md:text-xs text-gray-400">{{ __('UV Index') }}</div>
+                            <div class="text-[10px] md:text-xs text-ui-muted">{{ __('UV Index') }}</div>
                             <div class="text-lg md:text-xl font-bold data-value" x-text="current?.uv_index ?? '--'">{{ isset($ssrCurrent['uv_index']) ? $ssrCurrent['uv_index'] : '--' }}</div>
                         </div>
                         <div>
-                            <div class="text-[10px] md:text-xs text-gray-400">{{ __('Pressure') }}</div>
+                            <div class="text-[10px] md:text-xs text-ui-muted">{{ __('Pressure') }}</div>
                             <div class="text-lg md:text-xl font-bold data-value"
                                  data-field="pressure"
                                  :class="{ 'field-updated': changedFields.has('pressure') }"
@@ -1709,7 +1712,7 @@
 		                <!-- Wind Card -->
 		                @php $windVisualization = \App\Models\Setting::getValue('widgets.wind_visualization', 'streams'); @endphp
 	                <template x-if="isWidgetEnabled('wind')">
-		                <div class="sortable-widget bg-weather-card rounded-2xl border border-white/10 relative card-flip-container"
+		                <div class="sortable-widget bg-weather-card rounded-2xl border border-ui-line/10 relative card-flip-container"
 		                     data-widget="wind"
 		                     x-ref="windCard">
 
@@ -1848,14 +1851,14 @@
 
                     <!-- Widget Content (on top of visualization) -->
                     <div class="relative z-10">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -1863,7 +1866,7 @@
                         </div>
                     </div>
                     <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/30 backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp-raised backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -1871,7 +1874,7 @@
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">{{ __('Wind') }}</h3>
-                        <button @click.stop="windCardFlipped = true" class="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1 z-20 relative">
+                        <button @click.stop="windCardFlipped = true" class="text-xs text-ui-muted hover:text-ui-fg transition-colors cursor-pointer flex items-center gap-1 z-20 relative">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                             <span>{{ __('Wind Rose') }}</span>
                         </button>
@@ -1879,32 +1882,32 @@
                     <div class="flex items-center gap-6">
                         <div class="relative w-28 h-28 flex-shrink-0">
                             <svg viewBox="0 0 100 100" class="w-full h-full">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2" class="text-white/20"/>
-                                <text x="50" y="12" text-anchor="middle" fill="currentColor" class="text-[10px] text-gray-400">{{ __('N') }}</text>
-                                <text x="88" y="54" text-anchor="middle" fill="currentColor" class="text-[10px] text-gray-400">{{ __('E') }}</text>
-                                <text x="50" y="96" text-anchor="middle" fill="currentColor" class="text-[10px] text-gray-400">{{ __('S') }}</text>
-                                <text x="12" y="54" text-anchor="middle" fill="currentColor" class="text-[10px] text-gray-400">{{ __('W') }}</text>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2" class="text-ui-fg/20"/>
+                                <text x="50" y="12" text-anchor="middle" fill="currentColor" class="text-[10px] text-ui-muted">{{ __('N') }}</text>
+                                <text x="88" y="54" text-anchor="middle" fill="currentColor" class="text-[10px] text-ui-muted">{{ __('E') }}</text>
+                                <text x="50" y="96" text-anchor="middle" fill="currentColor" class="text-[10px] text-ui-muted">{{ __('S') }}</text>
+                                <text x="12" y="54" text-anchor="middle" fill="currentColor" class="text-[10px] text-ui-muted">{{ __('W') }}</text>
                                 <polygon points="50,20 45,40 50,35 55,40" fill="#3b82f6"
                                          :style="{ transform: 'rotate(' + (current?.wind_direction ?? 0) + 'deg)', transformOrigin: '50px 50px' }"/>
                             </svg>
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold font-display data-value" x-text="formatWindValue(current?.wind_speed)">{{ $ssrWindSpeedText }}</div>
-                                    <div class="text-xs text-gray-400" x-text="windUnit()"></div>
+                                    <div class="text-xs text-ui-muted" x-text="windUnit()"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="flex-1 space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Direction') }}</span>
+                                <span class="text-ui-muted">{{ __('Direction') }}</span>
                                 <span class="font-bold" x-text="current ? (translateKey(current.wind_direction_compass) + ' ' + current.wind_direction + '°') : '--'">{{ isset($ssrCurrent['wind_direction']) && is_numeric($ssrCurrent['wind_direction']) ? (__($ssrCurrent['wind_direction_compass'] ?? 'N') . ' ' . (int) $ssrCurrent['wind_direction'] . '°') : '--' }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Wind gust') }}</span>
-                                <span class="font-bold text-amber-400 data-value" x-text="formatWind(current?.wind_gust)">{{ $ssrWindGustText }}</span>
+                                <span class="text-ui-muted">{{ __('Wind gust') }}</span>
+                                <span class="font-bold text-data-amber-400 data-value" x-text="formatWind(current?.wind_gust)">{{ $ssrWindGustText }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Beaufort') }}</span>
+                                <span class="text-ui-muted">{{ __('Beaufort') }}</span>
                                 <span class="font-bold" x-text="current?.beaufort ? current.beaufort + ' Bft' : '-- Bft'"></span>
                             </div>
                         </div>
@@ -1913,14 +1916,14 @@
                     </div><!-- End front face -->
 
                     <!-- ═══ BACK FACE (Wind Rose) ═══ -->
-                    <div class="card-flip-back bg-weather-card rounded-2xl p-5 border border-white/10 transition-opacity duration-300"
+                    <div class="card-flip-back bg-weather-card rounded-2xl p-5 border border-ui-line/10 transition-opacity duration-300"
                          x-ref="windBack"
                          :class="windCardFlipped ? 'pointer-events-auto opacity-100 visible' : 'pointer-events-none opacity-0 invisible'"
                          :aria-hidden="windCardFlipped ? 'false' : 'true'">
                         <!-- Header -->
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold">{{ __('Wind Rose') }} <span class="text-xs text-gray-400 font-normal">24h</span></h3>
-                            <button @click.stop="windCardFlipped = false" class="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1">
+                            <h3 class="font-semibold">{{ __('Wind Rose') }} <span class="text-xs text-ui-muted font-normal">24h</span></h3>
+                            <button @click.stop="windCardFlipped = false" class="text-xs text-ui-muted hover:text-ui-fg transition-colors cursor-pointer flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                                 <span>{{ __('Back') }}</span>
                             </button>
@@ -1932,7 +1935,7 @@
                                 <div x-html="windRoseData.svgMarkup"></div>
 
                                 <!-- Legend -->
-                                <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-2 text-[10px] text-gray-400">
+                                <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-2 text-[10px] text-ui-muted">
                                     <template x-for="(range, ri) in windRoseData.speedRanges" :key="'legend-'+ri">
                                         <span class="flex items-center gap-1">
                                             <span class="inline-block w-2 h-2 rounded-full" :style="'background:' + range.color"></span>
@@ -1940,13 +1943,13 @@
                                         </span>
                                     </template>
                                 </div>
-                                <div class="text-center text-[10px] text-gray-500 mt-1" x-text="windRoseData.total + ' readings'"></div>
+                                <div class="text-center text-[10px] text-ui-subtle mt-1" x-text="windRoseData.total + ' readings'"></div>
                             </div>
                         </template>
 
                         <!-- No data state -->
                         <template x-if="windRoseData.total === 0">
-                            <div class="flex flex-col items-center justify-center py-10 text-gray-500">
+                            <div class="flex flex-col items-center justify-center py-10 text-ui-subtle">
                                 <svg class="w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                                 <span class="text-sm">{{ __('No wind data available') }}</span>
                                 <span class="text-xs mt-1">{{ __('Data will appear after 24h of readings') }}</span>
@@ -1961,7 +1964,7 @@
 	                <!-- Barometer Card -->
 	                @php $pressureVisualization = \App\Models\Setting::getValue('widgets.pressure_visualization', 'sky'); @endphp
 	                <template x-if="isWidgetEnabled('pressure')">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 relative overflow-hidden"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 relative overflow-hidden"
 		                     data-widget="pressure"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
 
@@ -2265,14 +2268,14 @@
 
                     <!-- Widget Content (on top of visualization) -->
                     <div class="relative z-10">
-                        <div class="drag-handle absolute -top-3 -right-3 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                            <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="drag-handle absolute -top-3 -right-3 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                            <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                             </svg>
                         </div>
                         <!-- Offline Badge (Centered) -->
                         <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                            <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                            <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                 </svg>
@@ -2280,7 +2283,7 @@
                             </div>
                         </div>
                         <!-- Update Timestamp (Top Center) -->
-                        <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/30 backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
+                        <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp-raised backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
                             <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -2291,7 +2294,7 @@
                         <h3 class="font-semibold">{{ __('Pressure') }}</h3>
                         <a href="{{ route('weather.pressure-map') }}"
                            target="_blank"
-                           class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors flex items-center gap-1">
+                           class="text-xs px-2 py-1 bg-blue-500/20 text-data-blue-400 rounded hover:bg-ui-action/30 transition-colors flex items-center gap-1">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                             </svg>
@@ -2303,14 +2306,14 @@
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex-1">
                             <div class="text-4xl font-bold font-display data-value mb-1" x-text="formatPressureValue(current?.pressure)"></div>
-                            <div class="text-sm text-gray-400" x-text="pressureUnit()"></div>
+                            <div class="text-sm text-ui-muted" x-text="pressureUnit()"></div>
                         </div>
 
                         <!-- Compact Circular Gauge -->
                         <div class="relative w-24 h-24 flex-shrink-0">
                             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="w-full h-full transform -rotate-90">
                                 <!-- Background arc -->
-                                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                                <circle cx="50" cy="50" r="42" fill="none" stroke="rgb(var(--wn-fg) / 0.1)" stroke-width="8"/>
 
                                 <!-- Pressure range arc (low to high) -->
                                 <circle cx="50" cy="50" r="42"
@@ -2332,9 +2335,9 @@
                                 </defs>
 
                                 <!-- Tick marks at min, mid, max (arc is 0-270deg, -90 rotated so 0=top, 270=right) -->
-                                <line x1="92" y1="50" x2="96" y2="50" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
-                                <line x1="50" y1="92" x2="50" y2="96" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
-                                <line x1="20.3" y1="20.3" x2="17" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="92" y1="50" x2="96" y2="50" stroke="rgb(var(--wn-fg) / 0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="50" y1="92" x2="50" y2="96" stroke="rgb(var(--wn-fg) / 0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                                <line x1="20.3" y1="20.3" x2="17" y2="17" stroke="rgb(var(--wn-fg) / 0.4)" stroke-width="1.5" stroke-linecap="round"/>
 
                                 <!-- Current position indicator -->
                                 <circle cx="50" cy="8" r="4"
@@ -2361,15 +2364,15 @@
                                      x-data="{
                                          getTrendIcon(key, trend) {
                                              const k = (key || '').toLowerCase();
-                                             if (k === 'rising') return { icon: '↗', class: 'text-red-400' };
-                                             if (k === 'falling') return { icon: '↘', class: 'text-cyan-400' };
-                                             if (k === 'stable') return { icon: '→', class: 'text-green-400' };
-                                             if (!trend || trend === 'n/a') return { icon: '--', class: 'text-gray-500 text-base' };
+                                             if (k === 'rising') return { icon: '↗', class: 'text-data-red-400' };
+                                             if (k === 'falling') return { icon: '↘', class: 'text-data-cyan-400' };
+                                             if (k === 'stable') return { icon: '→', class: 'text-data-green-400' };
+                                             if (!trend || trend === 'n/a') return { icon: '--', class: 'text-ui-subtle text-base' };
                                              const lower = trend.toLowerCase();
-                                             if (lower.includes('stijg') || lower.includes('ris')) return { icon: '↗', class: 'text-red-400' };
-                                             if (lower.includes('dal') || lower.includes('fall')) return { icon: '↘', class: 'text-cyan-400' };
-                                             if (lower.includes('stab') || lower.includes('stead')) return { icon: '→', class: 'text-green-400' };
-                                             return { icon: '--', class: 'text-gray-400 text-base' };
+                                             if (lower.includes('stijg') || lower.includes('ris')) return { icon: '↗', class: 'text-data-red-400' };
+                                             if (lower.includes('dal') || lower.includes('fall')) return { icon: '↘', class: 'text-data-cyan-400' };
+                                             if (lower.includes('stab') || lower.includes('stead')) return { icon: '→', class: 'text-data-green-400' };
+                                             return { icon: '--', class: 'text-ui-muted text-base' };
                                          }
                                      }"
                                      :class="getTrendIcon(current?.pressure_trend_key, current?.pressure_trend).class"
@@ -2378,7 +2381,7 @@
                             </div>
 
                             <!-- Min / mid / max labels (metric and imperial); arc runs top=min to right=max -->
-                            <div class="absolute inset-0 pointer-events-none text-[9px] text-gray-400">
+                            <div class="absolute inset-0 pointer-events-none text-[9px] text-ui-muted">
                                 <span class="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-0.5" x-text="pressureUnit().includes('hPa') ? '970' : '28.5'"></span>
                                 <span class="absolute right-0 top-1/2 translate-x-0.5 -translate-y-1/2" x-text="pressureUnit().includes('hPa') ? '1040' : '31.0'"></span>
                                 <span class="absolute top-2 right-2" x-text="pressureUnit().includes('hPa') ? '1005' : '29.8'"></span>
@@ -2388,29 +2391,29 @@
 
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-3 gap-3 mb-3">
-                        <div class="bg-white/5 rounded-lg p-2">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Min') }}</div>
-                            <div class="text-sm font-bold text-cyan-400 data-value" x-text="formatPressureValue(today?.pressure_low) || '--'"></div>
+                        <div class="bg-ui-overlay/5 rounded-lg p-2">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Min') }}</div>
+                            <div class="text-sm font-bold text-data-cyan-400 data-value" x-text="formatPressureValue(today?.pressure_low) || '--'"></div>
                         </div>
-                        <div class="bg-white/5 rounded-lg p-2">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Max') }}</div>
-                            <div class="text-sm font-bold text-red-400 data-value" x-text="formatPressureValue(today?.pressure_high) || '--'"></div>
+                        <div class="bg-ui-overlay/5 rounded-lg p-2">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Max') }}</div>
+                            <div class="text-sm font-bold text-data-red-400 data-value" x-text="formatPressureValue(today?.pressure_high) || '--'"></div>
                         </div>
-                        <div class="bg-white/5 rounded-lg p-2">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Trend') }}</div>
+                        <div class="bg-ui-overlay/5 rounded-lg p-2">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Trend') }}</div>
                             <div class="text-sm font-bold"
                                  x-data="{
                                      getTrendClass(key, trend) {
                                          const k = (key || '').toLowerCase();
-                                         if (k === 'rising') return 'text-red-400';
-                                         if (k === 'falling') return 'text-cyan-400';
-                                         if (k === 'stable') return 'text-green-400';
-                                         if (!trend || trend === 'n/a') return 'text-gray-500';
+                                         if (k === 'rising') return 'text-data-red-400';
+                                         if (k === 'falling') return 'text-data-cyan-400';
+                                         if (k === 'stable') return 'text-data-green-400';
+                                         if (!trend || trend === 'n/a') return 'text-ui-subtle';
                                          const lower = trend.toLowerCase();
-                                         if (lower.includes('stijg') || lower.includes('ris')) return 'text-red-400';
-                                         if (lower.includes('dal') || lower.includes('fall')) return 'text-cyan-400';
-                                         if (lower.includes('stab') || lower.includes('stead')) return 'text-green-400';
-                                         return 'text-gray-400';
+                                         if (lower.includes('stijg') || lower.includes('ris')) return 'text-data-red-400';
+                                         if (lower.includes('dal') || lower.includes('fall')) return 'text-data-cyan-400';
+                                         if (lower.includes('stab') || lower.includes('stead')) return 'text-data-green-400';
+                                         return 'text-ui-muted';
                                      }
                                  }"
                                  :class="getTrendClass(current?.pressure_trend_key, current?.pressure_trend)"
@@ -2420,8 +2423,8 @@
                     </div>
 
                     <!-- 24hr Pressure History Chart (uses dashboard scope so pressureHistory updates trigger chart) -->
-                    <div class="bg-white/5 rounded-lg p-3">
-                        <div class="text-xs text-gray-400 mb-2">{{ __('Last 24 Hours') }}</div>
+                    <div class="bg-ui-overlay/5 rounded-lg p-3">
+                        <div class="text-xs text-ui-muted mb-2">{{ __('Last 24 Hours') }}</div>
                         <div class="relative">
                             <div x-show="hasPressureChartData">
                                 <!-- Chart Container -->
@@ -2470,34 +2473,34 @@
                                         x-transition:leave="transition ease-in duration-150"
                                         x-transition:leave-start="opacity-100 scale-100"
                                         x-transition:leave-end="opacity-0 scale-95"
-                                        class="absolute bg-gray-900/95 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-xs shadow-xl pointer-events-none z-50 whitespace-nowrap"
+                                        class="absolute bg-ui-deep/95 backdrop-blur-sm border border-ui-line/20 rounded-lg px-3 py-2 text-xs shadow-xl pointer-events-none z-50 whitespace-nowrap"
                                         :style="`left: ${pressureChartTooltipX}px; top: ${pressureChartTooltipY}px; transform: translateX(-50%) translateY(-100%); margin-top: -4px;`">
-                                        <div class="text-white font-semibold" x-text="pressureChartData.pressures[pressureChartHoveredIndex] ? formatPressure(pressureChartData.pressures[pressureChartHoveredIndex]) : '--'"></div>
-                                        <div class="text-gray-400 text-[10px] mt-0.5" x-text="pressureChartData.times[pressureChartHoveredIndex] ? pressureChartFormatTime(pressureChartData.times[pressureChartHoveredIndex]) : ''"></div>
-                                        <div class="text-gray-500 text-[10px]" x-text="pressureChartData.times[pressureChartHoveredIndex] ? pressureChartFormatRelativeTime(pressureChartData.times[pressureChartHoveredIndex]) : ''"></div>
+                                        <div class="text-ui-fg font-semibold" x-text="pressureChartData.pressures[pressureChartHoveredIndex] ? formatPressure(pressureChartData.pressures[pressureChartHoveredIndex]) : '--'"></div>
+                                        <div class="text-ui-muted text-[10px] mt-0.5" x-text="pressureChartData.times[pressureChartHoveredIndex] ? pressureChartFormatTime(pressureChartData.times[pressureChartHoveredIndex]) : ''"></div>
+                                        <div class="text-ui-subtle text-[10px]" x-text="pressureChartData.times[pressureChartHoveredIndex] ? pressureChartFormatRelativeTime(pressureChartData.times[pressureChartHoveredIndex]) : ''"></div>
                                     </div>
                                 </div>
 
                                 <!-- Time Labels -->
-                                <div class="flex justify-between text-[10px] text-gray-500 mt-1 px-0.5">
+                                <div class="flex justify-between text-[10px] text-ui-subtle mt-1 px-0.5">
                                     <template x-for="label in pressureChartTimeLabels" :key="label.idx">
                                         <span x-text="label.time"></span>
                                     </template>
                                 </div>
 
                                 <!-- Summary Stats -->
-                                <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/10 text-[10px]">
+                                <div class="flex justify-between items-center mt-2 pt-2 border-t border-ui-line/10 text-[10px]">
                                     <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">{{ __('Min') }}:</span>
-                                        <span class="text-cyan-400 font-semibold" x-text="pressureChartData.min !== null ? formatPressureValue(pressureChartData.min) : '--'"></span>
+                                        <span class="text-ui-muted">{{ __('Min') }}:</span>
+                                        <span class="text-data-cyan-400 font-semibold" x-text="pressureChartData.min !== null ? formatPressureValue(pressureChartData.min) : '--'"></span>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">{{ __('Max') }}:</span>
-                                        <span class="text-red-400 font-semibold" x-text="pressureChartData.max !== null ? formatPressureValue(pressureChartData.max) : '--'"></span>
+                                        <span class="text-ui-muted">{{ __('Max') }}:</span>
+                                        <span class="text-data-red-400 font-semibold" x-text="pressureChartData.max !== null ? formatPressureValue(pressureChartData.max) : '--'"></span>
                                     </div>
                                     <div class="flex items-center gap-1">
-                                        <span class="text-gray-400">{{ __('Range') }}:</span>
-                                        <span class="text-gray-300 font-semibold" x-text="pressureChartData.range !== null ? formatPressureValue(pressureChartData.range) : '--'"></span>
+                                        <span class="text-ui-muted">{{ __('Range') }}:</span>
+                                        <span class="text-ui-secondary font-semibold" x-text="pressureChartData.range !== null ? formatPressureValue(pressureChartData.range) : '--'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -2513,13 +2516,13 @@
                         @if($ssrDashboard && count($ssrFallbackGroups['sortable-middle-column'] ?? []) > 0)
                             @foreach($ssrFallbackGroups['sortable-middle-column'] as $ssrCard)
                                 <article x-show="ssrFallbackVisible"
-                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                                          data-widget="{{ $ssrCard['id'] ?? 'widget' }}">
                                     <div class="flex items-center justify-between mb-3">
                                         <h2 class="font-semibold">{{ $ssrCard['title'] ?? __('Weather') }}</h2>
-                                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">SSR</span>
+                                        <span class="text-[10px] text-ui-subtle uppercase tracking-wide">SSR</span>
                                     </div>
-                                    <div class="space-y-1.5 text-sm text-gray-300">
+                                    <div class="space-y-1.5 text-sm text-ui-secondary">
                                         @foreach(($ssrCard['lines'] ?? []) as $ssrLine)
                                             <p class="leading-snug">{{ $ssrLine }}</p>
                                         @endforeach
@@ -2530,24 +2533,24 @@
 		                
 		                <!-- Forecast -->
 		                <template x-if="isWidgetEnabled('forecast')">
-		                <div id="forecast" class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div id="forecast" class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="forecast"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.forecast?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                             <span class="text-lg font-bold">{{ __('Offline') }}</span>
                         </div>
                     </div>                    <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.forecast?.is_stale !== true && getHealthTimestamp('forecast')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/20 px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.forecast?.is_stale !== true && getHealthTimestamp('forecast')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -2558,13 +2561,13 @@
                         <h3 class="font-semibold">{{ __('Forecast') }}</h3>
                         <div class="flex gap-1 text-xs">
                             <button @click="forecastView = 'daily5'" 
-                                    :class="forecastView === 'daily5' ? 'bg-blue-600 shadow-lg shadow-blue-600/30' : 'bg-white/10 hover:bg-white/20'" 
+                                    :class="forecastView === 'daily5' ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                                     class="px-3 py-1 rounded transition-colors">{{ __('5 days') }}</button>
                             <button @click="forecastView = 'hourly'" 
-                                    :class="forecastView === 'hourly' ? 'bg-blue-600 shadow-lg shadow-blue-600/30' : 'bg-white/10 hover:bg-white/20'" 
+                                    :class="forecastView === 'hourly' ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                                     class="px-3 py-1 rounded transition-colors">{{ __('Hourly') }}</button>
                             <button @click="forecastView = 'daily14'" 
-                                    :class="forecastView === 'daily14' ? 'bg-blue-600 shadow-lg shadow-blue-600/30' : 'bg-white/10 hover:bg-white/20'" 
+                                    :class="forecastView === 'daily14' ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                                     class="px-3 py-1 rounded transition-colors">{{ __('14 days') }}</button>
                         </div>
                     </div>
@@ -2574,34 +2577,34 @@
                         @if($ssrDashboard)
                         <div x-show="forecast.length === 0" class="ssr-fallback-block contents">
                             @forelse(array_slice($ssrForecast, 0, 5) as $day)
-                                <div class="text-center p-3 rounded-xl min-w-[72px] flex-shrink-0 snap-start transition-all bg-white/5">
-                                    <div class="text-xs text-gray-400">{{ (string) ($day['date'] ?? '--') }}</div>
+                                <div class="text-center p-3 rounded-xl min-w-[72px] flex-shrink-0 snap-start transition-all bg-ui-overlay/5">
+                                    <div class="text-xs text-ui-muted">{{ (string) ($day['date'] ?? '--') }}</div>
                                     <div class="font-bold text-sm">
-                                        <span class="text-weather-warm">{{ isset($day['temp_high']) && is_numeric($day['temp_high']) ? round((float) $day['temp_high']) . '°' : '--' }}</span>
-                                        <span class="text-gray-500">/</span>
-                                        <span class="text-weather-cold">{{ isset($day['temp_low']) && is_numeric($day['temp_low']) ? round((float) $day['temp_low']) . '°' : '--' }}</span>
+                                        <span class="text-data-amber-500">{{ isset($day['temp_high']) && is_numeric($day['temp_high']) ? round((float) $day['temp_high']) . '°' : '--' }}</span>
+                                        <span class="text-ui-subtle">/</span>
+                                        <span class="text-data-cyan-500">{{ isset($day['temp_low']) && is_numeric($day['temp_low']) ? round((float) $day['temp_low']) . '°' : '--' }}</span>
                                     </div>
                                     @if(isset($day['precipitation']) && is_numeric($day['precipitation']) && (float) $day['precipitation'] > 0)
-                                        <div class="text-[10px] text-blue-400 mt-1">💧{{ round((float) $day['precipitation'], 1) }}</div>
+                                        <div class="text-[10px] text-data-blue-400 mt-1">💧{{ round((float) $day['precipitation'], 1) }}</div>
                                     @endif
                                 </div>
                             @empty
-                                <div class="text-xs text-gray-500 py-2">{{ __('No forecast data') }}</div>
+                                <div class="text-xs text-ui-subtle py-2">{{ __('No forecast data') }}</div>
                             @endforelse
                         </div>
                         @endif
                         <template x-for="(day, idx) in forecast.slice(0, 5)" :key="'d5-'+day.date">
-                            <div class="text-center p-3 rounded-xl min-w-[72px] flex-shrink-0 snap-start transition-all hover:bg-white/10"
-                                 :class="idx === 0 ? 'bg-white/10' : 'bg-white/5'">
-                                <div class="text-xs text-gray-400" x-text="formatDate(day.date)"></div>
+                            <div class="text-center p-3 rounded-xl min-w-[72px] flex-shrink-0 snap-start transition-all hover:bg-ui-overlay/10"
+                                 :class="idx === 0 ? 'bg-ui-overlay/10' : 'bg-ui-overlay/5'">
+                                <div class="text-xs text-ui-muted" x-text="formatDate(day.date)"></div>
 		                                <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getWeatherIconForSymbol(day.symbol, day.date) + '.svg'"
 		                                     class="w-8 h-8 mx-auto my-1" alt="Weather">
                                 <div class="font-bold text-sm">
-                                    <span class="text-weather-warm" x-text="formatTemp(day.temp_high, 0)"></span>
-                                    <span class="text-gray-500">/</span>
-                                    <span class="text-weather-cold" x-text="formatTemp(day.temp_low, 0)"></span>
+                                    <span class="text-data-amber-500" x-text="formatTemp(day.temp_high, 0)"></span>
+                                    <span class="text-ui-subtle">/</span>
+                                    <span class="text-data-cyan-500" x-text="formatTemp(day.temp_low, 0)"></span>
                                 </div>
-                                <div class="text-[10px] text-blue-400 mt-1" x-show="day.precipitation > 0">
+                                <div class="text-[10px] text-data-blue-400 mt-1" x-show="day.precipitation > 0">
                                     💧<span x-text="formatRain(day.precipitation, 1)"></span>
                                 </div>
                             </div>
@@ -2613,8 +2616,8 @@
                         @if($ssrDashboard)
                         <div x-show="hourlyForecast.length === 0" class="ssr-fallback-block contents">
                             @forelse(array_slice($ssrHourlyForecast, 0, 12) as $hour)
-                                <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all bg-white/5">
-                                    <div class="text-xs text-gray-400">
+                                <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all bg-ui-overlay/5">
+                                    <div class="text-xs text-ui-muted">
                                         @if(!empty($hour['time']))
                                             @php
                                                 try {
@@ -2630,30 +2633,30 @@
                                     </div>
                                     <div class="font-bold text-sm">{{ isset($hour['temperature']) && is_numeric($hour['temperature']) ? round((float) $hour['temperature']) . '°' : '--' }}</div>
                                     @if(isset($hour['precipitation_1h']) && is_numeric($hour['precipitation_1h']) && (float) $hour['precipitation_1h'] > 0)
-                                        <div class="text-[10px] text-blue-400 mt-1">💧{{ round((float) $hour['precipitation_1h'], 1) }}</div>
+                                        <div class="text-[10px] text-data-blue-400 mt-1">💧{{ round((float) $hour['precipitation_1h'], 1) }}</div>
                                     @endif
                                 </div>
                             @empty
-                                <div class="text-xs text-gray-500 py-2">{{ __('No hourly data') }}</div>
+                                <div class="text-xs text-ui-subtle py-2">{{ __('No hourly data') }}</div>
                             @endforelse
                         </div>
                         @endif
                         <template x-for="(hour, idx) in hourlyForecast.slice(0, 12)" :key="'hr-'+idx">
-                            <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all hover:bg-white/10"
-                                 :class="idx === 0 ? 'bg-white/10' : 'bg-white/5'">
-                                <div class="text-xs text-gray-400" x-text="formatHour(hour.time)"></div>
+                            <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all hover:bg-ui-overlay/10"
+                                 :class="idx === 0 ? 'bg-ui-overlay/10' : 'bg-ui-overlay/5'">
+                                <div class="text-xs text-ui-muted" x-text="formatHour(hour.time)"></div>
 		                                <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getWeatherIconForSymbol(hour.symbol, null, hour.time) + '.svg'"
 		                                     class="w-8 h-8 mx-auto my-1" alt="Weather">
                                 <div class="font-bold text-sm" x-text="formatTemp(hour.temperature, 0)"></div>
-                                <div class="text-[10px] text-blue-400 mt-1" x-show="hour.precipitation_1h > 0">
+                                <div class="text-[10px] text-data-blue-400 mt-1" x-show="hour.precipitation_1h > 0">
                                     💧<span x-text="formatRain(hour.precipitation_1h, 1)"></span>
                                 </div>
                             </div>
                         </template>
                         @if($menuFeatures['forecast'] ?? true)
-                            <a href="{{ route('forecast') }}" class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center">
-                                <div class="text-gray-400 text-xs">{{ __('View') }}</div>
-                                <div class="text-blue-400 text-sm font-medium">{{ __('more') }} →</div>
+                            <a href="{{ route('forecast') }}" class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start bg-ui-overlay/5 hover:bg-ui-overlay/10 transition-all flex flex-col items-center justify-center">
+                                <div class="text-ui-muted text-xs">{{ __('View') }}</div>
+                                <div class="text-data-blue-400 text-sm font-medium">{{ __('more') }} →</div>
                             </a>
                         @endif
                     </div>
@@ -2663,36 +2666,36 @@
                         @if($ssrDashboard)
                         <div x-show="forecast.length === 0" class="ssr-fallback-block contents">
                             @forelse($ssrForecast as $day)
-                                <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all bg-white/5">
-                                    <div class="text-xs text-gray-400">{{ (string) ($day['date'] ?? '--') }}</div>
+                                <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all bg-ui-overlay/5">
+                                    <div class="text-xs text-ui-muted">{{ (string) ($day['date'] ?? '--') }}</div>
                                     <div class="font-bold text-xs">
-                                        <span class="text-weather-warm">{{ isset($day['temp_high']) && is_numeric($day['temp_high']) ? round((float) $day['temp_high']) . '°' : '--' }}</span>
-                                        <span class="text-gray-500">/</span>
-                                        <span class="text-weather-cold">{{ isset($day['temp_low']) && is_numeric($day['temp_low']) ? round((float) $day['temp_low']) . '°' : '--' }}</span>
+                                        <span class="text-data-amber-500">{{ isset($day['temp_high']) && is_numeric($day['temp_high']) ? round((float) $day['temp_high']) . '°' : '--' }}</span>
+                                        <span class="text-ui-subtle">/</span>
+                                        <span class="text-data-cyan-500">{{ isset($day['temp_low']) && is_numeric($day['temp_low']) ? round((float) $day['temp_low']) . '°' : '--' }}</span>
                                     </div>
                                 </div>
                             @empty
-                                <div class="text-xs text-gray-500 py-2">{{ __('No forecast data') }}</div>
+                                <div class="text-xs text-ui-subtle py-2">{{ __('No forecast data') }}</div>
                             @endforelse
                         </div>
                         @endif
                         <template x-for="(day, idx) in forecast" :key="'d14-'+day.date">
-                            <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all hover:bg-white/10"
-                                 :class="idx === 0 ? 'bg-white/10' : 'bg-white/5'">
-                                <div class="text-xs text-gray-400" x-text="formatDate(day.date)"></div>
+                            <div class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start transition-all hover:bg-ui-overlay/10"
+                                 :class="idx === 0 ? 'bg-ui-overlay/10' : 'bg-ui-overlay/5'">
+                                <div class="text-xs text-ui-muted" x-text="formatDate(day.date)"></div>
 		                                <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getWeatherIconForSymbol(day.symbol, day.date) + '.svg'"
 		                                     class="w-6 h-6 mx-auto my-1" alt="Weather">
                                 <div class="font-bold text-xs">
-                                    <span class="text-weather-warm" x-text="formatTemp(day.temp_high, 0)"></span>
-                                    <span class="text-gray-500">/</span>
-                                    <span class="text-weather-cold" x-text="formatTemp(day.temp_low, 0)"></span>
+                                    <span class="text-data-amber-500" x-text="formatTemp(day.temp_high, 0)"></span>
+                                    <span class="text-ui-subtle">/</span>
+                                    <span class="text-data-cyan-500" x-text="formatTemp(day.temp_low, 0)"></span>
                                 </div>
                             </div>
                         </template>
                         @if($menuFeatures['forecast'] ?? true)
-                            <a href="{{ route('forecast') }}" class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center">
-                                <div class="text-gray-400 text-xs">{{ __('Full') }}</div>
-                                <div class="text-blue-400 text-sm font-medium">{{ __('overview') }} →</div>
+                            <a href="{{ route('forecast') }}" class="text-center p-3 rounded-xl min-w-[64px] flex-shrink-0 snap-start bg-ui-overlay/5 hover:bg-ui-overlay/10 transition-all flex flex-col items-center justify-center">
+                                <div class="text-ui-muted text-xs">{{ __('Full') }}</div>
+                                <div class="text-data-blue-400 text-sm font-medium">{{ __('overview') }} →</div>
                             </a>
                         @endif
                     </div>
@@ -2701,29 +2704,29 @@
 
 	                <!-- Temperature Chart -->
 	                <template x-if="isWidgetEnabled('hourly')">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="hourly"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)"
 		                     x-data="{ tempChartView: '24u' }">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="font-semibold">{{ __('Temperature') }}</h3>
-                            <div class="text-[10px] text-gray-500">
+                            <div class="text-[10px] text-ui-subtle">
                                 <span x-show="tempChartShowObserved">{{ __('Observed') }} + {{ __('Forecast') }}</span>
                                 <span x-show="!tempChartShowObserved">{{ __('Forecast') }}</span>
                             </div>
                         </div>
                         <div class="flex gap-1 text-xs">
                             <button @click="tempChartView = '24u'" 
-                                    :class="tempChartView === '24u' ? 'bg-blue-600 shadow-lg shadow-blue-600/30' : 'bg-white/10 hover:bg-white/20'" 
+                                    :class="tempChartView === '24u' ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                                     class="px-3 py-1 rounded transition-colors">{{ __('24h') }}</button>
                             <button @click="tempChartView = 'week'" 
-                                    :class="tempChartView === 'week' ? 'bg-blue-600 shadow-lg shadow-blue-600/30' : 'bg-white/10 hover:bg-white/20'" 
+                                    :class="tempChartView === 'week' ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                                     class="px-3 py-1 rounded transition-colors">{{ __('Week') }}</button>
                         </div>
                     </div>
@@ -2732,18 +2735,18 @@
                     <div x-show="tempChartView === '24u'" class="space-y-2">
                         <div class="flex">
                             <!-- Y-axis labels -->
-                            <div class="flex flex-col justify-between text-[10px] text-gray-500 pr-2 py-1 w-8 text-right">
-                                <span class="text-weather-warm" x-text="formatTemp(getHourlyMax(), 0)"></span>
+                            <div class="flex flex-col justify-between text-[10px] text-ui-subtle pr-2 py-1 w-8 text-right">
+                                <span class="text-data-amber-500" x-text="formatTemp(getHourlyMax(), 0)"></span>
                                 <span x-text="formatTemp((getHourlyMax() + getHourlyMin()) / 2, 0)"></span>
-                                <span class="text-weather-cold" x-text="formatTemp(getHourlyMin(), 0)"></span>
+                                <span class="text-data-cyan-500" x-text="formatTemp(getHourlyMin(), 0)"></span>
                             </div>
                             <!-- Chart area -->
                             <div class="flex-1 h-28 bg-gradient-to-b from-weather-warm/5 to-weather-cold/5 rounded-lg relative overflow-hidden">
                                 <!-- Horizontal guide lines -->
                                 <div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/10 border-dashed"></div>
-                                    <div class="border-t border-white/5"></div>
+                                    <div class="border-t border-ui-line/5"></div>
+                                    <div class="border-t border-ui-line/10 border-dashed"></div>
+                                    <div class="border-t border-ui-line/5"></div>
                                 </div>
                                 <svg class="w-full h-full relative z-10 p-2" viewBox="0 0 400 100" preserveAspectRatio="none">
                                     <defs>
@@ -2758,7 +2761,7 @@
                                               y1="0"
                                               :x2="getTempChartNowX() === null ? 0 : getTempChartNowX()"
                                               y2="100"
-                                              stroke="rgba(255,255,255,0.35)"
+                                              stroke="rgb(var(--wn-fg) / 0.35)"
                                               stroke-width="1"
                                               stroke-dasharray="3 3"/>
                                     </g>
@@ -2773,9 +2776,9 @@
                                     <path :d="getHourlyTempPath(false)" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
                                     <circle x-show="tempChartShowNowLine && current?.temperature !== null && current?.temperature !== undefined && getTempChartNowX() !== null"
                                             :cx="getTempChartNowX() === null ? 0 : getTempChartNowX()"
-                                            :cy="getTempY(Number(current.temperature), getHourlyMin(), getHourlyMax())"
+                                            :cy="getTempY(Number(current?.temperature ?? 0), getHourlyMin(), getHourlyMax())"
                                             r="2.2"
-                                            fill="rgba(255,255,255,0.85)"
+                                            fill="rgb(var(--wn-fg) / 0.85)"
                                             stroke="rgba(0,0,0,0.25)"
                                             stroke-width="0.6"/>
                                 </svg>
@@ -2783,20 +2786,20 @@
                         </div>
                         <div class="flex">
                             <div class="w-8"></div>
-                            <div x-show="!tempChartShowObserved" class="flex-1 flex justify-between text-[10px] text-gray-500 px-1">
+                            <div x-show="!tempChartShowObserved" class="flex-1 flex justify-between text-[10px] text-ui-subtle px-1">
                                 <span x-text="formatHour(hourlyForecast[0]?.time)"></span>
                                 <span x-text="formatHour(hourlyForecast[6]?.time)"></span>
                                 <span x-text="formatHour(hourlyForecast[12]?.time)"></span>
                                 <span x-text="formatHour(hourlyForecast[18]?.time)"></span>
                                 <span x-text="formatHour(hourlyForecast[23]?.time)"></span>
                             </div>
-                            <div x-show="tempChartShowObserved" class="flex-1 flex justify-between text-[10px] text-gray-500 px-1">
+                            <div x-show="tempChartShowObserved" class="flex-1 flex justify-between text-[10px] text-ui-subtle px-1">
                                 <template x-for="(label, idx) in getBlendedTempAxisLabels()" :key="'tlabel-'+idx">
                                     <span x-text="label"></span>
                                 </template>
                             </div>
                         </div>
-                        <div x-show="tempChartShowObserved" class="flex justify-center gap-4 text-[10px] text-gray-400">
+                        <div x-show="tempChartShowObserved" class="flex justify-center gap-4 text-[10px] text-ui-muted">
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 rounded" style="background: rgba(34,197,94,0.9)"></span> {{ __('Observed') }}</span>
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-weather-warm rounded"></span> {{ __('Forecast') }}</span>
                         </div>
@@ -2806,18 +2809,18 @@
                     <div x-show="tempChartView === 'week'" class="space-y-2">
                         <div class="flex">
                             <!-- Y-axis labels -->
-                            <div class="flex flex-col justify-between text-[10px] text-gray-500 pr-2 py-1 w-8 text-right">
-                                <span class="text-weather-warm" x-text="formatTemp(getWeeklyMax(), 0)"></span>
+                            <div class="flex flex-col justify-between text-[10px] text-ui-subtle pr-2 py-1 w-8 text-right">
+                                <span class="text-data-amber-500" x-text="formatTemp(getWeeklyMax(), 0)"></span>
                                 <span x-text="formatTemp((getWeeklyMax() + getWeeklyMin()) / 2, 0)"></span>
-                                <span class="text-weather-cold" x-text="formatTemp(getWeeklyMin(), 0)"></span>
+                                <span class="text-data-cyan-500" x-text="formatTemp(getWeeklyMin(), 0)"></span>
                             </div>
                             <!-- Chart area -->
                             <div class="flex-1 h-28 bg-gradient-to-b from-weather-warm/5 to-weather-cold/5 rounded-lg relative overflow-hidden">
                                 <!-- Horizontal guide lines -->
                                 <div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/10 border-dashed"></div>
-                                    <div class="border-t border-white/5"></div>
+                                    <div class="border-t border-ui-line/5"></div>
+                                    <div class="border-t border-ui-line/10 border-dashed"></div>
+                                    <div class="border-t border-ui-line/5"></div>
                                 </div>
                                 <svg class="w-full h-full relative z-10 p-2" viewBox="0 0 400 100" preserveAspectRatio="none">
                                     <defs>
@@ -2838,13 +2841,13 @@
                         </div>
                         <div class="flex">
                             <div class="w-8"></div>
-                            <div class="flex-1 flex justify-between text-[10px] text-gray-500 px-1">
+                            <div class="flex-1 flex justify-between text-[10px] text-ui-subtle px-1">
                                 <template x-for="(day, idx) in forecast.slice(0, 7)" :key="'label-'+idx">
                                     <span x-text="formatShortDay(day.date)"></span>
                                 </template>
                             </div>
                         </div>
-                        <div class="flex justify-center gap-4 text-[10px] text-gray-400">
+                        <div class="flex justify-center gap-4 text-[10px] text-ui-muted">
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-weather-warm rounded"></span> {{ __('Max') }}</span>
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-weather-cold rounded"></span> {{ __('Min') }}</span>
                         </div>
@@ -2855,7 +2858,7 @@
 	                <!-- Rain Card -->
 	                @php $rainVisualization = \App\Models\Setting::getValue('widgets.rain_visualization', 'ripple'); @endphp
 	                <template x-if="isWidgetEnabled('rain')">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 relative overflow-hidden"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 relative overflow-hidden"
 		                     data-widget="rain"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
 
@@ -3122,7 +3125,7 @@
                                     <circle cx="0" cy="12" r="4" fill="#1e3a8a" opacity="0.7"/>
                                     <circle cx="0" cy="12" r="2.8" fill="#3b82f6" opacity="0.8"/>
                                     <!-- NAP tekst op bovenkant -->
-                                    <text x="0" y="12" text-anchor="middle" dominant-baseline="middle" font-size="2.2" font-weight="bold" fill="white" font-family="Arial, sans-serif" opacity="0.9">NAP</text>
+                                    <text x="0" y="12" text-anchor="middle" dominant-baseline="middle" font-size="2.2" font-weight="bold" fill="rgb(var(--wn-fg))" font-family="Arial, sans-serif" opacity="0.9">NAP</text>
                                     <!-- Meetstreepjes - exact aligned with water levels -->
                                     <!-- 35mm: water at y=50, local = 50-18 = 32 -->
                                     <line x1="-3" y1="32" x2="3" y2="32" stroke="#d1d5db" stroke-width="0.5" opacity="0.6"/> <!-- 35mm -->
@@ -3176,14 +3179,14 @@
 
                     <!-- Widget Content (on top of visualization) -->
                     <div class="relative z-10">
-                        <div class="drag-handle absolute -top-3 -right-3 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                            <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="drag-handle absolute -top-3 -right-3 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                            <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                             </svg>
                         </div>
                         <!-- Offline Badge (Centered) -->
                         <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                            <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                            <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                 </svg>
@@ -3191,7 +3194,7 @@
                             </div>
                         </div>
                         <!-- Update Timestamp (Top Center) -->
-                        <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/30 backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
+                        <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp-raised backdrop-blur-sm px-1.5 py-0.5 rounded z-10">
                             <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -3200,34 +3203,34 @@
 
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold">{{ __('Precipitation') }}</h3>
-                            <span class="text-xs text-gray-400">{{ __('Last rain') }}: <span x-text="formatLastRainAt(current?.last_rain_at)"></span></span>
+                            <span class="text-xs text-ui-muted">{{ __('Last rain') }}: <span x-text="formatLastRainAt(current?.last_rain_at)"></span></span>
                         </div>
                         <div class="grid grid-cols-4 gap-2 text-center">
                             <div>
-                                <div class="text-xl md:text-2xl font-bold font-display text-weather-rain data-value drop-shadow-lg" x-text="formatRainRateValue(current?.rain_rate)"></div>
-                                <div class="text-[10px] text-gray-400" x-text="rainUnit() + rainRateSuffix()"></div>
+                                <div class="text-xl md:text-2xl font-bold font-display text-data-indigo-500 data-value drop-shadow-lg" x-text="formatRainRateValue(current?.rain_rate)"></div>
+                                <div class="text-[10px] text-ui-muted" x-text="rainUnit() + rainRateSuffix()"></div>
                             </div>
                             <div>
                                 <div class="text-xl md:text-2xl font-bold font-display data-value drop-shadow-lg" x-text="formatRainValue(current?.rain_daily)"></div>
-                                <div class="text-[10px] text-gray-400">{{ __('Today') }}</div>
+                                <div class="text-[10px] text-ui-muted">{{ __('Today') }}</div>
                             </div>
                             <div>
                                 <div class="text-xl md:text-2xl font-bold font-display data-value drop-shadow-lg" x-text="formatRainValue(current?.rain_monthly)"></div>
-                                <div class="text-[10px] text-gray-400">{{ __('Month') }}</div>
+                                <div class="text-[10px] text-ui-muted">{{ __('Month') }}</div>
                             </div>
                             <div>
                                 <div class="text-xl md:text-2xl font-bold font-display data-value drop-shadow-lg" x-text="formatRainValue(current?.rain_yearly, 0)"></div>
-                                <div class="text-[10px] text-gray-400">{{ __('Year') }}</div>
+                                <div class="text-[10px] text-ui-muted">{{ __('Year') }}</div>
                             </div>
                         </div>
 
                         <!-- Rain probability bars -->
-                        <div class="mt-4 pt-4 border-t border-white/10">
+                        <div class="mt-4 pt-4 border-t border-ui-line/10">
                             <div class="flex items-center justify-between mb-2">
-                                <div class="text-xs text-gray-400">{{ __('Precipitation chance in the coming hours') }}</div>
+                                <div class="text-xs text-ui-muted">{{ __('Precipitation chance in the coming hours') }}</div>
                                 <div x-show="hourlyForecast.length > 0" class="text-xs">
-                                    <span class="text-gray-500">{{ __('Next Rain') }}: </span>
-                                    <span :class="nextRainInfo() ? 'text-blue-400 font-medium' : 'text-gray-500'"
+                                    <span class="text-ui-subtle">{{ __('Next Rain') }}: </span>
+                                    <span :class="nextRainInfo() ? 'text-data-blue-400 font-medium' : 'text-ui-subtle'"
                                           x-text="nextRainLabel()">{{ $ssrNextRainLabel }}</span>
                                 </div>
                             </div>
@@ -3239,7 +3242,7 @@
                                             $hourRain = isset($hour['precipitation_1h']) && is_numeric($hour['precipitation_1h']) ? (float) $hour['precipitation_1h'] : 0.0;
                                             $hourRainOpacity = max(10, min(90, (int) round($hourRain * 10)));
                                         @endphp
-                                        <div class="flex-1 h-8 rounded text-[10px] flex items-end justify-center pb-1 transition-all backdrop-blur-sm bg-blue-500"
+                                        <div class="flex-1 h-8 rounded text-[10px] flex items-end justify-center pb-1 transition-all backdrop-blur-sm bg-blue-500 text-on-accent"
                                              style="opacity: {{ max(0.15, min(0.95, $hourRainOpacity / 100)) }};">
                                             {{ round($hourRain, 1) }}
                                         </div>
@@ -3263,13 +3266,13 @@
                         @if($ssrDashboard && count($ssrFallbackGroups['sortable-right-column'] ?? []) > 0)
                             @foreach($ssrFallbackGroups['sortable-right-column'] as $ssrCard)
                                 <article x-show="ssrFallbackVisible"
-                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                                         class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                                          data-widget="{{ $ssrCard['id'] ?? 'widget' }}">
                                     <div class="flex items-center justify-between mb-3">
                                         <h2 class="font-semibold">{{ $ssrCard['title'] ?? __('Weather') }}</h2>
-                                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">SSR</span>
+                                        <span class="text-[10px] text-ui-subtle uppercase tracking-wide">SSR</span>
                                     </div>
-                                    <div class="space-y-1.5 text-sm text-gray-300">
+                                    <div class="space-y-1.5 text-sm text-ui-secondary">
                                         @foreach(($ssrCard['lines'] ?? []) as $ssrLine)
                                             <p class="leading-snug">{{ $ssrLine }}</p>
                                         @endforeach
@@ -3283,32 +3286,32 @@
                         @if($astronomyFeatureEnabled)
 		                    <a href="{{ route('astronomy') }}"
 		                       id="astronomy"
-		                       class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                       class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                       data-widget="sun_moon"
 		                       @click="editMode && $event.preventDefault()"
 		                       @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @else
                             <div id="astronomy"
-                                 class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                                 class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                                  data-widget="sun_moon"
                                  @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @endif
                     <!-- Drag Handle -->
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.astronomy?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                             <span class="text-lg font-bold">{{ __('Offline') }}</span>
                         </div>
                     </div>                    <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.astronomy?.is_stale !== true && getHealthTimestamp('astronomy')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/20 px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.astronomy?.is_stale !== true && getHealthTimestamp('astronomy')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -3318,9 +3321,9 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">{{ __('Sun & Moon') }}</h3>
                         @if($astronomyFeatureEnabled)
-                            <span class="text-xs text-gray-500">{{ __('More') }} →</span>
+                            <span class="text-xs text-ui-subtle">{{ __('More') }} →</span>
                         @else
-                            <span class="text-xs text-amber-400">{{ __('Page disabled') }}</span>
+                            <span class="text-xs text-data-amber-400">{{ __('Page disabled') }}</span>
                         @endif
                     </div>
                     <div class="space-y-4">
@@ -3330,13 +3333,13 @@
 		                                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/sunrise.svg'"
 		                                     class="w-8 h-8" alt="Sunrise">
                                 <div>
-                                    <div class="text-xs text-gray-400">{{ __('Sunrise') }}</div>
+                                    <div class="text-xs text-ui-muted">{{ __('Sunrise') }}</div>
                                     <div class="font-bold" x-text="sun?.sunrise ?? '--:--'"></div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="text-right">
-                                    <div class="text-xs text-gray-400">{{ __('Sunset') }}</div>
+                                    <div class="text-xs text-ui-muted">{{ __('Sunset') }}</div>
                                     <div class="font-bold" x-text="sun?.sunset ?? '--:--'"></div>
                                 </div>
 		                                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/sunset.svg') }}"
@@ -3344,31 +3347,31 @@
 		                                     class="w-8 h-8" alt="Sunset">
                             </div>
                         </div>
-                        <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-2 bg-ui-overlay/10 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-400 transition-all duration-1000" 
                                  :style="{ width: (sun?.position_percent ?? getDaylightProgress()) + '%' }"></div>
                         </div>
                         <div class="flex justify-between text-sm">
                             <div>
-                                <span class="text-gray-400">{{ __('Daylight') }} </span>
-                                <span class="font-bold text-amber-400" x-text="sun?.day_length ?? '--:--'"></span>
+                                <span class="text-ui-muted">{{ __('Daylight') }} </span>
+                                <span class="font-bold text-data-amber-400" x-text="sun?.day_length ?? '--:--'"></span>
                             </div>
                             <div x-show="sun?.day_length_change">
-                                <span :class="sun?.day_length_change_seconds > 0 ? 'text-green-400' : 'text-red-400'" x-text="sun?.day_length_change"></span>
+                                <span :class="sun?.day_length_change_seconds > 0 ? 'text-data-green-400' : 'text-data-red-400'" x-text="sun?.day_length_change"></span>
                             </div>
                         </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                        <div class="pt-4 border-t border-ui-line/10 flex items-center justify-between">
                             <div class="flex items-center gap-3">
 		                                <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + (moon?.icon ?? 'moon-waxing-crescent') + '.svg'"
 		                                     class="w-12 h-12" alt="Moon phase">
                                 <div>
                                     <div class="font-bold" x-text="translateMoonPhase(moon?.phase_name) || translations.loading"></div>
-                                    <div class="text-xs text-gray-400"><span x-text="moon?.illumination ?? '--'"></span>% {{ __('illuminated') }}</div>
+                                    <div class="text-xs text-ui-muted"><span x-text="moon?.illumination ?? '--'"></span>% {{ __('illuminated') }}</div>
                                 </div>
                             </div>
                             <div class="text-right text-xs" x-show="aurora?.kp !== undefined">
-                                <div class="text-gray-400">{{ __('Kp Index') }}</div>
-                                <div class="font-bold" :style="'color: ' + (aurora?.color ?? '#22c55e')" x-text="aurora?.kp ?? '--'">{{ isset($ssrAurora['kp']) ? $ssrAurora['kp'] : '--' }}</div>
+                                <div class="text-ui-muted">{{ __('Kp Index') }}</div>
+                                <div data-weather-colour-text class="font-bold" :style="'color: ' + (aurora?.color ?? '#22c55e')" x-text="aurora?.kp ?? '--'">{{ isset($ssrAurora['kp']) ? $ssrAurora['kp'] : '--' }}</div>
                             </div>
                         </div>
                     </div>
@@ -3384,27 +3387,27 @@
                         @if($astronomyFeatureEnabled)
                             <a href="{{ route('astronomy') }}"
                                x-show="ssrFallbackVisible && isWidgetEnabled('astro_events') && astronomicalEvents.length === 0"
-                               class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+                               class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
                                data-widget="astro_events"
                                @click="editMode && $event.preventDefault()"
                                @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @else
                             <div x-show="ssrFallbackVisible && isWidgetEnabled('astro_events') && astronomicalEvents.length === 0"
-                                 class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                                 class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                                  data-widget="astro_events"
                                  @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @endif
-                        <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                            <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                            <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                             </svg>
                         </div>
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold">📅 {{ __('Sky Events') }}</h3>
                             @if($astronomyFeatureEnabled)
-                                <span class="text-xs text-gray-500">{{ __('More') }} →</span>
+                                <span class="text-xs text-ui-subtle">{{ __('More') }} →</span>
                             @else
-                                <span class="text-xs text-amber-400">{{ __('Page disabled') }}</span>
+                                <span class="text-xs text-data-amber-400">{{ __('Page disabled') }}</span>
                             @endif
                         </div>
                         <div class="space-y-2 min-w-0 overflow-hidden">
@@ -3412,24 +3415,24 @@
                                 @php
                                     $eventType = (string) ($event['type'] ?? '');
                                     $eventTypeClass = match ($eventType) {
-                                        'moon' => 'bg-blue-500/20 text-blue-400',
-                                        'seasonal' => 'bg-orange-500/20 text-orange-400',
-                                        'eclipse' => 'bg-purple-500/20 text-purple-400',
-                                        'meteor' => 'bg-yellow-500/20 text-yellow-400',
-                                        'planet' => 'bg-cyan-500/20 text-cyan-400',
-                                        'earth' => 'bg-green-500/20 text-green-400',
-                                        'comet' => 'bg-pink-500/20 text-pink-400',
-                                        'special' => 'bg-indigo-500/20 text-indigo-400',
-                                        'transit' => 'bg-amber-500/20 text-amber-400',
-                                        default => 'bg-white/10 text-gray-300',
+                                        'moon' => 'bg-blue-500/20 text-data-blue-400',
+                                        'seasonal' => 'bg-orange-500/20 text-data-orange-400',
+                                        'eclipse' => 'bg-purple-500/20 text-data-purple-400',
+                                        'meteor' => 'bg-yellow-500/20 text-data-yellow-400',
+                                        'planet' => 'bg-cyan-500/20 text-data-cyan-400',
+                                        'earth' => 'bg-green-500/20 text-data-green-400',
+                                        'comet' => 'bg-pink-500/20 text-data-pink-400',
+                                        'special' => 'bg-indigo-500/20 text-data-indigo-400',
+                                        'transit' => 'bg-amber-500/20 text-data-amber-400',
+                                        default => 'bg-ui-overlay/10 text-ui-secondary',
                                     };
                                 @endphp
-                                <div class="flex items-center justify-between gap-2 p-2 bg-white/5 rounded-lg min-w-0">
+                                <div class="flex items-center justify-between gap-2 p-2 bg-ui-overlay/5 rounded-lg min-w-0">
                                     <div class="flex items-center gap-2 min-w-0 flex-1">
                                         <span class="text-xl flex-shrink-0">{{ (string) ($event['emoji'] ?? '✨') }}</span>
                                         <div class="min-w-0 flex-1">
                                             <div class="text-sm font-medium truncate">{{ (string) ($event['event'] ?? __('Event')) }}</div>
-                                            <div class="text-xs text-gray-400">{{ (string) ($event['formatted_date'] ?? ($event['date'] ?? '--')) }}</div>
+                                            <div class="text-xs text-ui-muted">{{ (string) ($event['formatted_date'] ?? ($event['date'] ?? '--')) }}</div>
                                         </div>
                                     </div>
                                     <div class="text-xs px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap {{ $eventTypeClass }}">
@@ -3447,18 +3450,18 @@
 	                <template x-if="isWidgetEnabled('astro_events') && astronomicalEvents.length > 0">
                         @if($astronomyFeatureEnabled)
 		                    <a href="{{ route('astronomy') }}"
-		                       class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                       class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                       data-widget="astro_events"
 		                       @click="editMode && $event.preventDefault()"
 		                       @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @else
-                            <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                            <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                                  data-widget="astro_events"
                                  @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                         @endif
                     <!-- Drag Handle -->
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
@@ -3466,36 +3469,36 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">📅 {{ __('Sky Events') }}</h3>
                         @if($astronomyFeatureEnabled)
-                            <span class="text-xs text-gray-500">{{ __('More') }} →</span>
+                            <span class="text-xs text-ui-subtle">{{ __('More') }} →</span>
                         @else
-                            <span class="text-xs text-amber-400">{{ __('Page disabled') }}</span>
+                            <span class="text-xs text-data-amber-400">{{ __('Page disabled') }}</span>
                         @endif
                     </div>
 
                     <div class="space-y-2 min-w-0 overflow-hidden">
                         <template x-for="event in astronomicalEvents" :key="event.date + event.event">
-                            <div class="flex items-center justify-between gap-2 p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors min-w-0">
+                            <div class="flex items-center justify-between gap-2 p-2 bg-ui-overlay/5 rounded-lg hover:bg-ui-overlay/10 transition-colors min-w-0">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
                                     <span class="text-xl flex-shrink-0" x-text="event.emoji"></span>
                                     <div class="min-w-0 flex-1">
                                         <div class="text-sm font-medium truncate" x-text="translateEvent(event.event)"></div>
-                                        <div class="text-xs text-gray-400" x-text="event.formatted_date"></div>
+                                        <div class="text-xs text-ui-muted" x-text="event.formatted_date"></div>
                                         <template x-if="event.hint">
-                                            <div class="text-xs text-gray-500 mt-0.5" x-text="translateEvent(event.hint)"></div>
+                                            <div class="text-xs text-ui-subtle mt-0.5" x-text="translateEvent(event.hint)"></div>
                                         </template>
                                     </div>
                                 </div>
                                 <div class="text-xs px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap"
                                      :class="{
-                                         'bg-blue-500/20 text-blue-400': event.type === 'moon',
-                                         'bg-orange-500/20 text-orange-400': event.type === 'seasonal',
-                                         'bg-purple-500/20 text-purple-400': event.type === 'eclipse',
-                                         'bg-yellow-500/20 text-yellow-400': event.type === 'meteor',
-                                         'bg-cyan-500/20 text-cyan-400': event.type === 'planet',
-                                         'bg-green-500/20 text-green-400': event.type === 'earth',
-                                         'bg-pink-500/20 text-pink-400': event.type === 'comet',
-                                         'bg-indigo-500/20 text-indigo-400': event.type === 'special',
-                                         'bg-amber-500/20 text-amber-400': event.type === 'transit'
+                                         'bg-blue-500/20 text-data-blue-400': event.type === 'moon',
+                                         'bg-orange-500/20 text-data-orange-400': event.type === 'seasonal',
+                                         'bg-purple-500/20 text-data-purple-400': event.type === 'eclipse',
+                                         'bg-yellow-500/20 text-data-yellow-400': event.type === 'meteor',
+                                         'bg-cyan-500/20 text-data-cyan-400': event.type === 'planet',
+                                         'bg-green-500/20 text-data-green-400': event.type === 'earth',
+                                         'bg-pink-500/20 text-data-pink-400': event.type === 'comet',
+                                         'bg-indigo-500/20 text-data-indigo-400': event.type === 'special',
+                                         'bg-amber-500/20 text-data-amber-400': event.type === 'transit'
                                      }"
                                      x-text="translateEventType(event.type)">
                                 </div>
@@ -3503,8 +3506,8 @@
                         </template>
                     </div>
 
-                    <div class="mt-3 pt-3 border-t border-white/10 text-center">
-                        <span class="text-xs text-gray-400">{{ __('View all upcoming events') }}</span>
+                    <div class="mt-3 pt-3 border-t border-ui-line/10 text-center">
+                        <span class="text-xs text-ui-muted">{{ __('View all upcoming events') }}</span>
                     </div>
                         @if($astronomyFeatureEnabled)
 		                    </a>
@@ -3515,24 +3518,24 @@
 
 	                <!-- UV & Solar -->
 	                <template x-if="isWidgetEnabled('uv') || isWidgetEnabled('solar')">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="uv_solar"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                             <span class="text-lg font-bold">{{ __('Offline') }}</span>
                         </div>
                     </div>                    <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/20 px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -3542,14 +3545,14 @@
                     <h3 class="font-semibold mb-4">{{ __('UV & Solar radiation') }}</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="text-center p-3 bg-green-500/10 rounded-xl">
-                            <div class="text-xs text-gray-400">{{ __('UV Index') }}</div>
+                            <div class="text-xs text-ui-muted">{{ __('UV Index') }}</div>
                             <div class="text-3xl font-bold" :class="getUvColor(current?.uv_index)" x-text="current?.uv_index ?? '0'"></div>
                             <div class="text-xs" :class="getUvColor(current?.uv_index)" x-text="getUvLevel(current?.uv_index)"></div>
                         </div>
                         <div class="text-center p-3 bg-yellow-500/10 rounded-xl">
-                            <div class="text-xs text-gray-400">{{ __('Radiation') }}</div>
-                            <div class="text-3xl font-bold text-yellow-400 data-value" x-text="current?.solar_radiation ?? '--'">{{ isset($ssrCurrent['solar_radiation']) ? $ssrCurrent['solar_radiation'] : '--' }}</div>
-                            <div class="text-xs text-gray-400">W/m²</div>
+                            <div class="text-xs text-ui-muted">{{ __('Radiation') }}</div>
+                            <div class="text-3xl font-bold text-data-yellow-400 data-value" x-text="current?.solar_radiation ?? '--'">{{ isset($ssrCurrent['solar_radiation']) ? $ssrCurrent['solar_radiation'] : '--' }}</div>
+                            <div class="text-xs text-ui-muted">W/m²</div>
                         </div>
                     </div>
 	                </div>
@@ -3557,24 +3560,24 @@
 
 	                <!-- Air Quality -->
 	                <template x-if="isWidgetEnabled('airquality')">
-		                <div id="airquality" class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div id="airquality" class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="airquality"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.airquality?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                             <span class="text-lg font-bold">{{ __('Offline') }}</span>
                         </div>
                     </div>                    <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.airquality?.is_stale !== true && getHealthTimestamp('airquality')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/20 px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.airquality?.is_stale !== true && getHealthTimestamp('airquality')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -3584,7 +3587,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">{{ __('Air Quality') }}</h3>
                         <template x-if="airQuality">
-                            <span class="text-xs px-2 py-0.5 rounded" 
+                            <span data-weather-colour-text class="text-xs px-2 py-0.5 rounded"
                                   :style="'background-color: ' + (airQuality.category?.color || '#00e400') + '20; color: ' + (airQuality.category?.color || '#00e400')"
                                   x-text="getAqiEmoji(airQuality.category?.level) + ' ' + getAqiLevelTranslation(airQuality.category?.level)"></span>
                         </template>
@@ -3593,27 +3596,27 @@
                         <div class="w-20 h-20 rounded-full flex items-center justify-center"
                              :style="'background-color: ' + (airQuality?.category?.color || '#00e400') + '20'">
                             <div class="text-center">
-                                <div class="text-2xl font-bold" :style="'color: ' + (airQuality?.category?.color || '#00e400')" x-text="airQuality?.aqi ?? '--'">{{ isset($ssrAirQuality['aqi']) ? (int) $ssrAirQuality['aqi'] : '--' }}</div>
-                                <div class="text-[10px] text-gray-400">{{ __('AQI') }}</div>
+                                <div data-weather-colour-text class="text-2xl font-bold" :style="'color: ' + (airQuality?.category?.color || '#00e400')" x-text="airQuality?.aqi ?? '--'">{{ isset($ssrAirQuality['aqi']) ? (int) $ssrAirQuality['aqi'] : '--' }}</div>
+                                <div class="text-[10px] text-ui-muted">{{ __('AQI') }}</div>
                             </div>
                         </div>
                         <div class="flex-1 space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">PM2.5</span>
+                                <span class="text-ui-muted">PM2.5</span>
                                 <span x-text="(airQuality?.pollutants?.pm25 ?? '--') + ' µg/m³'">{{ isset($ssrAirQuality['pollutants']['pm25']) ? $ssrAirQuality['pollutants']['pm25'] : '--' }} µg/m³</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">PM10</span>
+                                <span class="text-ui-muted">PM10</span>
                                 <span x-text="(airQuality?.pollutants?.pm10 ?? '--') + ' µg/m³'">{{ isset($ssrAirQuality['pollutants']['pm10']) ? $ssrAirQuality['pollutants']['pm10'] : '--' }} µg/m³</span>
                             </div>
                             <template x-if="luftdatenNoise && luftdatenNoise.formatted && luftdatenNoise.formatted.noise_avg">
-                                <div class="pt-2 mt-2 border-t border-white/10 space-y-1">
+                                <div class="pt-2 mt-2 border-t border-ui-line/10 space-y-1">
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-400">🔊 {{ __('Noise') }}</span>
+                                        <span class="text-ui-muted">🔊 {{ __('Noise') }}</span>
                                         <span x-text="(luftdatenNoise?.formatted?.noise_avg?.value != null ? Math.round(luftdatenNoise.formatted.noise_avg.value * 10) / 10 : '--') + ' dB(A)'">-- dB(A)</span>
                                     </div>
                                     <template x-if="luftdatenNoise?.noise_level">
-                                        <div class="text-xs" :style="'color: ' + (luftdatenNoise.noise_level?.color || '#9ca3af')" x-text="luftdatenNoise.noise_level?.level ? (typeof t === 'function' ? t(luftdatenNoise.noise_level.level) : luftdatenNoise.noise_level.level) : ''"></div>
+                                        <div data-weather-colour-text class="text-xs" :style="'color: ' + (luftdatenNoise.noise_level?.color || '#9ca3af')" x-text="luftdatenNoise.noise_level?.level ? (typeof t === 'function' ? t(luftdatenNoise.noise_level.level) : luftdatenNoise.noise_level.level) : ''"></div>
                                     </template>
                                 </div>
                             </template>
@@ -3627,18 +3630,18 @@
                     @if($airPollenFeatureEnabled)
 	                    <a href="{{ route('pollen') }}"
 		                   id="pollen"
-		                   class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                   class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                   data-widget="pollen"
 		                   @click="editMode && $event.preventDefault()"
 		                   @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
                         <div id="pollen"
-		                     class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+		                     class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
 		                     data-widget="pollen"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
@@ -3646,9 +3649,9 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">🌿 {{ __('Pollen') }}</h3>
                         @if($airPollenFeatureEnabled)
-                            <span class="text-xs text-gray-500">{{ __('More') }} →</span>
+                            <span class="text-xs text-ui-subtle">{{ __('More') }} →</span>
                         @else
-                            <span class="text-xs text-amber-400">{{ __('Page disabled') }}</span>
+                            <span class="text-xs text-data-amber-400">{{ __('Page disabled') }}</span>
                         @endif
                     </div>
 
@@ -3657,28 +3660,28 @@
                         <div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
                              :style="'background-color:' + (pollenData?.today?.overall_color || '#4b5563') + '20;border:2px solid ' + (pollenData?.today?.overall_color || '#4b5563') + '40'">
                             <div class="text-center">
-                                <div class="text-xl font-bold leading-none"
+                                <div data-weather-colour-text class="text-xl font-bold leading-none"
                                      :style="'color:' + (pollenData?.today?.overall_color || '#9ca3af')"
                                      x-text="pollenData?.today?.overall_risk_index ?? '--'">{{ isset($ssrPollen['today']['overall_risk_index']) ? $ssrPollen['today']['overall_risk_index'] : '--' }}</div>
-                                <div class="text-[9px] text-gray-400 uppercase tracking-wide">{{ __('Overall') }}</div>
+                                <div class="text-[9px] text-ui-muted uppercase tracking-wide">{{ __('Overall') }}</div>
                             </div>
                         </div>
                         <div>
-                            <div class="font-semibold text-sm"
+                            <div data-weather-colour-text class="font-semibold text-sm"
                                  :style="'color:' + (pollenData?.today?.overall_color || '#9ca3af')"
                                  x-text="pollenData ? pollenTranslateRisk(pollenData.today?.overall_risk) : '—'">—</div>
-                            <div class="text-xs text-gray-400">{{ __('Overall Pollen Risk') }}</div>
+                            <div class="text-xs text-ui-muted">{{ __('Overall Pollen Risk') }}</div>
                         </div>
                     </div>
 
                     {{-- Grass / Tree / Weed grid (always rendered) --}}
                     <div class="grid grid-cols-3 gap-2 text-center text-xs">
                         <template x-for="[cat, icon] in [['grass','🌾'],['tree','🌳'],['weed','🌿']]" :key="cat">
-                            <div class="rounded-lg p-2 bg-white/5"
+                            <div class="rounded-lg p-2 bg-ui-overlay/5"
                                  :style="pollenData?.today?.[cat]?.color ? 'background-color:' + pollenData.today[cat].color + '15' : ''">
                                 <div class="mb-0.5" x-text="icon"></div>
-                                <div class="text-gray-400 mb-0.5" x-text="translations.pollenTypes[cat] || cat"></div>
-                                <div class="font-semibold"
+                                <div class="text-ui-muted mb-0.5" x-text="translations.pollenTypes[cat] || cat"></div>
+                                <div data-weather-colour-text class="font-semibold"
                                      :style="pollenData?.today?.[cat]?.color ? 'color:' + pollenData.today[cat].color : 'color:#9ca3af'"
                                      x-text="pollenData?.today?.[cat]?.risk ? pollenTranslateRisk(pollenData.today[cat].risk) : '—'">—</div>
                             </div>
@@ -3696,18 +3699,18 @@
                     @if($skyWaterFeatureEnabled)
                         <a href="{{ route('water') }}"
                        id="tide"
-                       class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-cyan-500/30 transition-colors cursor-pointer"
+                       class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-cyan-500/30 transition-colors cursor-pointer"
                        data-widget="tide"
                        @click="editMode && $event.preventDefault()"
                        @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
                         <div id="tide"
-                             class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                             class="relative block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="tide"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                        <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                            <svg class="w-4 h-4 text-data-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                             </svg>
                         </div>
@@ -3715,9 +3718,9 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold">🌊 {{ __('Water') }}</h3>
                             @if($skyWaterFeatureEnabled)
-                                <span class="text-xs text-gray-500">{{ __('More') }} →</span>
+                                <span class="text-xs text-ui-subtle">{{ __('More') }} →</span>
                             @else
-                                <span class="text-xs text-amber-400">{{ __('Page disabled') }}</span>
+                                <span class="text-xs text-data-amber-400">{{ __('Page disabled') }}</span>
                             @endif
                         </div>
 
@@ -3727,32 +3730,32 @@
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 bg-cyan-900/30 border border-cyan-800/40">
                                         <div class="text-center">
-                                            <div class="text-lg font-bold leading-none text-cyan-300"
+                                            <div class="text-lg font-bold leading-none text-data-cyan-300"
                                                  x-text="tideData?.current_level_cm != null ? Math.round(tideData.current_level_cm) : '--'">{{ $ssrTideCurrentLevelLabel }}</div>
-                                            <div class="text-[9px] text-gray-400">cm</div>
+                                            <div class="text-[9px] text-ui-muted">cm</div>
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="font-semibold text-sm text-white"
+                                        <div class="font-semibold text-sm text-ui-fg"
                                              x-text="tideData?.station ?? '—'">—</div>
                                         <div class="text-xs"
-                                             :class="{'text-cyan-400': tideData?.trend === 'rising', 'text-blue-400': tideData?.trend === 'falling', 'text-gray-400': !tideData?.trend || tideData?.trend === 'steady'}"
+                                             :class="{'text-data-cyan-400': tideData?.trend === 'rising', 'text-data-blue-400': tideData?.trend === 'falling', 'text-ui-muted': !tideData?.trend || tideData?.trend === 'steady'}"
                                              x-text="tideData?.trend === 'rising' ? '↑ {{ __('Rising') }}' : tideData?.trend === 'falling' ? '↓ {{ __('Falling') }}' : '→ {{ __('Steady') }}'">—</div>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2 text-xs mb-3">
                                     <div class="rounded-lg p-2 bg-cyan-900/20 border border-cyan-800/30">
-                                        <div class="text-gray-400 mb-0.5">🔼 {{ __('High Tide') }}</div>
-                                        <div class="font-semibold text-cyan-300"
+                                        <div class="text-ui-muted mb-0.5">🔼 {{ __('High Tide') }}</div>
+                                        <div class="font-semibold text-data-cyan-300"
                                              x-text="tideData?.next_high ? new Date(tideData.next_high.timestamp_unix).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '--'">{{ $ssrTideNextHighTimeLabel }}</div>
-                                        <div class="text-gray-400"
+                                        <div class="text-ui-muted"
                                              x-text="tideData?.next_high ? Math.round(tideData.next_high.level_cm) + ' cm' : ''"></div>
                                     </div>
                                     <div class="rounded-lg p-2 bg-blue-950/30 border border-blue-900/30">
-                                        <div class="text-gray-400 mb-0.5">🔽 {{ __('Low Tide') }}</div>
-                                        <div class="font-semibold text-blue-300"
+                                        <div class="text-ui-muted mb-0.5">🔽 {{ __('Low Tide') }}</div>
+                                        <div class="font-semibold text-data-blue-300"
                                              x-text="tideData?.next_low ? new Date(tideData.next_low.timestamp_unix).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '--'">{{ $ssrTideNextLowTimeLabel }}</div>
-                                        <div class="text-gray-400"
+                                        <div class="text-ui-muted"
                                              x-text="tideData?.next_low ? Math.round(tideData.next_low.level_cm) + ' cm' : ''"></div>
                                     </div>
                                 </div>
@@ -3760,19 +3763,19 @@
                         </template>
 
                         {{-- Wave height + Sea temp: only when wave/SST data is available --}}
-                        <div x-show="waterWaves && (waterWaves.wave_height_m != null || waterWaves.sst_c != null)" class="text-xs border-t border-white/10 pt-2 flex gap-3 flex-wrap">
+                        <div x-show="waterWaves && (waterWaves.wave_height_m != null || waterWaves.sst_c != null)" class="text-xs border-t border-ui-line/10 pt-2 flex gap-3 flex-wrap">
                             <template x-if="waterWaves?.wave_height_m != null">
                                 <div class="flex items-center gap-1">
                                     <span>〰</span>
-                                    <span class="text-gray-400">{{ __('Wave Height') }}:</span>
-                                    <span class="font-semibold text-blue-300" x-text="units === 'imperial' ? (waterWaves.wave_height_m * 3.28084).toFixed(1) + ' ft' : waterWaves.wave_height_m.toFixed(2) + ' m'"></span>
+                                    <span class="text-ui-muted">{{ __('Wave Height') }}:</span>
+                                    <span class="font-semibold text-data-blue-300" x-text="units === 'imperial' ? (waterWaves.wave_height_m * 3.28084).toFixed(1) + ' ft' : waterWaves.wave_height_m.toFixed(2) + ' m'"></span>
                                 </div>
                             </template>
                             <template x-if="waterWaves?.sst_c != null">
                                 <div class="flex items-center gap-1">
                                     <span>🌡</span>
-                                    <span class="text-gray-400">{{ __('Sea Temperature') }}:</span>
-                                    <span class="font-semibold text-orange-300" x-text="units === 'imperial' ? ((waterWaves.sst_c * 9/5) + 32).toFixed(1) + '°F' : waterWaves.sst_c.toFixed(1) + '°C'"></span>
+                                    <span class="text-ui-muted">{{ __('Sea Temperature') }}:</span>
+                                    <span class="font-semibold text-data-orange-300" x-text="units === 'imperial' ? ((waterWaves.sst_c * 9/5) + 32).toFixed(1) + '°F' : waterWaves.sst_c.toFixed(1) + '°C'"></span>
                                 </div>
                             </template>
                         </div>
@@ -3785,24 +3788,24 @@
 
 	                <!-- Extra Sensors -->
 	                <template x-if="isWidgetEnabled('indoor')">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="indoor"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <!-- Offline Badge (Centered) -->
                     <div x-cloak x-show="healthStatus.sensor?.is_stale === true" class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 text-white bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
+                        <div class="flex flex-col items-center gap-2 text-ui-fg bg-red-600/90 backdrop-blur-sm px-6 py-4 rounded-xl shadow-2xl animate-pulse">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                             <span class="text-lg font-bold">{{ __('Offline') }}</span>
                         </div>
                     </div>                    <!-- Update Timestamp (Top Center) -->
-                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-gray-400 bg-black/20 px-1.5 py-0.5 rounded z-10">
+                    <div x-cloak x-show="healthStatus.sensor?.is_stale !== true && getHealthTimestamp('sensor')" class="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 text-[10px] text-ui-muted bg-ui-timestamp px-1.5 py-0.5 rounded z-10">
                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -3812,7 +3815,7 @@
                     <h3 class="font-semibold mb-4">{{ __('Extra Sensors') }}</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-400 flex items-center gap-1">
+                            <span class="text-ui-muted flex items-center gap-1">
 		                                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/thermometer.svg') }}"
 		                                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/thermometer.svg'"
 		                                     class="w-4 h-4" alt="">
@@ -3821,7 +3824,7 @@
                             <span class="font-bold data-value" x-text="formatTemp(current?.temperature_indoor)"></span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-gray-400 flex items-center gap-1">
+                            <span class="text-ui-muted flex items-center gap-1">
 		                                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/humidity.svg') }}"
 		                                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/humidity.svg'"
 		                                     class="w-4 h-4" alt="">
@@ -3833,7 +3836,7 @@
                         <template x-if="extraSensors?.temps">
                             <template x-for="(temp, key) in extraSensors.temps" :key="key">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-400 flex items-center gap-1">
+                                    <span class="text-ui-muted flex items-center gap-1">
 		                                        <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/thermometer.svg') }}"
 		                                             :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/thermometer.svg'"
 		                                             class="w-4 h-4" alt="">
@@ -3847,7 +3850,7 @@
                         <template x-if="extraSensors?.soil">
                             <template x-for="(data, idx) in extraSensors.soil" :key="idx">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-400" x-text="'🌱 ' + getSoilLabel(idx)"></span>
+                                    <span class="text-ui-muted" x-text="'🌱 ' + getSoilLabel(idx)"></span>
                                     <span class="font-bold data-value" x-text="data.moisture ? data.moisture + '%' : '--'"></span>
                                 </div>
                             </template>
@@ -3859,63 +3862,63 @@
 	                <!-- Lightning -->
 	                <template x-if="isWidgetEnabled('lightning')">
 		                <a href="{{ route('lightning') }}"
-		                   class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                   class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                   data-widget="lightning"
 		                   @click="editMode && $event.preventDefault()"
 		                   @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">⚡ {{ __('Lightning') }}</h3>
-                        <span class="text-xs" :class="lightning ? 'text-yellow-400' : 'text-gray-400'"
+                        <span class="text-xs" :class="lightning ? 'text-data-yellow-400' : 'text-ui-muted'"
                               x-text="lightning?.time_ago ? lightning.time_ago : translations.noActivity"></span>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-20 h-20 rounded-full flex items-center justify-center"
-                             :class="lightning?.distance && lightning.distance < 30 ? 'bg-yellow-500/20' : 'bg-gray-500/20'">
+                             :class="lightning?.distance && lightning.distance < 30 ? 'bg-yellow-500/20' : 'bg-ui-inactive/20'">
                             <div class="text-center">
                                 <div class="text-2xl font-bold" 
-                                     :class="lightning?.distance && lightning.distance < 30 ? 'text-yellow-400' : 'text-gray-400'"
+                                     :class="lightning?.distance && lightning.distance < 30 ? 'text-data-yellow-400' : 'text-ui-muted'"
                                      x-text="formatDistanceValue(lightning?.distance, 0)"></div>
-                                <div class="text-[10px] text-gray-400" x-text="distanceUnit()"></div>
+                                <div class="text-[10px] text-ui-muted" x-text="distanceUnit()"></div>
                             </div>
                         </div>
                         <div class="flex-1 space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Today') }}</span>
+                                <span class="text-ui-muted">{{ __('Today') }}</span>
                                 <span class="font-bold" x-text="(lightning?.count_daily ?? 0) + ' ' + translations.strikes"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Last distance') }}</span>
-                                <span class="font-bold text-yellow-400" x-text="formatDistance(lightning?.distance, 0)"></span>
+                                <span class="text-ui-muted">{{ __('Last distance') }}</span>
+                                <span class="font-bold text-data-yellow-400" x-text="formatDistance(lightning?.distance, 0)"></span>
                             </div>
                         </div>
                     </div>
-                    <div class="text-xs text-center mt-3 text-blue-400 hover:text-blue-300">{{ __('Map') }} →</div>
+                    <div class="text-xs text-center mt-3 text-data-blue-400 hover:text-data-blue-300">{{ __('Map') }} →</div>
 	                </a>
 	                </template>
 
 	                <!-- Battery Status Widget -->
 	                <template x-if="isWidgetEnabled('battery') && Object.keys(batteryStatus).length > 0">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="battery"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">🔋 {{ __('Battery Status') }}</h3>
-                        <span class="text-xs text-gray-400">{{ __('Sensor status') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Sensor status') }}</span>
                     </div>
                     <div class="space-y-2 text-sm">
                         <template x-for="(value, key) in batteryStatus" :key="key">
-                            <div class="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
-                                <span class="text-gray-400 flex items-center gap-2">
+                            <div class="flex justify-between items-center py-1 border-b border-ui-line/5 last:border-0">
+                                <span class="text-ui-muted flex items-center gap-2">
                                     <span x-text="getBatteryIcon(key, value)"></span>
                                     <span x-text="getBatteryLabel(key)"></span>
                                 </span>
@@ -3930,34 +3933,34 @@
 
 	                <!-- Aurora / Kp Index Widget -->
 	                <template x-if="isWidgetEnabled('aurora') && aurora">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="aurora"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">✨ {{ __('Aurora') }} / {{ __('Kp Index') }}</h3>
-                        <span class="text-xs text-gray-400">{{ __('Geomagnetic activity') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Geomagnetic activity') }}</span>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-20 h-20 rounded-full flex items-center justify-center" :class="getKpBgColor(aurora?.kp)">
                             <div class="text-center">
                                 <div class="text-3xl font-bold" :class="getKpColor(aurora?.kp)"
                                      x-text="aurora?.kp?.toFixed(1) ?? '--'"></div>
-                                <div class="text-[10px] text-gray-400">Kp</div>
+                                <div class="text-[10px] text-ui-muted">Kp</div>
                             </div>
                         </div>
                         <div class="flex-1 space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Status') }}</span>
+                                <span class="text-ui-muted">{{ __('Status') }}</span>
                                 <span class="font-bold" :class="getKpColor(aurora?.kp)"
                                       x-text="getKpLevel(aurora?.kp)"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Aurora chance') }}</span>
+                                <span class="text-ui-muted">{{ __('Aurora chance') }}</span>
                                 <span class="font-bold" x-text="getKpChance(aurora?.kp)"></span>
                             </div>
                         </div>
@@ -3967,11 +3970,11 @@
 
 	                <!-- Extra Temperature Sensors Widget -->
 	                <template x-if="isWidgetEnabled('extra_temps') && extraSensors?.temps && Object.keys(extraSensors.temps).length > 0">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="extra_temps"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
@@ -3982,12 +3985,12 @@
 		                                 class="w-5 h-5" alt="">
                             {{ __('Extra Sensors') }}
                         </h3>
-                        <span class="text-xs text-gray-400">{{ __('Temperature') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Temperature') }}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <template x-for="(temp, key) in extraSensors?.temps || {}" :key="key">
-                            <div class="bg-white/5 rounded-lg p-3 text-center">
-                                <div class="text-xs text-gray-400" x-text="getExtraTempLabel(key)"></div>
+                            <div class="bg-ui-overlay/5 rounded-lg p-3 text-center">
+                                <div class="text-xs text-ui-muted" x-text="getExtraTempLabel(key)"></div>
                                 <div class="text-xl font-bold" x-text="formatTemp(temp)"></div>
                             </div>
                         </template>
@@ -3997,24 +4000,24 @@
 
 	                <!-- Soil Sensors Widget -->
 	                <template x-if="isWidgetEnabled('soil') && extraSensors?.soil && Object.keys(extraSensors.soil).length > 0">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="soil"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">🌱 {{ __('Soil sensors') }}</h3>
-                        <span class="text-xs text-gray-400">{{ __('Moisture & Temperature') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Moisture & Temperature') }}</span>
                     </div>
                     <div class="space-y-3 text-sm">
                         <template x-for="(data, key) in extraSensors?.soil || {}" :key="key">
-                            <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
-                                <span class="text-gray-400" x-text="getSoilLabel(key)"></span>
+                            <div class="flex justify-between items-center py-2 border-b border-ui-line/5 last:border-0">
+                                <span class="text-ui-muted" x-text="getSoilLabel(key)"></span>
                                 <div class="flex gap-4">
-                                    <span class="font-bold text-blue-400" x-text="data?.moisture !== undefined ? data.moisture + '%' : '--'"></span>
+                                    <span class="font-bold text-data-blue-400" x-text="data?.moisture !== undefined ? data.moisture + '%' : '--'"></span>
                                     <span class="font-bold" x-text="formatTemp(data?.temperature)"></span>
                                 </div>
                             </div>
@@ -4025,28 +4028,28 @@
 
 	                <!-- PM2.5 Widget -->
 	                <template x-if="isWidgetEnabled('pm25') && (Object.keys(pm25Channels()).length > 0 || extraSensors?.pm10?.value != null)">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="pm25"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-semibold">💨 {{ __('PM2.5 Air Quality') }}</h3>
-                        <span class="text-xs text-gray-400">{{ __('Fine dust') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Fine dust') }}</span>
                     </div>
                     <div class="space-y-3 text-sm">
                         <template x-for="(value, key) in pm25Channels()" :key="key">
-                            <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
-                                <span class="text-gray-400" x-text="getPm25Label(key)"></span>
+                            <div class="flex justify-between items-center py-2 border-b border-ui-line/5 last:border-0">
+                                <span class="text-ui-muted" x-text="getPm25Label(key)"></span>
                                 <span class="font-bold" x-text="value + ' µg/m³'"></span>
                             </div>
                         </template>
                         <template x-if="extraSensors?.pm10?.value !== undefined && extraSensors?.pm10?.value !== null">
-                            <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
-                                <span class="text-gray-400">PM10</span>
+                            <div class="flex justify-between items-center py-2 border-b border-ui-line/5 last:border-0">
+                                <span class="text-ui-muted">PM10</span>
                                 <span class="font-bold" x-text="extraSensors.pm10.value + ' µg/m³'"></span>
                             </div>
                         </template>
@@ -4056,11 +4059,11 @@
 
 	                <!-- CO2 Widget -->
 	                <template x-if="isWidgetEnabled('co2') && extraSensors?.co2">
-		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
 		                     data-widget="co2"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
@@ -4071,23 +4074,23 @@
 		                                 class="w-5 h-5" alt="">
                             {{ __('CO2 Monitor') }}
                         </h3>
-                        <span class="text-xs text-gray-400">{{ __('Carbon dioxide') }}</span>
+                        <span class="text-xs text-ui-muted">{{ __('Carbon dioxide') }}</span>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-20 h-20 rounded-full flex items-center justify-center"
                              :class="extraSensors?.co2 > 1000 ? 'bg-yellow-500/20' : 'bg-green-500/20'">
                             <div class="text-center">
                                 <div class="text-2xl font-bold" 
-                                     :class="extraSensors?.co2 > 1000 ? 'text-yellow-400' : 'text-green-400'"
+                                     :class="extraSensors?.co2 > 1000 ? 'text-data-yellow-400' : 'text-data-green-400'"
                                      x-text="extraSensors?.co2 ?? '--'"></div>
-                                <div class="text-[10px] text-gray-400">ppm</div>
+                                <div class="text-[10px] text-ui-muted">ppm</div>
                             </div>
                         </div>
                         <div class="flex-1 space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Quality') }}</span>
+                                <span class="text-ui-muted">{{ __('Quality') }}</span>
                                 <span class="font-bold" 
-                                      :class="extraSensors?.co2 > 1000 ? 'text-yellow-400' : 'text-green-400'"
+                                      :class="extraSensors?.co2 > 1000 ? 'text-data-yellow-400' : 'text-data-green-400'"
                                       x-text="extraSensors?.co2 > 1000 ? translations.moderate : translations.good"></span>
                             </div>
                         </div>
@@ -4102,13 +4105,13 @@
             @if($ssrDashboard && count($ssrFallbackGroups['sortable-media-row'] ?? []) > 0)
                 @foreach($ssrFallbackGroups['sortable-media-row'] as $ssrCard)
                     <article x-show="ssrFallbackVisible"
-                             class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                             class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                              data-widget="{{ $ssrCard['id'] ?? 'widget' }}">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="font-semibold">{{ $ssrCard['title'] ?? __('Weather') }}</h2>
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wide">SSR</span>
+                            <span class="text-[10px] text-ui-subtle uppercase tracking-wide">SSR</span>
                         </div>
-                        <div class="space-y-1.5 text-sm text-gray-300">
+                        <div class="space-y-1.5 text-sm text-ui-secondary">
                             @foreach(($ssrCard['lines'] ?? []) as $ssrLine)
                                 <p class="leading-snug">{{ $ssrLine }}</p>
                             @endforeach
@@ -4118,7 +4121,7 @@
             @endif
             <!-- Webcam -->
             <template x-if="isWidgetEnabled('webcam')">
-                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                      data-widget="webcam"
                      @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)"
                      x-data="{
@@ -4368,8 +4371,8 @@
                  }"
                  x-init="init()"
                  @keydown.escape.window="closeStreamModal()">
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
@@ -4380,7 +4383,7 @@
                         <button x-show="displayMode === 'stream' && streamType !== 'none' && streamUrl"
                                 @click="toggleStream()"
                                 class="text-xs px-2 py-1 rounded transition-colors flex items-center gap-1"
-                                :class="isStreaming ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'"
+                                :class="isStreaming ? 'bg-red-500/20 text-data-red-400 hover:bg-red-500/30' : 'bg-green-500/20 text-data-green-400 hover:bg-green-500/30'"
                                 :title="isStreaming ? '{{ __('Stop stream') }}' : '{{ __('Start stream') }}'">
                             <svg x-show="isStreaming" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                                 <rect x="6" y="4" width="4" height="16" rx="1"/>
@@ -4391,10 +4394,10 @@
                             </svg>
                             <span x-text="isStreaming ? '{{ __('Stop') }}' : '{{ __('Play') }}'"></span>
                         </button>
-                        <span class="text-xs text-gray-400" x-show="isStreaming">{{ __('Live') }}</span>
-                        <span class="text-xs text-yellow-400" x-show="displayMode === 'stream' && !isStreaming">📱 {{ __('Data saver') }}</span>
+                        <span class="text-xs text-ui-muted" x-show="isStreaming">{{ __('Live') }}</span>
+                        <span class="text-xs text-data-yellow-400" x-show="displayMode === 'stream' && !isStreaming">📱 {{ __('Data saver') }}</span>
                         <span x-show="displayMode === 'image' || displayMode === 'both'"
-                              class="inline-flex max-w-36 items-center gap-1.5 whitespace-nowrap text-xs text-gray-400"
+                              class="inline-flex max-w-36 items-center gap-1.5 whitespace-nowrap text-xs text-ui-muted"
                               style="display: none;">
                             <span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
                                   :class="imageLoadFailed ? 'bg-red-400' : (imageUpdatedAt ? 'bg-green-400' : 'bg-amber-400')"></span>
@@ -4408,7 +4411,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="aspect-video bg-black/30 rounded-xl overflow-hidden relative">
+                <div data-theme-surface="dark" class="aspect-video bg-black/30 rounded-xl overflow-hidden relative">
                     <!-- Stream display (when mode is 'stream') - Show first so it has priority -->
                     <div x-show="displayMode === 'stream' && streamType === 'youtube' && streamUrl && isStreaming"
                          class="absolute inset-0"
@@ -4425,16 +4428,16 @@
                     <!-- Paused state overlay for YouTube - tap to play -->
                     <div x-show="displayMode === 'stream' && streamType === 'youtube' && streamUrl && !isStreaming"
                          @click="toggleStream()"
-                         class="absolute inset-0 flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors"
+                         data-theme-surface="dark" class="absolute inset-0 flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors"
                          style="display: none;">
                         <div class="text-center pointer-events-none">
-                            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                                <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-ui-overlay/10 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-ui-fg ml-1" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
                             </div>
-                            <p class="text-white text-sm font-medium">{{ __('Video stream paused') }}</p>
-                            <p class="text-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
+                            <p class="text-ui-fg text-sm font-medium">{{ __('Video stream paused') }}</p>
+                            <p class="text-data-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
                         </div>
                     </div>
 
@@ -4453,15 +4456,15 @@
                                 <!-- Paused state - tap to play -->
                                 <div x-show="!isStreaming"
                                      @click="toggleStream()"
-                                     class="w-full h-full flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors">
+                                     data-theme-surface="dark" class="w-full h-full flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors">
                                     <div class="text-center pointer-events-none">
-                                        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-ui-overlay/10 flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-ui-fg ml-1" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
                                         </div>
-                                        <p class="text-white text-sm font-medium">{{ __('Video stream paused') }}</p>
-                                        <p class="text-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
+                                        <p class="text-ui-fg text-sm font-medium">{{ __('Video stream paused') }}</p>
+                                        <p class="text-data-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -4490,15 +4493,15 @@
                                 <!-- Paused state - tap to play -->
                                 <div x-show="!isStreaming"
                                      @click="toggleStream()"
-                                     class="w-full h-full flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors">
+                                     data-theme-surface="dark" class="w-full h-full flex items-center justify-center bg-black/80 cursor-pointer hover:bg-black/70 transition-colors">
                                     <div class="text-center pointer-events-none">
-                                        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-ui-overlay/10 flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-ui-fg ml-1" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
                                         </div>
-                                        <p class="text-white text-sm font-medium">{{ __('Video stream paused') }}</p>
-                                        <p class="text-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
+                                        <p class="text-ui-fg text-sm font-medium">{{ __('Video stream paused') }}</p>
+                                        <p class="text-data-yellow-400 text-xs mt-1">{{ __('Tap to play - saves mobile data') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -4509,7 +4512,7 @@
                          far better than the default this used to carry, which
                          was the author's own webcam. -->
                     <div x-show="(displayMode === 'image' || displayMode === 'both') && !imageUrl"
-                         class="absolute inset-0 flex items-center justify-center bg-black/40 text-sm text-gray-300"
+                         data-theme-surface="dark" class="absolute inset-0 flex items-center justify-center bg-black/40 text-sm text-ui-secondary"
                          style="display: none;">
                         📷 {{ __('Webcam not configured') }}
                     </div>
@@ -4531,7 +4534,7 @@
                              x-on:load="markImageLoaded()"
                              x-on:error="imageLoadFailed = true">
                         <div x-show="imageLoadFailed"
-                             class="absolute inset-0 flex items-center justify-center bg-black/50 text-sm text-gray-300"
+                             data-theme-surface="dark" class="absolute inset-0 flex items-center justify-center bg-black/50 text-sm text-ui-secondary"
                              style="display: none;">
                             📷 {{ __('Webcam not available') }}
                         </div>
@@ -4539,30 +4542,30 @@
                     
                     <!-- Live indicator -->
                     <div x-show="displayMode === 'stream' && isStreaming"
-                         class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded flex items-center gap-1.5 z-10"
+                         data-theme-surface="dark" class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded flex items-center gap-1.5 z-10"
                          style="display: none;">
-                        <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></span>
+                        <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full shadow-lg shadow-green-500/50"></span>
                         {{ __('Live') }}
                     </div>
                     
                     <!-- Click to view stream overlay (when mode is 'both') -->
                     <template x-if="displayMode === 'both' && streamType !== 'none' && streamUrl">
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors cursor-pointer z-20"
+                        <div data-theme-surface="dark" class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors cursor-pointer z-20"
                              @click.stop.prevent="openStreamModal()"
                              @mousedown.stop>
-                            <div class="bg-black/60 px-4 py-2 rounded-lg flex items-center gap-2 pointer-events-none">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div data-theme-surface="dark" class="bg-black/60 px-4 py-2 rounded-lg flex items-center gap-2 pointer-events-none">
+                                <svg class="w-5 h-5 text-on-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <span class="text-white text-sm font-medium">{{ __('Click to view live stream') }}</span>
+                                <span class="text-ui-fg text-sm font-medium">{{ __('Click to view live stream') }}</span>
                             </div>
                         </div>
                     </template>
                     
                     <!-- Debug info (remove in production) -->
                     <template x-if="displayMode === 'stream' && !streamUrl">
-                        <div class="absolute inset-0 flex items-center justify-center text-yellow-400 text-sm">
+                        <div class="absolute inset-0 flex items-center justify-center text-data-yellow-400 text-sm">
                             Stream URL not configured
                         </div>
                     </template>
@@ -4592,14 +4595,14 @@
                          x-transition:leave-end="opacity-0 scale-95">
                         <!-- Close button -->
                         <button @click="closeStreamModal()"
-                                class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 transition-colors">
+                                data-theme-surface="dark" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black/80 text-ui-fg rounded-full p-2 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                         
                         <!-- Stream container -->
-                        <div class="w-full h-full bg-black rounded-xl overflow-hidden">
+                        <div data-theme-surface="dark" class="w-full h-full bg-black rounded-xl overflow-hidden">
                             <template x-if="streamType === 'youtube'">
                                 <iframe 
                                     :src="getEmbedUrl()"
@@ -4639,11 +4642,11 @@
 
             <!-- Radar -->
             <template x-if="isWidgetEnabled('radar')">
-                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                      data-widget="radar"
                      @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
@@ -4658,9 +4661,9 @@
                         ];
                         $providerLabel = $providerLabels[$radarProvider] ?? 'KNMI';
                     @endphp
-                    <span class="text-xs text-gray-400">{{ $providerLabel }}</span>
+                    <span class="text-xs text-ui-muted">{{ $providerLabel }}</span>
                 </div>
-                <div class="aspect-video bg-black/30 rounded-xl overflow-hidden relative">
+                <div data-theme-surface="dark" class="aspect-video bg-black/30 rounded-xl overflow-hidden relative">
                     @php
                         // Check if widget has separate provider setting
                         $widgetProvider = \App\Models\Setting::getValue('radar.widget_provider', '');
@@ -4682,24 +4685,24 @@
                             <button type="button"
                                     @click="radarZoomIn()"
                                     :disabled="!radarCanZoomIn()"
-                                    class="h-7 w-7 rounded bg-black/55 text-white text-sm leading-none flex items-center justify-center border border-white/20 hover:bg-black/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    data-theme-surface="dark" class="h-7 w-7 rounded bg-black/55 text-ui-fg text-sm leading-none flex items-center justify-center border border-ui-line/20 hover:bg-black/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                     aria-label="{{ __('Zoom in') }}">
                                 +
                             </button>
                             <button type="button"
                                     @click="radarZoomOut()"
                                     :disabled="!radarCanZoomOut()"
-                                    class="h-7 w-7 rounded bg-black/55 text-white text-sm leading-none flex items-center justify-center border border-white/20 hover:bg-black/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    data-theme-surface="dark" class="h-7 w-7 rounded bg-black/55 text-ui-fg text-sm leading-none flex items-center justify-center border border-ui-line/20 hover:bg-black/70 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                     aria-label="{{ __('Zoom out') }}">
                                 -
                             </button>
                         </div>
                         <div x-cloak
                              x-show="radarFrameTimeLabel"
-                             class="pointer-events-none absolute top-2 right-2 text-xs bg-black/60 px-2 py-1 rounded z-[1200]">
+                             data-theme-surface="dark" class="pointer-events-none absolute top-2 right-2 text-xs bg-black/60 px-2 py-1 rounded z-[1200]">
                             🕒 <span x-text="radarFrameTimeLabel"></span>
                         </div>
-                        <div class="pointer-events-none absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded z-[1200]">
+                        <div data-theme-surface="dark" class="pointer-events-none absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded z-[1200]">
                             📍 <span x-text="station.location || '{{ __('Station location') }}'"></span>
                         </div>
                     @elseif($radarProvider === 'rainviewer' && $rainviewerMode === 'iframe')
@@ -4766,12 +4769,12 @@
 	                                 class="w-full h-full object-contain"
 	                                 loading="lazy"
 	                                 decoding="async"
-	                                 onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-500\'>🛰️ {{ __('Radar not available') }}</div>'">
-	                            <div class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">
+	                                 onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-ui-subtle\'>🛰️ {{ __('Radar not available') }}</div>'">
+	                            <div data-theme-surface="dark" class="absolute bottom-2 left-2 text-xs bg-black/50 px-2 py-1 rounded">
 	                                📍 {{ __('Netherlands') }}
 	                            </div>
 	                        @else
-	                            <div class="absolute inset-0 flex items-center justify-center text-gray-500">🛰️ {{ __('Radar not available') }}</div>
+	                            <div class="absolute inset-0 flex items-center justify-center text-ui-subtle">🛰️ {{ __('Radar not available') }}</div>
 	                        @endif
 	                    @endif
                 </div>
@@ -4784,13 +4787,13 @@
                     @if($ssrDashboard && count($ssrFallbackGroups['sortable-widgets'] ?? []) > 0)
                         @foreach($ssrFallbackGroups['sortable-widgets'] as $ssrCard)
                             <article x-show="ssrFallbackVisible"
-                                     class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                                     class="ssr-fallback-block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                                      data-widget="{{ $ssrCard['id'] ?? 'widget' }}">
                                 <div class="flex items-center justify-between mb-3">
                                     <h2 class="font-semibold">{{ $ssrCard['title'] ?? __('Weather') }}</h2>
-                                    <span class="text-[10px] text-gray-500 uppercase tracking-wide">SSR</span>
+                                    <span class="text-[10px] text-ui-subtle uppercase tracking-wide">SSR</span>
                                 </div>
-                                <div class="space-y-1.5 text-sm text-gray-300">
+                                <div class="space-y-1.5 text-sm text-ui-secondary">
                                     @foreach(($ssrCard['lines'] ?? []) as $ssrLine)
                                         <p class="leading-snug">{{ $ssrLine }}</p>
                                     @endforeach
@@ -4800,61 +4803,61 @@
                     @endif
                 <template x-if="isWidgetEnabled('metar')">
                     @if($skyWaterFeatureEnabled)
-			                <a href="{{ route('aviation') }}" class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+			                <a href="{{ route('aviation') }}" class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                     data-widget="metar"
 		                     @click="editMode && $event.preventDefault()"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
-                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="metar"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
                 <!-- Drag Handle (visible in edit mode) -->
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="font-semibold">✈️ METAR</h3>
                     <div class="text-right">
-                        <span class="text-xs text-gray-400" x-text="metar?.[0]?.icao || defaultMetarIcao">{{ \App\Models\Setting::getValue('metar.primary_icao', '') }}</span>
+                        <span class="text-xs text-ui-muted" x-text="metar?.[0]?.icao || defaultMetarIcao">{{ \App\Models\Setting::getValue('metar.primary_icao', '') }}</span>
                         @unless($skyWaterFeatureEnabled)
-                            <span class="block text-[10px] text-amber-400">{{ __('Page disabled') }}</span>
+                            <span class="block text-[10px] text-data-amber-400">{{ __('Page disabled') }}</span>
                         @endunless
                     </div>
                 </div>
                 <template x-if="metar && metar[0]">
                     <div class="text-sm space-y-2">
                         <div class="flex justify-between">
-                            <span class="text-gray-400">{{ __('Temp') }}</span>
+                            <span class="text-ui-muted">{{ __('Temp') }}</span>
                             <span x-text="formatTemp(metar[0]?.temperature)"></span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">{{ __('Wind') }}</span>
+                            <span class="text-ui-muted">{{ __('Wind') }}</span>
                             <span x-text="(metar[0].wind?.direction ?? '--') + '° / ' + (metar[0].wind?.speed_kmh != null ? formatWind(metar[0].wind.speed_kmh, 0) : '--')"></span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">{{ __('Pressure') }}</span>
+                            <span class="text-ui-muted">{{ __('Pressure') }}</span>
                             <span x-text="formatPressure(metar[0]?.pressure)"></span>
                         </div>
                         <template x-if="metar[0].clouds?.length > 0">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Sky') }}</span>
+                                <span class="text-ui-muted">{{ __('Sky') }}</span>
                                 <span x-text="formatMetarClouds(metar[0].clouds)"></span>
                             </div>
                         </template>
                         <template x-if="metar[0].conditions?.length > 0">
                             <div class="flex justify-between">
-                                <span class="text-gray-400">{{ __('Weather') }}</span>
+                                <span class="text-ui-muted">{{ __('Weather') }}</span>
                                 <span x-text="formatMetarConditions(metar[0].conditions)"></span>
                             </div>
                         </template>
-                    <div class="text-xs text-gray-500 mt-2" x-text="translations.flightCategory + ': ' + (metar[0].flight_category || '--')"></div>
+                    <div class="text-xs text-ui-subtle mt-2" x-text="translations.flightCategory + ': ' + (metar[0].flight_category || '--')"></div>
                     </div>
                 </template>
                 <template x-if="!metar || !metar[0]">
-                    <div class="text-sm text-gray-400">
+                    <div class="text-sm text-ui-muted">
                         <p>{{ __('No METAR data available') }}</p>
                     </div>
                 </template>
@@ -4869,23 +4872,23 @@
                     @if($earthquakesFeatureEnabled)
                         <a href="{{ route('earthquakes') }}"
                            x-show="ssrFallbackVisible && isWidgetEnabled('earthquakes') && earthquakes.length === 0"
-                           class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+                           class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
                            data-widget="earthquakes"
                            @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
                         <div x-show="ssrFallbackVisible && isWidgetEnabled('earthquakes') && earthquakes.length === 0"
-                             class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                             class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="earthquakes"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-semibold">🌍 {{ __('Earthquakes') }}</h3>
-                        <span class="text-xs text-gray-400">{{ count($ssrEarthquakes) }} {{ __('in region') }}</span>
+                        <span class="text-xs text-ui-muted">{{ count($ssrEarthquakes) }} {{ __('in region') }}</span>
                     </div>
                     @if(count($ssrEarthquakes) > 0)
                         <div class="text-sm space-y-2">
@@ -4897,19 +4900,19 @@
                                         ? round((float) $eq['distance']) . ' km'
                                         : (isset($eq['distance_km']) && is_numeric($eq['distance_km']) ? round((float) $eq['distance_km']) . ' km' : '--');
                                 @endphp
-                                <div class="flex justify-between items-center p-2 bg-white/5 rounded-lg gap-2">
+                                <div class="flex justify-between items-center p-2 bg-ui-overlay/5 rounded-lg gap-2">
                                     <div class="flex items-center gap-2 min-w-0 flex-1">
-                                        <span class="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm bg-orange-500/20 text-orange-300">{{ $eqMagnitude }}</span>
+                                        <span class="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm bg-orange-500/20 text-data-orange-300">{{ $eqMagnitude }}</span>
                                         <div class="min-w-0">
-                                            <div class="text-xs text-gray-400 truncate">{{ \Illuminate\Support\Str::limit($eqPlace, 25) }}</div>
-                                            <div class="text-xs text-gray-400">{{ $eqDistance }}</div>
+                                            <div class="text-xs text-ui-muted truncate">{{ \Illuminate\Support\Str::limit($eqPlace, 25) }}</div>
+                                            <div class="text-xs text-ui-muted">{{ $eqDistance }}</div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <div class="text-sm text-gray-400 text-center py-2">
+                        <div class="text-sm text-ui-muted text-center py-2">
                             <p>✓ {{ __('No recent earthquakes') }}</p>
                         </div>
                     @endif
@@ -4921,34 +4924,34 @@
                 @endif
                 <template x-if="isWidgetEnabled('earthquakes')">
                     @if($earthquakesFeatureEnabled)
-		                <a href="{{ route('earthquakes') }}" class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                <a href="{{ route('earthquakes') }}" class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                     data-widget="earthquakes"
 		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
-                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="earthquakes"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="font-semibold">🌍 {{ __('Earthquakes') }}</h3>
-                    <span class="text-xs text-gray-400" x-text="earthquakes.length + ' ' + translations.inRegion">0 {{ __('in region') }}</span>
+                    <span class="text-xs text-ui-muted" x-text="earthquakes.length + ' ' + translations.inRegion">0 {{ __('in region') }}</span>
                 </div>
                 <template x-if="earthquakes.length > 0">
                     <div class="text-sm space-y-2">
                         <template x-for="eq in earthquakes.slice(0, 3)" :key="eq.id || eq.time">
-                            <div class="flex justify-between items-center p-2 bg-white/5 rounded-lg gap-2">
+                            <div class="flex justify-between items-center p-2 bg-ui-overlay/5 rounded-lg gap-2">
                                 <div class="flex items-center gap-2 min-w-0 flex-1">
                                     <span class="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm"
                                           :class="magnitudeColorClass(eq.magnitude)"
                                           x-text="eq.magnitude != null ? eq.magnitude.toFixed(1) : '--'"></span>
                                     <div class="min-w-0">
-                                        <div class="text-xs text-gray-400 truncate" x-text="(eq.place || eq.location || '')?.substring(0, 25) || translations.unknown"></div>
-                                        <div class="text-xs text-gray-400" x-text="formatDistance(eq.distance ?? eq.distance_km, 0)"></div>
+                                        <div class="text-xs text-ui-muted truncate" x-text="(eq.place || eq.location || '')?.substring(0, 25) || translations.unknown"></div>
+                                        <div class="text-xs text-ui-muted" x-text="formatDistance(eq.distance ?? eq.distance_km, 0)"></div>
                                     </div>
                                 </div>
                             </div>
@@ -4956,14 +4959,14 @@
                     </div>
                 </template>
                 <template x-if="earthquakes.length === 0">
-                    <div class="text-sm text-gray-400 text-center py-2">
+                    <div class="text-sm text-ui-muted text-center py-2">
                         <p>✓ {{ __('No recent earthquakes') }}</p>
                     </div>
                 </template>
                 @if($earthquakesFeatureEnabled)
-                    <div class="text-xs text-center mt-3 text-blue-400 hover:text-blue-300">{{ __('View all') }} →</div>
+                    <div class="text-xs text-center mt-3 text-data-blue-400 hover:text-data-blue-300">{{ __('View all') }} →</div>
                 @else
-                    <div class="text-xs text-center mt-3 text-amber-400">{{ __('Page disabled') }}</div>
+                    <div class="text-xs text-center mt-3 text-data-amber-400">{{ __('Page disabled') }}</div>
                 @endif
                 @if($earthquakesFeatureEnabled)
 		            </a>
@@ -4976,26 +4979,26 @@
                     @if($alertsFeatureEnabled)
                         <a href="{{ route('alerts') }}"
                            x-show="ssrFallbackVisible && isWidgetEnabled('alerts') && alerts.length === 0"
-                           class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+                           class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
                            data-widget="alerts"
                            @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
                         <div x-show="ssrFallbackVisible && isWidgetEnabled('alerts') && alerts.length === 0"
-                             class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                             class="ssr-fallback-block block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="alerts"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                        <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-semibold">⚠️ {{ __('Alerts') }}</h3>
                         @if(count($ssrAlerts) === 0)
-                            <span class="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">{{ __('None') }}</span>
+                            <span class="text-xs px-2 py-1 bg-green-500/20 text-data-green-400 rounded">{{ __('None') }}</span>
                         @else
-                            <span class="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-300">{{ count($ssrAlerts) }} {{ __('active') }}</span>
+                            <span class="text-xs px-2 py-1 rounded bg-yellow-500/20 text-data-yellow-300">{{ count($ssrAlerts) }} {{ __('active') }}</span>
                         @endif
                     </div>
                     @if(count($ssrAlerts) > 0)
@@ -5009,11 +5012,11 @@
                                 </div>
                             @endforeach
                             @if(count($ssrAlerts) > 3)
-                                <div class="text-xs text-gray-400 text-center">+{{ count($ssrAlerts) - 3 }}</div>
+                                <div class="text-xs text-ui-muted text-center">+{{ count($ssrAlerts) - 3 }}</div>
                             @endif
                         </div>
                     @else
-                        <div class="text-sm text-gray-400 text-center py-2">
+                        <div class="text-sm text-ui-muted text-center py-2">
                             <p>✓ {{ __('No active alerts') }}</p>
                             @php
                                 $alertsRegionCode = \App\Models\Setting::getValue('alerts.region_code', '');
@@ -5032,26 +5035,26 @@
                 <template x-if="isWidgetEnabled('alerts')">
                     @if($alertsFeatureEnabled)
 		                <a href="{{ route('alerts') }}"
-		                   class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 hover:border-orange-500/30 transition-colors cursor-pointer"
+		                   class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 hover:border-orange-500/30 transition-colors cursor-pointer"
 		                   data-widget="alerts"
 		                   @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @else
-                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10 transition-colors cursor-default"
+                        <div class="block sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10 transition-colors cursor-default"
                              data-widget="alerts"
                              @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
                     @endif
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20" @click.prevent.stop>
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20" @click.prevent.stop>
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="font-semibold">⚠️ {{ __('Alerts') }}</h3>
                     <template x-if="alerts.length === 0">
-                        <span class="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded">{{ __('None') }}</span>
+                        <span class="text-xs px-2 py-1 bg-green-500/20 text-data-green-400 rounded">{{ __('None') }}</span>
                     </template>
                     <template x-if="alerts.length > 0">
-                        <span class="text-xs px-2 py-1 rounded" 
+                        <span data-weather-colour-text class="text-xs px-2 py-1 rounded"
                               :style="'background-color: ' + (alerts[0]?.severity_color || '#FBEA55') + '20; color: ' + (alerts[0]?.severity_color || '#FBEA55')"
                               x-text="alerts.length + ' ' + translations.active"></span>
                     </template>
@@ -5072,12 +5075,12 @@
                                         || translations.weather"></span>
                             </div>
                         </template>
-                        <div x-show="alerts.length > 3" class="text-xs text-gray-400 text-center"
+                        <div x-show="alerts.length > 3" class="text-xs text-ui-muted text-center"
                              x-text="'+' + (alerts.length - 3)"></div>
                     </div>
                 </template>
                 <template x-if="alerts.length === 0">
-                    <div class="text-sm text-gray-400 text-center py-2">
+                    <div class="text-sm text-ui-muted text-center py-2">
                         <p>✓ {{ __('No active alerts') }}</p>
                         @php
                             $alertsRegionCode = \App\Models\Setting::getValue('alerts.region_code', '');
@@ -5088,7 +5091,7 @@
                     </div>
                 </template>
                 @unless($alertsFeatureEnabled)
-                    <div class="text-xs text-center mt-3 text-amber-400">{{ __('Page disabled') }}</div>
+                    <div class="text-xs text-center mt-3 text-data-amber-400">{{ __('Page disabled') }}</div>
                 @endunless
                 @if($alertsFeatureEnabled)
 		            </a>
@@ -5100,47 +5103,47 @@
             <!-- Advertisement Widget -->
             <div x-cloak
                  x-show="isWidgetEnabled('ads') && hasAdCode && canRenderAds"
-                 class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                 class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                  data-widget="ads"
                  @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold">📢 <span x-text="translations.advertisement"></span></h3>
-                    <span class="text-xs text-gray-400" x-show="translations.adCompany" x-text="translations.adCompany"></span>
+                    <span class="text-xs text-ui-muted" x-show="translations.adCompany" x-text="translations.adCompany"></span>
                 </div>
                 <div id="dashboard-ad-slot"
                      class="ad-container w-full transition-all duration-500"
                      :class="adSlotCollapsed ? 'min-h-0 overflow-hidden' : 'min-h-[100px]'"></div>
-                <p class="mt-3 text-xs text-gray-400" x-show="!adMounted || adFillState === 'loading'">{{ __('Advertisement loads when visible') }}</p>
-                <p class="mt-3 text-xs text-amber-300" x-show="adMounted && adFillState === 'unfilled'">{{ __('No ad available right now (ad network returned no fill).') }}</p>
-                <p class="mt-3 text-xs text-gray-400" x-show="adMounted && adFillState === 'error'">{{ __('Advertisement could not be loaded.') }}</p>
-                <p class="mt-1 text-[11px] text-gray-500" x-show="adMounted && adForceTestMode">{{ __('Local ad test mode is active.') }}</p>
+                <p class="mt-3 text-xs text-ui-muted" x-show="!adMounted || adFillState === 'loading'">{{ __('Advertisement loads when visible') }}</p>
+                <p class="mt-3 text-xs text-data-amber-300" x-show="adMounted && adFillState === 'unfilled'">{{ __('No ad available right now (ad network returned no fill).') }}</p>
+                <p class="mt-3 text-xs text-ui-muted" x-show="adMounted && adFillState === 'error'">{{ __('Advertisement could not be loaded.') }}</p>
+                <p class="mt-1 text-[11px] text-ui-subtle" x-show="adMounted && adForceTestMode">{{ __('Local ad test mode is active.') }}</p>
             </div>
 
             <div x-cloak
                  x-show="showAdsConsentPlaceholder"
-                 class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-white/10"
+                 class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
                  data-widget="ads"
                  @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
-                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-white/10 rounded-lg transition-colors z-20">
-                    <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                    <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                     </svg>
                 </div>
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold">📢 <span x-text="translations.advertisement"></span></h3>
-                    <span class="text-xs text-gray-400" x-show="translations.adCompany" x-text="translations.adCompany"></span>
+                    <span class="text-xs text-ui-muted" x-show="translations.adCompany" x-text="translations.adCompany"></span>
                 </div>
                 <div class="space-y-3 text-sm">
-                    <p class="text-gray-300" x-show="adsConsentStatus === 'rejected'">{{ __('You rejected ad cookies. Ads stay disabled until you change your choice.') }}</p>
-                    <p class="text-gray-300" x-show="adsConsentStatus !== 'rejected'">{{ __('Ads are blocked in your region until cookie consent is accepted.') }}</p>
+                    <p class="text-ui-secondary" x-show="adsConsentStatus === 'rejected'">{{ __('You rejected ad cookies. Ads stay disabled until you change your choice.') }}</p>
+                    <p class="text-ui-secondary" x-show="adsConsentStatus !== 'rejected'">{{ __('Ads are blocked in your region until cookie consent is accepted.') }}</p>
                     <button type="button"
                             @click="openCookieSettings()"
-                            class="inline-flex items-center rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-violet-500 transition-colors">
+                            class="inline-flex items-center rounded-lg bg-violet-600 text-on-accent px-3 py-1.5 text-xs font-medium text-ui-fg hover:bg-violet-500 transition-colors">
                         {{ __('Cookie settings') }}
                     </button>
                 </div>
@@ -5150,7 +5153,7 @@
         
         <!-- Edit Mode Indicator -->
         <div x-show="editMode" x-transition class="fixed bottom-20 lg:bottom-4 left-1/2 transform -translate-x-1/2 z-50" google-side-rail-overlap="true">
-            <div class="bg-violet-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm">
+            <div class="bg-violet-600 text-on-accent text-ui-fg px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm">
                 <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
@@ -5170,27 +5173,27 @@
          class="fixed inset-x-0 bottom-24 lg:bottom-4 px-4"
          google-side-rail-overlap="true"
          style="z-index: 2147483000;">
-        <div class="mx-auto max-w-2xl rounded-2xl border border-white/20 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-sm">
+        <div class="mx-auto max-w-2xl rounded-2xl border border-ui-line/20 bg-ui-slate-deep/95 p-4 shadow-2xl backdrop-blur-sm">
             <div class="space-y-3">
                 <div>
-                    <h2 class="text-sm font-semibold text-white" x-text="cookieBannerCopy.title"></h2>
-                    <p class="mt-1 text-xs text-gray-300" x-text="cookieBannerCopy.description"></p>
-                    <p class="mt-1 text-[11px] text-gray-400">
-                        <a href="{{ route('legal.privacy') }}" class="underline hover:text-gray-200">{{ __('Privacy Policy') }}</a>
+                    <h2 class="text-sm font-semibold text-ui-fg" x-text="cookieBannerCopy.title"></h2>
+                    <p class="mt-1 text-xs text-ui-secondary" x-text="cookieBannerCopy.description"></p>
+                    <p class="mt-1 text-[11px] text-ui-muted">
+                        <a href="{{ route('legal.privacy') }}" class="underline hover:text-ui-body">{{ __('Privacy Policy') }}</a>
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button"
                             @click="acceptAdsConsent()"
-                            class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
+                            class="rounded-lg bg-emerald-600 text-on-accent px-3 py-1.5 text-xs font-semibold text-ui-fg hover:bg-emerald-500 transition-colors"
                             x-text="cookieBannerCopy.accept"></button>
                     <button type="button"
                             @click="rejectAdsConsent()"
-                            class="rounded-lg bg-gray-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-gray-600 transition-colors"
+                            class="rounded-lg bg-ui-soft px-3 py-1.5 text-xs font-semibold text-ui-fg hover:bg-ui-disabled transition-colors"
                             x-text="cookieBannerCopy.reject"></button>
                     <button type="button"
                             @click="openCookieSettings()"
-                            class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+                            class="rounded-lg border border-ui-line/20 px-3 py-1.5 text-xs font-semibold text-ui-fg hover:bg-ui-overlay/10 transition-colors"
                             x-text="cookieBannerCopy.settings"></button>
                 </div>
             </div>
@@ -5203,30 +5206,30 @@
          class="fixed inset-0 flex items-center justify-center p-4"
          google-side-rail-overlap="true"
          style="z-index: 2147483100;">
-        <div class="absolute inset-0 bg-black/60" @click="closeCookieSettings()"></div>
-        <div class="relative w-full max-w-md rounded-2xl border border-white/20 bg-slate-900 p-5 shadow-2xl">
-            <h3 class="text-base font-semibold text-white">{{ __('Cookie settings') }}</h3>
-            <p class="mt-1 text-xs text-gray-300">{{ __('Essential cookies are always on. Ads/marketing cookies are optional.') }}</p>
+        <div data-theme-surface="dark" class="absolute inset-0 bg-black/60" @click="closeCookieSettings()"></div>
+        <div class="relative w-full max-w-md rounded-2xl border border-ui-line/20 bg-ui-slate-deep p-5 shadow-2xl">
+            <h3 class="text-base font-semibold text-ui-fg">{{ __('Cookie settings') }}</h3>
+            <p class="mt-1 text-xs text-ui-secondary">{{ __('Essential cookies are always on. Ads/marketing cookies are optional.') }}</p>
 
             <div class="mt-4 space-y-3">
-                <div class="rounded-xl border border-white/15 bg-white/5 p-3">
+                <div class="rounded-xl border border-ui-line/15 bg-ui-overlay/5 p-3">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="text-sm font-medium text-white">{{ __('Essential') }}</div>
-                            <div class="text-xs text-gray-400">{{ __('Required for basic website functionality.') }}</div>
+                            <div class="text-sm font-medium text-ui-fg">{{ __('Essential') }}</div>
+                            <div class="text-xs text-ui-muted">{{ __('Required for basic website functionality.') }}</div>
                         </div>
-                        <span class="rounded-md bg-emerald-600/25 px-2 py-1 text-xs font-medium text-emerald-300">{{ __('Always on') }}</span>
+                        <span class="rounded-md bg-emerald-600/25 px-2 py-1 text-xs font-medium text-data-emerald-300">{{ __('Always on') }}</span>
                     </div>
                 </div>
-                <div class="rounded-xl border border-white/15 bg-white/5 p-3">
+                <div class="rounded-xl border border-ui-line/15 bg-ui-overlay/5 p-3">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="text-sm font-medium text-white">{{ __('Ads / Marketing') }}</div>
-                            <div class="text-xs text-gray-400">{{ __('Allows loading ad network scripts and ad measurement.') }}</div>
+                            <div class="text-sm font-medium text-ui-fg">{{ __('Ads / Marketing') }}</div>
+                            <div class="text-xs text-ui-muted">{{ __('Allows loading ad network scripts and ad measurement.') }}</div>
                         </div>
                         <button type="button"
                                 @click="cookieSettingsAdsAllowed = !cookieSettingsAdsAllowed"
-                                :class="cookieSettingsAdsAllowed ? 'bg-violet-600' : 'bg-gray-500'"
+                                :class="cookieSettingsAdsAllowed ? 'bg-violet-600 text-on-accent' : 'bg-ui-inactive'"
                                 class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out">
                             <span :class="cookieSettingsAdsAllowed ? 'translate-x-5' : 'translate-x-0'" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out"></span>
                         </button>
@@ -5237,12 +5240,12 @@
             <div class="mt-5 flex items-center justify-end gap-2">
                 <button type="button"
                         @click="closeCookieSettings()"
-                        class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10 transition-colors">
+                        class="rounded-lg border border-ui-line/20 px-3 py-1.5 text-xs font-semibold text-ui-fg hover:bg-ui-overlay/10 transition-colors">
                     {{ __('Cancel') }}
                 </button>
                 <button type="button"
                         @click="saveCookieSettings()"
-                        class="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-500 transition-colors">
+                        class="rounded-lg bg-violet-600 text-on-accent px-3 py-1.5 text-xs font-semibold text-ui-fg hover:bg-violet-500 transition-colors">
                     {{ __('Save choices') }}
                 </button>
             </div>
@@ -5324,7 +5327,7 @@
          style="transform: translateX(-50%); width: calc(100% - 2rem); max-width: 420px">
         <template x-for="toast in weatherToasts" :key="toast.id">
             <div class="pointer-events-auto flex items-stretch rounded-xl shadow-xl overflow-hidden"
-                 style="background: #1e2130; border: 1px solid rgba(255,255,255,0.08)"
+                 style="background: rgb(var(--wn-card)); border: 1px solid rgb(var(--wn-line) / 0.15)"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 -translate-y-3"
                  x-transition:enter-end="opacity-100 translate-y-0"
@@ -5337,8 +5340,8 @@
                 <div class="flex items-start gap-2.5 px-3 py-2.5 flex-1 min-w-0">
                     <span class="text-lg flex-shrink-0 mt-0.5" x-text="toast.icon"></span>
                     <div class="flex-1 min-w-0">
-                        <div class="text-xs font-semibold text-white leading-snug" x-text="toast.title"></div>
-                        <div class="text-[10px] text-gray-400 mt-0.5 leading-snug" x-text="toast.message"></div>
+                        <div class="text-xs font-semibold text-ui-fg leading-snug" x-text="toast.title"></div>
+                        <div class="text-[10px] text-ui-muted mt-0.5 leading-snug" x-text="toast.message"></div>
                         @if($alertsFeatureEnabled)
                         <a href="{{ route('alerts') }}"
                            class="text-[10px] mt-1 inline-block hover:underline"
@@ -5346,7 +5349,7 @@
                         @endif
                     </div>
                     <button @click="dismissWeatherToast(toast.id)"
-                            class="flex-shrink-0 text-gray-500 hover:text-gray-200 text-lg leading-none mt-0.5"
+                            class="flex-shrink-0 text-ui-subtle hover:text-ui-body text-lg leading-none mt-0.5"
                             :aria-label="'{{ __('Dismiss') }}'">×</button>
                 </div>
             </div>
@@ -5355,7 +5358,7 @@
 
     <!-- PWA Install Prompt (Mobile only, non-intrusive) -->
     <div id="pwa-install-prompt" class="fixed bottom-20 left-4 right-4 z-50 hidden" google-side-rail-overlap="true">
-        <div class="glass rounded-2xl p-4 border border-white/20 shadow-xl max-w-md mx-auto">
+        <div class="glass rounded-2xl p-4 border border-ui-line/20 shadow-xl max-w-md mx-auto">
             <div class="flex items-start gap-3">
                 <div class="flex-shrink-0 w-10 h-10 bg-weather-accent/20 rounded-xl flex items-center justify-center">
                     <svg class="w-5 h-5 text-weather-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5363,20 +5366,20 @@
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-white">{{ __('Install App') }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ __('Add to home screen for quick access') }}</p>
+                    <p class="text-sm font-medium text-ui-fg">{{ __('Install App') }}</p>
+                    <p class="text-xs text-ui-muted mt-0.5">{{ __('Add to home screen for quick access') }}</p>
                 </div>
-                <button id="pwa-prompt-close" class="flex-shrink-0 p-1 text-gray-400 hover:text-white transition" aria-label="Close">
+                <button id="pwa-prompt-close" class="flex-shrink-0 p-1 text-ui-muted hover:text-ui-fg transition" aria-label="Close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
             <div class="flex gap-2 mt-3">
-                <button id="pwa-prompt-install" class="flex-1 px-4 py-2 bg-weather-accent text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition">
+                <button id="pwa-prompt-install" class="flex-1 px-4 py-2 bg-ui-accent-strong text-on-accent text-sm font-medium rounded-lg hover:bg-ui-accent-strong transition">
                     {{ __('Install') }}
                 </button>
-                <button id="pwa-prompt-later" class="px-4 py-2 text-gray-400 text-sm hover:text-white transition">
+                <button id="pwa-prompt-later" class="px-4 py-2 text-ui-muted text-sm hover:text-ui-fg transition">
                     {{ __('Later') }}
                 </button>
             </div>

@@ -22,11 +22,11 @@
 <div class="max-w-6xl mx-auto space-y-8">
     <header>
         <h1 class="text-2xl md:text-3xl font-bold">{{ __('Lightning') }}</h1>
-        <p class="text-gray-400 mt-1">{{ __('Lightning page intro', ['location' => $stationLocation]) }}</p>
+        <p class="text-ui-muted mt-1">{{ __('Lightning page intro', ['location' => $stationLocation]) }}</p>
     </header>
 
-    <div class="bg-weather-card rounded-2xl border border-white/10 overflow-hidden">
-        <div class="blitz-frame-wrap relative bg-black/10"
+    <div class="bg-weather-card rounded-2xl border border-ui-line/10 overflow-hidden">
+        <div data-theme-surface="dark" class="blitz-frame-wrap relative bg-black/10"
              style="height: clamp(380px, 68vh, 760px); height: clamp(380px, 68dvh, 760px);">
             <iframe
                 class="blitz-frame absolute inset-0"
@@ -37,20 +37,20 @@
                 allow="fullscreen">
             </iframe>
         </div>
-        <div class="px-4 py-3 text-xs text-gray-400 border-t border-white/10">
+        <div class="px-4 py-3 text-xs text-ui-muted border-t border-ui-line/10">
             {{ __('Data source') }}: Blitzortung.org
         </div>
     </div>
 
-    <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="lightning-about-heading">
+    <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="lightning-about-heading">
         <h2 id="lightning-about-heading" class="text-xl font-semibold mb-4">{{ __('Lightning page about heading') }}</h2>
-        <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+        <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
             <p>{{ __('Lightning page about body 1') }}</p>
             <p>{{ __('Lightning page about body 2') }}</p>
             <p>{{ __('Lightning page about body 3') }}</p>
         </div>
-        <footer class="mt-6 pt-4 border-t border-white/10">
-            <p class="text-xs text-gray-500">{{ __('Lightning page sources') }}</p>
+        <footer class="mt-6 pt-4 border-t border-ui-line/10">
+            <p class="text-xs text-ui-subtle">{{ __('Lightning page sources') }}</p>
         </footer>
     </article>
 </div>

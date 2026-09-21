@@ -1,7 +1,7 @@
 const initFireWeatherChart = async () => {
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for fire weather page:', error);
         return;
@@ -19,8 +19,8 @@ const initFireWeatherChart = async () => {
     const isDark           = document.documentElement.classList.contains('dark');
     const effectsDisabled  = document.body.classList.contains('effects-disabled');
     const locale           = window.Meteo?.jsLocale || 'en-US';
-    const axisLabelColor   = isDark ? '#cbd5f5' : '#475569';
-    const gridColor        = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor   = '#cbd5f5'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor        = '#1f2937';
 
     // Colour each point based on Angström danger level
     const pointColors = values.map((v) => {

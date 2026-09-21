@@ -4,7 +4,7 @@ const initHistoryCharts = async () => {
 
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for history page:', error);
         return;
@@ -16,8 +16,8 @@ const initHistoryCharts = async () => {
     const locale = window.Meteo?.jsLocale || 'en-US';
     const units = window.Meteo?.activeUnits || 'metric';
 
-    const axisLabelColor = isDark ? '#cbd5f5' : '#475569';
-    const gridColor = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor = '#cbd5f5'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor = '#1f2937';
     const chartTheme = { mode: isDark ? 'dark' : 'light' };
     const effectsDisabled = document.body.classList.contains('effects-disabled');
 
@@ -135,7 +135,7 @@ const initHistoryCharts = async () => {
         const el = document.getElementById(id);
         if (!el) return;
         el.textContent = strings.no_data || 'No data available';
-        el.classList.add('text-sm', 'text-gray-400');
+        el.classList.add('text-sm', 'text-ui-muted');
     };
 
     const compass16 = (deg) => {

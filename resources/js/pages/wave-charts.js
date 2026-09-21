@@ -3,7 +3,7 @@
 const initWaveChart = async () => {
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for wave chart:', error);
         return;
@@ -23,8 +23,8 @@ const initWaveChart = async () => {
 
     const isDark          = document.documentElement.classList.contains('dark');
     const effectsDisabled = document.body.classList.contains('effects-disabled');
-    const axisLabelColor  = isDark ? '#cbd5e1' : '#475569';
-    const gridColor       = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor  = '#cbd5e1'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor       = '#1f2937';
 
     const chartData = series.map((p) => ({ x: p.timestamp_unix, y: p.value }));
 
@@ -122,7 +122,7 @@ const initWaveChart = async () => {
 const initSstChart = async () => {
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for SST chart:', error);
         return;
@@ -142,8 +142,8 @@ const initSstChart = async () => {
 
     const isDark          = document.documentElement.classList.contains('dark');
     const effectsDisabled = document.body.classList.contains('effects-disabled');
-    const axisLabelColor  = isDark ? '#cbd5e1' : '#475569';
-    const gridColor       = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor  = '#cbd5e1'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor       = '#1f2937';
 
     // Determine temperature range for colour gradient
     const values  = series.map((p) => p.value).filter((v) => v != null);

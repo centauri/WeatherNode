@@ -10,7 +10,7 @@
     body.theme-flat [class*="glass"] {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        background: #1a2332 !important;
+        background: rgb(var(--wn-card, 26 35 50)) !important;
         transform: none !important;
     }
     body.theme-flat [class*="backdrop-blur"] {
@@ -20,7 +20,7 @@
     body.theme-flat .pressure-map-header {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        background: rgba(0, 0, 0, 0.95) !important;
+        background: rgb(var(--wn-card, 26 35 50)) !important;
     }
     /* Remove all animations (not just pause) to avoid GPU compositing */
     body.theme-flat *,
@@ -54,15 +54,6 @@
     body.theme-flat [class*="drop-shadow"] {
         filter: none !important;
     }
-    /* Header logo and any gradient/shine in flat theme */
-    body.theme-flat header [class*="bg-gradient"],
-    body.theme-flat header [class*="from-blue"],
-    body.theme-flat header [class*="to-cyan"],
-    body.theme-flat header .rounded-lg {
-        background: #1a2332 !important;
-        background-image: none !important;
-        box-shadow: none !important;
-    }
     body.theme-flat .sortable-widget:hover,
     body.theme-flat .card-3d:hover,
     body.theme-flat .sortable-widget,
@@ -80,48 +71,15 @@
     body.theme-flat .card-3d.tilting {
         transform: none !important;
     }
-    body.theme-flat [class*="border-white"],
-    body.theme-flat [class*="border-gray-500"] {
-        border-color: rgba(75, 85, 99, 0.6) !important;
-    }
+    /* Flatten surfaces only. Controls and meaningful weather gradients retain colour. */
     body.theme-flat .sortable-widget,
-    body.theme-flat .bg-weather-card,
-    body.theme-flat [class*="from-weather-card"],
-    body.theme-flat [class*="to-weather-card"],
-    body.theme-flat [class*="bg-weather-card"],
-    body.theme-flat [class*="bg-gradient"],
-    body.theme-flat div[class*="bg-weather-card"] {
-        background: #1a2332 !important;
+    body.theme-flat .bg-weather-card {
+        background: rgb(var(--wn-card, 26 35 50)) !important;
         background-image: none !important;
-    }
-    /* Flat tab/button active state: solid blue, no glow */
-    body.theme-flat [class*="bg-blue-600"] {
-        box-shadow: none !important;
-    }
-    /* Temperature/UV bar gradients → solid visible fill in flat */
-    body.theme-flat [class*="from-weather-warm"],
-    body.theme-flat [class*="to-weather-cold"],
-    body.theme-flat [class*="from-orange"],
-    body.theme-flat [class*="via-yellow"],
-    body.theme-flat [class*="to-orange"] {
-        background: #4b5563 !important;
-        background-image: none !important;
-    }
-    /* Restore daylight bar gradient in Sun & Moon widget (flat theme) */
-    body.theme-flat [data-widget="sun_moon"] .h-2 [class*="from-orange"],
-    body.theme-flat [data-widget="sun_moon"] .h-2 [class*="via-yellow"],
-    body.theme-flat [data-widget="sun_moon"] .h-2 [class*="to-orange"] {
-        background: linear-gradient(to right, #fb923c, #fde047, #fb923c) !important;
-        background-image: linear-gradient(to right, #fb923c, #fde047, #fb923c) !important;
-    }
-    /* Restore temperature chart area gradient in hourly widget (flat theme) */
-    body.theme-flat [data-widget="hourly"] .h-28[class*="from-weather-warm"] {
-        background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), rgba(6, 182, 212, 0.05)) !important;
-        background-image: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), rgba(6, 182, 212, 0.05)) !important;
     }
     /* Flat: single solid background – no gradient for lower CPU/GPU */
     body.theme-flat .weather-bg--static {
-        background: #1a2332 !important;
+        background: rgb(var(--wn-card, 26 35 50)) !important;
         background-image: none !important;
     }
     /* Hide any weather-effect DOM in flat (no GPU for rain/snow/fog/clouds/sun) */
@@ -142,5 +100,65 @@
     /* Flat: hide decorative widget visualization layers (wind streams, rain pond, etc.) */
     body.theme-flat .fx-visual {
         display: none !important;
+    }
+}
+
+/* Preserve the original Flat dark appearance for existing stations. */
+@layer utilities {
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat .glass,
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="glass"] {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: #1a2332 !important;
+        transform: none !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat .pressure-map-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(0, 0, 0, 0.95) !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat header [class*="bg-gradient"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat header [class*="from-ui-accent"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat header [class*="to-ui-accent-end"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat header .rounded-lg {
+        background: #1a2332 !important;
+        background-image: none !important;
+        box-shadow: none !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="border-ui-line"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="border-ui-border"] {
+        border-color: rgba(75, 85, 99, 0.6) !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat .sortable-widget,
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat .bg-weather-card,
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="from-weather-card"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="to-weather-card"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="bg-weather-card"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="bg-gradient"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat div[class*="bg-weather-card"] {
+        background: #1a2332 !important;
+        background-image: none !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="from-weather-warm"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="to-weather-cold"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="from-orange"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="via-yellow"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [class*="to-orange"] {
+        background: #4b5563 !important;
+        background-image: none !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [data-widget="sun_moon"] .h-2 [class*="from-orange"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [data-widget="sun_moon"] .h-2 [class*="via-yellow"],
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [data-widget="sun_moon"] .h-2 [class*="to-orange"] {
+        background: linear-gradient(to right, #fb923c, #fde047, #fb923c) !important;
+        background-image: linear-gradient(to right, #fb923c, #fde047, #fb923c) !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat [data-widget="hourly"] .h-28[class*="from-weather-warm"] {
+        background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), rgba(6, 182, 212, 0.05)) !important;
+        background-image: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), rgba(6, 182, 212, 0.05)) !important;
+    }
+    html[data-public-theme="weathernode"][data-color-mode="dark"] body.theme-flat .weather-bg--static {
+        background: #1a2332 !important;
+        background-image: none !important;
     }
 }

@@ -937,8 +937,8 @@ function weatherDashboard() {
                     // Build complete SVG markup string (x-for/template doesn't work inside SVG)
                     const svgParts = [];
                     // Concentric scale circles
-                    [17.5, 35, 52.5].forEach(r => svgParts.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>`));
-                    svgParts.push(`<circle cx="${cx}" cy="${cy}" r="70" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>`);
+                    [17.5, 35, 52.5].forEach(r => svgParts.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgb(var(--wn-fg) / 0.08)" stroke-width="0.5"/>`));
+                    svgParts.push(`<circle cx="${cx}" cy="${cy}" r="70" fill="none" stroke="rgb(var(--wn-fg) / 0.12)" stroke-width="0.5"/>`);
                     // Axis lines
                     for (let i = 0; i < 16; i++) {
                         const rad = toRad(i * 22.5);
@@ -957,22 +957,22 @@ function weatherDashboard() {
                     const labels = [
                         [cx, 22, 'white', 10, 'bold', 'N'], [cx+88, cy+4, 'white', 10, 'bold', 'E'],
                         [cx, cy+96, 'white', 10, 'bold', 'S'], [cx-88, cy+4, 'white', 10, 'bold', 'W'],
-                        [cx+45, cy-76, 'rgba(255,255,255,0.5)', 7, 'normal', 'NE'],
-                        [cx+80, cy-40, 'rgba(255,255,255,0.5)', 7, 'normal', 'ENE'],
-                        [cx+80, cy+48, 'rgba(255,255,255,0.5)', 7, 'normal', 'ESE'],
-                        [cx+45, cy+84, 'rgba(255,255,255,0.5)', 7, 'normal', 'SE'],
-                        [cx-45, cy+84, 'rgba(255,255,255,0.5)', 7, 'normal', 'SW'],
-                        [cx-80, cy+48, 'rgba(255,255,255,0.5)', 7, 'normal', 'WSW'],
-                        [cx-80, cy-40, 'rgba(255,255,255,0.5)', 7, 'normal', 'WNW'],
-                        [cx-45, cy-76, 'rgba(255,255,255,0.5)', 7, 'normal', 'NW'],
+                        [cx+45, cy-76, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'NE'],
+                        [cx+80, cy-40, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'ENE'],
+                        [cx+80, cy+48, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'ESE'],
+                        [cx+45, cy+84, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'SE'],
+                        [cx-45, cy+84, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'SW'],
+                        [cx-80, cy+48, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'WSW'],
+                        [cx-80, cy-40, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'WNW'],
+                        [cx-45, cy-76, 'rgb(var(--wn-fg) / 0.5)', 7, 'normal', 'NW'],
                     ];
                     for (const [lx, ly, fill, fs, fw, txt] of labels) {
                         const label = t(txt);
                         svgParts.push(`<text x="${lx}" y="${ly}" text-anchor="middle" fill="${fill}" font-size="${fs}" font-weight="${fw}">${label}</text>`);
                     }
                     // Center calm
-                    svgParts.push(`<circle cx="${cx}" cy="${cy}" r="11" fill="rgba(15,23,42,0.8)" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>`);
-                    svgParts.push(`<text x="${cx}" y="${cy-2}" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="5.5">${t('Calm')}</text>`);
+                    svgParts.push(`<circle cx="${cx}" cy="${cy}" r="11" fill="rgb(var(--wn-card) / 0.8)" stroke="rgb(var(--wn-fg) / 0.15)" stroke-width="0.5"/>`);
+                    svgParts.push(`<text x="${cx}" y="${cy-2}" text-anchor="middle" fill="rgb(var(--wn-fg) / 0.6)" font-size="5.5">${t('Calm')}</text>`);
                     svgParts.push(`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="white" font-size="7" font-weight="bold">${calmPct}%</text>`);
 
                     const svgMarkup = `<svg viewBox="0 0 220 220" class="w-full mx-auto" style="max-width:280px;">${svgParts.join('')}</svg>`;
@@ -1029,14 +1029,14 @@ function weatherDashboard() {
                     return formatted === '--' ? '--' : `${formatted} ${this.distanceUnit()}`;
                 },
                 magnitudeColorClass(mag) {
-                    if (mag == null) return 'bg-gray-500/20 text-gray-300';
-                    if (mag < 2) return 'bg-gray-500/20 text-gray-300';
-                    if (mag < 3) return 'bg-blue-500/20 text-blue-400';
-                    if (mag < 4) return 'bg-cyan-500/20 text-cyan-400';
-                    if (mag < 5) return 'bg-yellow-500/20 text-yellow-400';
-                    if (mag < 6) return 'bg-orange-500/20 text-orange-400';
-                    if (mag < 7) return 'bg-red-500/20 text-red-400';
-                    return 'bg-purple-500/20 text-purple-400';
+                    if (mag == null) return 'bg-ui-soft/20 text-ui-secondary';
+                    if (mag < 2) return 'bg-ui-soft/20 text-ui-secondary';
+                    if (mag < 3) return 'bg-blue-500/20 text-data-blue-400';
+                    if (mag < 4) return 'bg-cyan-500/20 text-data-cyan-400';
+                    if (mag < 5) return 'bg-yellow-500/20 text-data-yellow-400';
+                    if (mag < 6) return 'bg-orange-500/20 text-data-orange-400';
+                    if (mag < 7) return 'bg-red-500/20 text-data-red-400';
+                    return 'bg-purple-500/20 text-data-purple-400';
                 },
                 formatMetarConditions(conditions) {
                     if (!conditions || conditions.length === 0) return '--';
@@ -1187,7 +1187,7 @@ function weatherDashboard() {
                 // Effect settings from API
                 effectsEnabled: true,
                 // Background effects toggle (persisted to localStorage for user preference)
-                backgroundEffectsEnabled: localStorage.getItem('backgroundEffectsEnabled') !== 'false',
+                backgroundEffectsEnabled: (() => { try { return localStorage.getItem('backgroundEffectsEnabled') !== 'false'; } catch { return true; } })(),
                 effects: {
                     rain: { enabled: true, intensity: 50, splash_on_cards: true, show_forecast: true, forecast_threshold_type: 'absolute', forecast_threshold_value: 0.5 },
                     snow: { enabled: true, intensity: 50 },
@@ -2407,20 +2407,20 @@ function weatherDashboard() {
                     const low  = today.temp_low  ?? null;
                     // Heat warnings (daytime high — priority)
                     if (high !== null) {
-                        if (high >= 35) return { label: t('Extreme heat'), color: 'text-red-500' };
-                        if (high >= 30) return { label: t('Tropical'),     color: 'text-orange-500' };
-                        if (high >= 25) return { label: t('Warm'),         color: 'text-amber-400' };
-                        if (high >= 20) return { label: t('Pleasant'),     color: 'text-green-400' };
-                        if (high >= 15) return { label: t('Mild'),         color: 'text-teal-400' };
-                        if (high >= 10) return { label: t('Chilly'),       color: 'text-sky-400' };
-                        if (high >= 5)  return { label: t('Cold'),         color: 'text-blue-400' };
+                        if (high >= 35) return { label: t('Extreme heat'), color: 'text-data-red-500' };
+                        if (high >= 30) return { label: t('Tropical'),     color: 'text-data-orange-500' };
+                        if (high >= 25) return { label: t('Warm'),         color: 'text-data-amber-400' };
+                        if (high >= 20) return { label: t('Pleasant'),     color: 'text-data-green-400' };
+                        if (high >= 15) return { label: t('Mild'),         color: 'text-data-teal-400' };
+                        if (high >= 10) return { label: t('Chilly'),       color: 'text-data-sky-400' };
+                        if (high >= 5)  return { label: t('Cold'),         color: 'text-data-blue-400' };
                     }
                     // Frost risk (when high < 5 or no high data)
                     if (low !== null) {
-                        if (low <= -5) return { label: t('Hard frost'), color: 'text-indigo-400' };
-                        if (low <=  0) return { label: t('Frost'),      color: 'text-blue-300' };
-                        if (low <=  2) return { label: t('Frost risk'), color: 'text-cyan-400' };
-                        return { label: t('Cold'), color: 'text-blue-400' };
+                        if (low <= -5) return { label: t('Hard frost'), color: 'text-data-indigo-400' };
+                        if (low <=  0) return { label: t('Frost'),      color: 'text-data-blue-300' };
+                        if (low <=  2) return { label: t('Frost risk'), color: 'text-data-cyan-400' };
+                        return { label: t('Cold'), color: 'text-data-blue-400' };
                     }
                     return null;
                 },
@@ -2433,9 +2433,9 @@ function weatherDashboard() {
                     let diff  = this.units === 'imperial'
                         ? Math.round(diffC * 9 / 5)
                         : Math.round(diffC);
-                    if (Math.abs(diff) < 1) return { label: t('Similar'), color: 'text-gray-400' };
+                    if (Math.abs(diff) < 1) return { label: t('Similar'), color: 'text-ui-muted' };
                     const sign  = diff > 0 ? '+' : '';
-                    const color = diff >= 3 ? 'text-orange-400' : diff <= -3 ? 'text-blue-400' : 'text-gray-300';
+                    const color = diff >= 3 ? 'text-data-orange-400' : diff <= -3 ? 'text-data-blue-400' : 'text-ui-secondary';
                     return { label: sign + diff + this.tempUnit(), color };
                 },
 
@@ -2465,8 +2465,8 @@ function weatherDashboard() {
                 },
                 bestOutdoorColor() {
                     const r = this._bestOutdoor();
-                    if (!r) return 'text-gray-500';
-                    return r.dry ? 'text-emerald-400' : 'text-amber-400';
+                    if (!r) return 'text-ui-subtle';
+                    return r.dry ? 'text-data-emerald-400' : 'text-data-amber-400';
                 },
 
                 formatShortDay(dateStr) {
@@ -3395,28 +3395,28 @@ function weatherDashboard() {
                 getBatteryStatus(key, value) {
                     // WH57 uses 0-5 scale where 5 is full
                     if (key === 'wh57batt') {
-                        if (value >= 4) return { text: t('Full'), class: 'text-green-400' };
-                        if (value >= 2) return { text: t('Moderate'), class: 'text-yellow-400' };
-                        return { text: t('Low'), class: 'text-red-400' };
+                        if (value >= 4) return { text: t('Full'), class: 'text-data-green-400' };
+                        if (value >= 2) return { text: t('Moderate'), class: 'text-data-yellow-400' };
+                        return { text: t('Low'), class: 'text-data-red-400' };
                     }
                     // WS90 AA battery pack: real voltage (V), not a 0/1 flag.
                     // Low-battery threshold per Ecowitt WS90 manual: 2.7V (alkaline/lithium,
                     // the conservative default since we don't know which chemistry is in use).
                     if (key === 'haptic_array_battery') {
                         return value <= 2.7
-                            ? { text: t('Low'), class: 'text-red-400' }
-                            : { text: t('Good'), class: 'text-green-400' };
+                            ? { text: t('Low'), class: 'text-data-red-400' }
+                            : { text: t('Good'), class: 'text-data-green-400' };
                     }
                     // WS90 solar-charged supercapacitor: voltage naturally dips overnight
                     // without indicating a fault, so this only flags a persistently low panel.
                     if (key === 'haptic_array_capacitor') {
                         return value <= 2.5
-                            ? { text: t('Low'), class: 'text-red-400' }
-                            : { text: t('Good'), class: 'text-green-400' };
+                            ? { text: t('Low'), class: 'text-data-red-400' }
+                            : { text: t('Good'), class: 'text-data-green-400' };
                     }
                     // Other sensors: 0 = OK, 1+ = low
-                    if (value === 0) return { text: t('Good'), class: 'text-green-400' };
-                    return { text: t('Low'), class: 'text-red-400' };
+                    if (value === 0) return { text: t('Good'), class: 'text-data-green-400' };
+                    return { text: t('Low'), class: 'text-data-red-400' };
                 },
 
 	                clearWeatherEffectContainers() {
@@ -3473,7 +3473,7 @@ function weatherDashboard() {
 	                // Background effects toggle (saves to localStorage)
 	                toggleBackgroundEffects() {
 	                    this.backgroundEffectsEnabled = !this.backgroundEffectsEnabled;
-	                    localStorage.setItem('backgroundEffectsEnabled', this.backgroundEffectsEnabled);
+	                    try { localStorage.setItem('backgroundEffectsEnabled', this.backgroundEffectsEnabled); } catch { /* Preference is session-only when storage is unavailable. */ }
 	                },
 
                 // Edit Mode functionality
@@ -3665,7 +3665,7 @@ function weatherDashboard() {
                         type === 'success' ? 'bg-green-500/90' : 
                         type === 'error' ? 'bg-red-500/90' : 
                         'bg-blue-500/90'
-                    } text-white font-medium backdrop-blur-sm`;
+                    } text-ui-fg font-medium backdrop-blur-sm`;
                     toast.textContent = message;
                     document.body.appendChild(toast);
                     
@@ -4265,10 +4265,10 @@ function weatherDashboard() {
                 },
 
                 getUvColor(uv) {
-                    if (!uv || uv < 3) return 'text-green-400';
-                    if (uv < 6) return 'text-yellow-400';
-                    if (uv < 8) return 'text-orange-400';
-                    return 'text-red-400';
+                    if (!uv || uv < 3) return 'text-data-green-400';
+                    if (uv < 6) return 'text-data-yellow-400';
+                    if (uv < 8) return 'text-data-orange-400';
+                    return 'text-data-red-400';
                 },
 
                 getUvLevel(uv) {
@@ -4307,11 +4307,11 @@ function weatherDashboard() {
 
                 // Kp-index helpers for Aurora
                 getKpColor(kp) {
-                    if (!kp || kp < 4) return 'text-green-400';
-                    if (kp < 5) return 'text-yellow-400';
-                    if (kp < 6) return 'text-orange-400';
-                    if (kp < 7) return 'text-red-400';
-                    return 'text-purple-400';
+                    if (!kp || kp < 4) return 'text-data-green-400';
+                    if (kp < 5) return 'text-data-yellow-400';
+                    if (kp < 6) return 'text-data-orange-400';
+                    if (kp < 7) return 'text-data-red-400';
+                    return 'text-data-purple-400';
                 },
 
                 getKpBgColor(kp) {

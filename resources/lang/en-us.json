@@ -3352,5 +3352,19 @@
     "US West Coast": "US West Coast",
     "Atlantic Tropics": "Atlantic Tropics",
     "Pacific Tropics": "Pacific Tropics",
-    "Northern Hemisphere": "Northern Hemisphere"
+    "Northern Hemisphere": "Northern Hemisphere",
+    "Colour mode": "Color mode",
+    "Colour palette": "Color palette",
+    "Dark mode": "Dark",
+    "Default colour mode": "Default color mode",
+    "Each palette supports light and dark modes with either FX or Flat.": "Each palette supports light and dark modes with either FX or Flat.",
+    "Forest": "Forest",
+    "Light mode": "Light",
+    "Ocean": "Ocean",
+    "Original / default": "Original / default",
+    "Public colour palette, colour mode and visual effects": "Public color palette, color mode and visual effects",
+    "Station default": "Station default",
+    "Visitors can override this on the public site. System follows their device preference. The admin theme is separate.": "Visitors can override this on the public site. System follows their device preference. The admin theme is separate.",
+    "Visual effects": "Visual effects",
+    "WeatherNode": "WeatherNode"
 }

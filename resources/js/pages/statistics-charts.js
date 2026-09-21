@@ -1,7 +1,7 @@
 const initStatisticsCharts = async () => {
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for statistics page:', error);
         return;
@@ -15,8 +15,8 @@ const initStatisticsCharts = async () => {
     const units = window.Meteo?.activeUnits || 'metric';
     const effectsDisabled = document.body.classList.contains('effects-disabled');
 
-    const axisLabelColor = isDark ? '#cbd5f5' : '#475569';
-    const gridColor = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor = '#cbd5f5'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor = '#1f2937';
 
     const convertTemp = (v) => {
         if (v === null || v === undefined) return null;

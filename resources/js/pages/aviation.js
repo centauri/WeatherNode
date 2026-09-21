@@ -173,14 +173,14 @@ document.addEventListener('alpine:init', () => {
 
         flightCategoryBadgeClass() {
             const cat = this.metar?.flight_category;
-            if (!cat) return 'bg-gray-600 text-gray-300';
+            if (!cat) return 'bg-ui-soft text-ui-secondary';
             const map = {
-                VFR: 'bg-green-500/20 text-green-400',
-                MVFR: 'bg-blue-500/20 text-blue-400',
-                IFR: 'bg-red-500/20 text-red-400',
-                LIFR: 'bg-fuchsia-500/20 text-fuchsia-400',
+                VFR: 'bg-green-500/20 text-data-green-400',
+                MVFR: 'bg-blue-500/20 text-data-blue-400',
+                IFR: 'bg-red-500/20 text-data-red-400',
+                LIFR: 'bg-fuchsia-500/20 text-data-fuchsia-400',
             };
-            return map[cat] || 'bg-gray-600 text-gray-300';
+            return map[cat] || 'bg-ui-soft text-ui-secondary';
         },
 
         _updateObservedAgo() {

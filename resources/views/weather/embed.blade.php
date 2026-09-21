@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html data-public-theme="{{ $publicAppearance['palette'] ?? 'weathernode' }}" data-default-color-mode="{{ $publicAppearance['mode'] ?? 'dark' }}" data-color-mode="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? 'light' : 'dark' }}" lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? '' : 'dark' }}">
 <head>
+    <x-public-theme-head />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
@@ -13,29 +14,29 @@
             background: transparent;
             font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
             font-size: 14px;
-            color: white;
+            color: rgb(var(--wn-fg));
         }
-        body { background: #111827; }
+        body { background: rgb(var(--wn-card)); }
         /* Ensure iframe content is not clipped */
         .widget-root { min-height: 100vh; display: flex; align-items: flex-start; justify-content: stretch; }
     </style>
 </head>
 <body>
 <div class="widget-root">
-<div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 rounded-2xl p-4 w-full shadow-2xl">
+<div class="bg-gradient-to-br from-ui-raised to-ui-deep border border-ui-line/10 rounded-2xl p-4 w-full shadow-2xl">
 
     {{-- Header: station name + link --}}
     <div class="flex items-center justify-between mb-3 gap-2">
         <a href="{{ $siteUrl }}" target="_blank" rel="noopener noreferrer"
-           class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors truncate min-w-0">
-            <svg class="w-3 h-3 flex-shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           class="flex items-center gap-1.5 text-xs text-ui-muted hover:text-ui-fg transition-colors truncate min-w-0">
+            <svg class="w-3 h-3 flex-shrink-0 text-data-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             <span class="truncate">{{ $stationLocation }}</span>
         </a>
-        <span class="text-xs text-gray-600 flex-shrink-0" id="w-update-time" title="{{ __('Last update') }}">
+        <span class="text-xs text-ui-faint flex-shrink-0" id="w-update-time" title="{{ __('Last update') }}">
             {{ $lastUpdate ?? '' }}
         </span>
     </div>
@@ -46,25 +47,25 @@
     <div class="flex items-end justify-between mb-4">
         <div>
             <div class="flex items-end gap-1 leading-none">
-                <span class="text-5xl font-bold text-white" id="w-temp">
+                <span class="text-5xl font-bold text-ui-fg" id="w-temp">
                     {{ $temp !== null ? number_format($temp, 1) : '--' }}
                 </span>
-                <span class="text-2xl font-light text-gray-300 mb-1">{{ $tempUnit }}</span>
+                <span class="text-2xl font-light text-ui-secondary mb-1">{{ $tempUnit }}</span>
             </div>
             @if($feelsLike !== null)
-            <div class="text-xs text-gray-500 mt-1">
+            <div class="text-xs text-ui-subtle mt-1">
                 {{ __('Feels like') }} <span id="w-feels">{{ number_format($feelsLike, 1) }}</span>{{ $tempUnit }}
             </div>
             @endif
             @if($beaufort)
-            <div class="text-xs text-gray-400 mt-0.5" id="w-condition">{{ __($beaufort) }}</div>
+            <div class="text-xs text-ui-muted mt-0.5" id="w-condition">{{ __($beaufort) }}</div>
             @endif
         </div>
         {{-- Rain indicator --}}
         @if(($rainDaily ?? 0) > 0)
         <div class="text-right">
-            <div class="text-xs text-blue-400/70 mb-0.5">{{ __('Rain today') }}</div>
-            <div class="text-lg font-semibold text-blue-300" id="w-rain">{{ number_format($rainDaily, 1) }} mm</div>
+            <div class="text-xs text-data-blue-400/70 mb-0.5">{{ __('Rain today') }}</div>
+            <div class="text-lg font-semibold text-data-blue-300" id="w-rain">{{ number_format($rainDaily, 1) }} mm</div>
         </div>
         @endif
     </div>
@@ -72,51 +73,51 @@
     {{-- Stats grid --}}
     <div class="grid grid-cols-3 gap-2">
         {{-- Humidity --}}
-        <div class="bg-white/5 rounded-xl p-2.5 text-center">
+        <div class="bg-ui-overlay/5 rounded-xl p-2.5 text-center">
             <div class="text-lg mb-0.5">💧</div>
-            <div class="text-sm font-semibold text-white" id="w-humid">
+            <div class="text-sm font-semibold text-ui-fg" id="w-humid">
                 {{ $humidity !== null ? $humidity . '%' : '--' }}
             </div>
-            <div class="text-xs text-gray-500">{{ __('Humidity') }}</div>
+            <div class="text-xs text-ui-subtle">{{ __('Humidity') }}</div>
         </div>
         {{-- Wind --}}
-        <div class="bg-white/5 rounded-xl p-2.5 text-center">
+        <div class="bg-ui-overlay/5 rounded-xl p-2.5 text-center">
             <div class="text-lg mb-0.5">💨</div>
-            <div class="text-sm font-semibold text-white" id="w-wind">
+            <div class="text-sm font-semibold text-ui-fg" id="w-wind">
                 @if($windSpeed !== null)
                     {{ $windDir ? $windDir . ' ' : '' }}{{ number_format($windSpeed, 0) }}&nbsp;{{ $windUnit }}
                 @else
                     --
                 @endif
             </div>
-            <div class="text-xs text-gray-500">{{ __('Wind') }}</div>
+            <div class="text-xs text-ui-subtle">{{ __('Wind') }}</div>
         </div>
         {{-- Pressure --}}
-        <div class="bg-white/5 rounded-xl p-2.5 text-center">
+        <div class="bg-ui-overlay/5 rounded-xl p-2.5 text-center">
             <div class="text-lg mb-0.5">🌡️</div>
-            <div class="text-sm font-semibold text-white" id="w-pressure">
+            <div class="text-sm font-semibold text-ui-fg" id="w-pressure">
                 {{ $pressure !== null ? number_format($pressure, 0) : '--' }}&nbsp;hPa
             </div>
-            <div class="text-xs text-gray-500">{{ __('Pressure') }}</div>
+            <div class="text-xs text-ui-subtle">{{ __('Pressure') }}</div>
         </div>
     </div>
 
     @else
     {{-- No data state --}}
-    <div class="text-center py-6 text-gray-500">
+    <div class="text-center py-6 text-ui-subtle">
         <div class="text-3xl mb-2">📡</div>
         <div class="text-sm">{{ __('No data available') }}</div>
     </div>
     @endif
 
     {{-- Footer link --}}
-    <div class="mt-3 pt-2 border-t border-white/5 flex items-center justify-between">
+    <div class="mt-3 pt-2 border-t border-ui-line/5 flex items-center justify-between">
         <a href="{{ $siteUrl }}" target="_blank" rel="noopener noreferrer"
-           class="text-xs text-gray-600 hover:text-gray-400 transition-colors truncate">
+           class="text-xs text-ui-faint hover:text-ui-muted transition-colors truncate">
             {{ $stationName }}
         </a>
         <a href="{{ $siteUrl }}" target="_blank" rel="noopener noreferrer"
-           class="text-xs text-blue-500 hover:text-blue-400 transition-colors flex-shrink-0 ml-2">
+           class="text-xs text-data-blue-500 hover:text-data-blue-400 transition-colors flex-shrink-0 ml-2">
             {{ __('Live data') }} →
         </a>
     </div>

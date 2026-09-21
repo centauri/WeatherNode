@@ -236,6 +236,16 @@ You can also run the Laravel test runner directly.
 php artisan test
 ```
 
+### Public appearance
+
+Run `npm run test:theme` for visitor preference behaviour and palette contrast checks, and `php artisan test --filter=AppearanceSettingsTest` for settings and public rendering. A frontend build is required after changing Tailwind classes.
+
+Public palette tokens live in `public/css/public-theme.css`; `public/js/public-theme.js` applies the visitor preference before first paint. These small local assets are separate from Vite so error pages can resolve a theme without a build. Public shells include `public-theme-head` and use `data-public-theme`, `data-default-color-mode`, and `data-color-mode` on the root element. Never use the admin's `theme` storage key for public preferences.
+
+Use `ui-*` utilities for interface surfaces/text/accents and `data-*` text colours for weather categories. Keep provider imagery and measurement ramps independent of station branding. Public chart modules import `themed-apexcharts`, which updates chart chrome on `weathernode:theme-change` without replacing the chart instance. Its RGB strings use comma-separated channels for compatibility with the bundled ApexCharts version.
+
+Before shipping changes, check every palette with both light/dark and FX/Flat, mobile/desktop, chart tooltips and preserved zoom/series visibility, blocked storage, System mode, and login/embed/error pages. Contrast tests cover opaque token pairs; also inspect text over glass, gradients and images visually.
+
 ## Formatting
 
 This repo includes Laravel Pint.
@@ -433,3 +443,5 @@ Create a new version and changelog entry.
 ```bash
 make release
 ```
+
+WeatherNode Dark preserves the original shipped colours, including muted text, measurement colours and Flat styling. Do not brighten or recolour this preset as part of theme improvements; use an optional palette instead. Contrast improvements apply to the new palettes and light modes. The theme tests pin representative original colours, and the chart adapter restores each chart's original dark label colours after mode changes.

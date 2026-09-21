@@ -23,15 +23,15 @@
     .station-popup h3 {
         font-weight: 600;
         margin-bottom: 8px;
-        color: #1f2937;
+        color: rgb(var(--wn-fg));
     }
     .station-popup p {
         margin: 4px 0;
         font-size: 0.875rem;
-        color: #4b5563;
+        color: rgb(var(--wn-muted));
     }
     .station-popup a {
-        color: #3b82f6;
+        color: rgb(var(--wn-link));
         text-decoration: none;
     }
     .station-popup a:hover {
@@ -46,10 +46,10 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">{{ __('Community Stations') }}</h1>
-            <p class="text-gray-400">{{ __('Discover weather stations around the world') }}</p>
+            <p class="text-ui-muted">{{ __('Discover weather stations around the world') }}</p>
         </div>
         @if($lastUpdated)
-        <div class="text-sm text-gray-400">
+        <div class="text-sm text-ui-muted">
             {{ __('Last updated') }}: {{ \Carbon\Carbon::parse($lastUpdated)->format('Y-m-d H:i') }}
         </div>
         @endif
@@ -57,42 +57,42 @@
 
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-white/10">
-            <div class="text-2xl font-bold text-blue-400" x-text="stations.length"></div>
-            <div class="text-sm text-gray-400">{{ __('Total stations') }}</div>
+        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-ui-line/10">
+            <div class="text-2xl font-bold text-data-blue-400" x-text="stations.length"></div>
+            <div class="text-sm text-ui-muted">{{ __('Total stations') }}</div>
         </div>
-        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-white/10">
-            <div class="text-2xl font-bold text-green-400" x-text="uniqueHardware.length"></div>
-            <div class="text-sm text-gray-400">{{ __('Hardware types') }}</div>
+        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-ui-line/10">
+            <div class="text-2xl font-bold text-data-green-400" x-text="uniqueHardware.length"></div>
+            <div class="text-sm text-ui-muted">{{ __('Hardware types') }}</div>
         </div>
-        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-white/10">
-            <div class="text-2xl font-bold text-purple-400" x-text="uniqueCountries.length"></div>
-            <div class="text-sm text-gray-400">{{ __('Countries') }}</div>
+        <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-ui-line/10">
+            <div class="text-2xl font-bold text-data-purple-400" x-text="uniqueCountries.length"></div>
+            <div class="text-sm text-ui-muted">{{ __('Countries') }}</div>
         </div>
     </div>
 
     <!-- Map -->
-    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-white/10">
+    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-ui-line/10">
         <div id="map"></div>
     </div>
 
     <!-- Filter Bar -->
-    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-white/10">
+    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-4 border border-ui-line/10">
         <div class="flex flex-col md:flex-row gap-3">
             <!-- Search -->
             <div class="flex-1 relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ui-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
                 <input type="text"
                        x-model.debounce.300ms="searchQuery"
                        placeholder="{{ __('Search stations...') }}"
-                       class="w-full bg-weather-card border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500">
+                       class="w-full bg-weather-card border border-ui-line/10 rounded-lg pl-10 pr-4 py-2 text-ui-fg placeholder-ui-subtle text-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
 
             <!-- Country Filter -->
             <select x-model="selectedCountry"
-                    class="bg-weather-card border border-white/10 rounded-lg px-4 py-2 text-white text-sm">
+                    class="bg-weather-card border border-ui-line/10 rounded-lg px-4 py-2 text-ui-fg text-sm">
                 <option value="">{{ __('All countries') }}</option>
                 <template x-for="cc in uniqueCountries" :key="cc">
                     <option :value="cc" x-text="countryFlag(cc) + ' ' + countryName(cc)"></option>
@@ -101,7 +101,7 @@
 
             <!-- Hardware Filter -->
             <select x-model="selectedHardware"
-                    class="bg-weather-card border border-white/10 rounded-lg px-4 py-2 text-white text-sm">
+                    class="bg-weather-card border border-ui-line/10 rounded-lg px-4 py-2 text-ui-fg text-sm">
                 <option value="">{{ __('All hardware') }}</option>
                 <template x-for="hw in uniqueHardware" :key="hw">
                     <option :value="hw" x-text="hw"></option>
@@ -112,25 +112,25 @@
             <button x-show="hasActiveFilters"
                     x-transition
                     @click="clearFilters()"
-                    class="text-sm text-gray-400 hover:text-white px-3 py-2 whitespace-nowrap">
+                    class="text-sm text-ui-muted hover:text-ui-fg px-3 py-2 whitespace-nowrap">
                 {{ __('Clear filters') }}
             </button>
         </div>
 
         <!-- Filter result count -->
-        <div class="mt-2 text-sm text-gray-500" x-show="hasActiveFilters" x-transition>
+        <div class="mt-2 text-sm text-ui-subtle" x-show="hasActiveFilters" x-transition>
             <span x-text="filteredStations.length"></span> {{ __('of') }}
             <span x-text="stations.length"></span> {{ __('stations') }}
         </div>
     </div>
 
     <!-- Station List (grouped by country) -->
-    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-6 border border-white/10">
+    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-xl p-6 border border-ui-line/10">
         <h2 class="text-xl font-semibold mb-4">{{ __('All stations') }}</h2>
 
         <!-- Empty: no stations at all -->
         <template x-if="stations.length === 0">
-            <div class="text-center py-8 text-gray-400">
+            <div class="text-center py-8 text-ui-muted">
                 <p>{{ __('No stations available yet.') }}</p>
                 <p class="text-sm mt-2">{{ __('Enable telemetry in admin settings to add your station!') }}</p>
             </div>
@@ -138,9 +138,9 @@
 
         <!-- Empty: filters returned nothing -->
         <template x-if="stations.length > 0 && filteredStations.length === 0">
-            <div class="text-center py-8 text-gray-400">
+            <div class="text-center py-8 text-ui-muted">
                 <p>{{ __('No stations match your filters.') }}</p>
-                <button @click="clearFilters()" class="text-blue-400 hover:underline text-sm mt-2">
+                <button @click="clearFilters()" class="text-data-blue-400 hover:underline text-sm mt-2">
                     {{ __('Clear filters') }}
                 </button>
             </div>
@@ -151,25 +151,25 @@
             <template x-for="[countryCode, stationsInCountry] in groupedStations" :key="countryCode">
                 <div>
                     <!-- Country Header -->
-                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-white/10">
+                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-ui-line/10">
                         <span class="text-lg" x-text="countryFlag(countryCode)"></span>
-                        <h3 class="font-semibold text-white" x-text="countryName(countryCode)"></h3>
-                        <span class="text-xs text-gray-500 bg-white/5 rounded-full px-2 py-0.5"
+                        <h3 class="font-semibold text-ui-fg" x-text="countryName(countryCode)"></h3>
+                        <span class="text-xs text-ui-subtle bg-ui-overlay/5 rounded-full px-2 py-0.5"
                               x-text="stationsInCountry.length"></span>
                     </div>
 
                     <!-- Station Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <template x-for="station in stationsInCountry" :key="station.id">
-                            <div class="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors">
-                                <h4 class="font-semibold text-white mb-2" x-text="station.name"></h4>
-                                <div class="space-y-1 text-sm text-gray-400">
+                            <div class="bg-ui-overlay/5 rounded-lg p-4 hover:bg-ui-overlay/10 transition-colors">
+                                <h4 class="font-semibold text-ui-fg mb-2" x-text="station.name"></h4>
+                                <div class="space-y-1 text-sm text-ui-muted">
                                     <p x-show="station.hardware">
-                                        <span class="text-gray-500">{{ __('Hardware') }}:</span>
+                                        <span class="text-ui-subtle">{{ __('Hardware') }}:</span>
                                         <span x-text="station.hardware"></span>
                                     </p>
                                     <p x-show="station.url">
-                                        <a :href="station.url" target="_blank" class="text-blue-400 hover:underline">{{ __('Visit station') }} &rarr;</a>
+                                        <a :href="station.url" target="_blank" class="text-data-blue-400 hover:underline">{{ __('Visit station') }} &rarr;</a>
                                     </p>
                                 </div>
                             </div>
@@ -304,7 +304,7 @@ function communityStations() {
                                 ${station.hardware ? `<p><strong>${communityI18n.hardware}:</strong> ${self.escapeHtml(station.hardware)}</p>` : ''}
                                 ${station.manufacturer ? `<p><strong>${communityI18n.manufacturer}:</strong> ${self.escapeHtml(station.manufacturer)}</p>` : ''}
                                 ${station.url ? `<p><a href="${self.escapeHtml(station.url)}" target="_blank">${communityI18n.visitStation} &rarr;</a></p>` : ''}
-                                ${station.updated_at ? `<p class="text-xs text-gray-500">${communityI18n.updated}: ${new Date(station.updated_at).toLocaleDateString(window.Meteo?.jsLocale || 'en-US')}</p>` : ''}
+                                ${station.updated_at ? `<p class="text-xs text-ui-subtle">${communityI18n.updated}: ${new Date(station.updated_at).toLocaleDateString(window.Meteo?.jsLocale || 'en-US')}</p>` : ''}
                             </div>
                         `;
 
