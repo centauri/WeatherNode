@@ -938,3 +938,44 @@ body:has(.weather-bg) {
 .apexcharts-svg {
     will-change: auto;
 }
+
+/* Keep controls out of the header flow; the native dialog provides focus trapping and Escape. */
+.public-header-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "brand actions" "clock clock";
+    align-items: center;
+    gap: .5rem 1.25rem;
+}
+.public-header-brand { grid-area: brand; }
+.public-header-actions { grid-area: actions; }
+.public-header-title { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.public-header-clock {
+    grid-area: clock; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem;
+}
+@media (min-width: 1024px) {
+    .public-header-grid { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "brand clock actions"; }
+    .public-header-clock { flex-wrap: nowrap; }
+    .public-header-title { display: block; text-overflow: ellipsis; white-space: nowrap; }
+}
+.public-settings-dialog {
+    box-sizing: border-box;
+    position: fixed; inset: 0 0 0 auto; margin: 0;
+    width: min(24rem, 100%); max-width: 100%; height: 100%; height: 100dvh; max-height: 100%;
+    padding: 1.5rem; overflow-y: auto; overscroll-behavior: contain;
+    background: rgb(var(--wn-card)); color: rgb(var(--wn-fg));
+    border: 0; border-left: 1px solid rgb(var(--wn-line) / .15);
+    box-shadow: -8px 0 40px rgb(0 0 0 / .2);
+}
+.public-settings-dialog::backdrop { background: rgb(0 0 0 / .45); }
+body:has(.public-settings-dialog[open]) { overflow: hidden; }
+html[data-public-theme] .public-settings-dialog .public-theme-control {
+    display: flex; flex-direction: column; align-items: stretch; gap: .375rem;
+}
+html[data-public-theme] .public-settings-dialog select {
+    display: block; width: 100%; max-width: none; min-height: 2.75rem;
+    font-size: .875rem; line-height: 1.25rem;
+    padding: .625rem 2rem .625rem .75rem;
+    border: 1px solid rgb(var(--wn-border)); border-radius: .5rem;
+    background-color: rgb(var(--wn-card)); color: rgb(var(--wn-fg));
+}

@@ -2920,5 +2920,7 @@
     "Visitor theme choices": "Izbor tema za posjetitelje",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Odaberite teme koje posjetitelji smiju koristiti. Ostavite sve neoznačeno za korištenje samo palete postaje.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Prilagođene teme koriste posljednju primijenjenu verziju. Primijenite temu jednom da biste je ponudili ovdje; spremljeni nacrti ostaju neobjavljeni.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Posjetitelji spremaju izbor na svoj uređaj. Uklonjeni izbori vraćaju se na zadanu temu postaje pri sljedećem učitavanju stranice."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Posjetitelji spremaju izbor na svoj uređaj. Uklonjeni izbori vraćaju se na zadanu temu postaje pri sljedećem učitavanju stranice.",
+    "Language": "Jezik",
+    "Units": "Jedinice"
 }

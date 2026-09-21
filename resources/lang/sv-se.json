@@ -2920,5 +2920,7 @@
     "Visitor theme choices": "Temaval för besökare",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Välj de teman som besökare får välja. Lämna alla omarkerade för att endast använda stationens palett.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Anpassade teman använder den senast tillämpade versionen. Tillämpa ett tema en gång för att erbjuda det här; sparade utkast förblir opublicerade.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Besökare sparar sitt val på sin enhet. Borttagna alternativ återgår till stationens standard nästa gång sidan läses in."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Besökare sparar sitt val på sin enhet. Borttagna alternativ återgår till stationens standard nästa gång sidan läses in.",
+    "Language": "Språk",
+    "Units": "Enheter"
 }

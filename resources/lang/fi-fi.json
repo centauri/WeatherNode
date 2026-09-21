@@ -2920,5 +2920,7 @@
     "Visitor theme choices": "Vierailijoiden teemavalinnat",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Valitse teemat, joita vierailijat voivat käyttää. Jätä kaikki valitsematta, jos haluat käyttää vain aseman väripalettia.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Mukautetut teemat käyttävät viimeksi käyttöön otettua versiota. Ota teema käyttöön kerran tarjotaksesi sen tässä; tallennettuja luonnoksia ei julkaista.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Vierailijat tallentavat valintansa laitteelleen. Poistetut vaihtoehdot palautuvat aseman oletukseen seuraavalla sivulatauksella."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Vierailijat tallentavat valintansa laitteelleen. Poistetut vaihtoehdot palautuvat aseman oletukseen seuraavalla sivulatauksella.",
+    "Language": "Kieli",
+    "Units": "Yksiköt"
 }
