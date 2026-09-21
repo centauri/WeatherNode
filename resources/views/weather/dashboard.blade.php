@@ -1255,6 +1255,7 @@
                     <span class="w-2 h-2 rounded-full flex-shrink-0 bg-emerald-500 text-on-accent"></span>
                 </template>
                 <span class="text-xs truncate"
+                      :data-weather-colour-text="alerts.length > 0 ? '' : null"
                       :class="alerts.length > 0 ? 'font-medium' : 'text-ui-subtle'"
                       :style="alerts.length > 0 ? 'color:' + (alerts[0]?.severity_color||'#FBEA55') : ''"
                       x-text="alerts.length > 0 ? alertBannerText() : '{{ __('No active alerts') }}'">{{ $ssrAlertSummary }}</span>
