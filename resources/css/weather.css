@@ -20,7 +20,7 @@ html {
 
 /* Theme color for Safari status bar */
 html, body {
-    background-color: #1a2332;
+    background-color: rgb(var(--wn-card, 26 35 50));
 }
 /* When fixed weather layer exists, html and body must be transparent so the gradient layer is visible */
 html.has-weather-bg,
@@ -62,7 +62,7 @@ body:has(.weather-bg) {
     z-index: -1;
     pointer-events: none;
     /* Fallback so background is always visible even before Alpine applies state classes */
-    background: linear-gradient(-45deg, #0f1419, #1a2744, #0f1419);
+    background: linear-gradient(-45deg, rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-mid, 26 39 68)), rgb(var(--wn-bg, 15 20 25)));
     background-size: 100% 100%;
 }
 
@@ -78,7 +78,7 @@ body:has(.weather-bg) {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(-45deg, #0f1419, #1a2744, #0f1419, #1e1b4b, #0f1419);
+    background: linear-gradient(-45deg, rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-mid, 26 39 68)), rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-end, 30 27 75)), rgb(var(--wn-bg, 15 20 25)));
     background-size: 400% 400%;
     animation: gradientShift 30s ease infinite;
     /* Keep inside the weather-bg stacking context so it remains visible behind page content */
@@ -87,7 +87,7 @@ body:has(.weather-bg) {
 
 /* Static gradient (flat theme or FX off) */
 .weather-bg--static {
-    background: linear-gradient(-45deg, #0f1419, #1a2744, #0f1419);
+    background: linear-gradient(-45deg, rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-mid, 26 39 68)), rgb(var(--wn-bg, 15 20 25)));
     background-size: 100% 100%;
     animation: none;
 }
@@ -113,7 +113,7 @@ body:has(.weather-bg) {
    ========================================================================== */
 
 .glass {
-    background: rgba(26, 35, 50, 0.75);
+    background: rgb(var(--wn-card, 26 35 50) / 0.75);
     /* Reduced blur for better cross-browser performance */
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -123,7 +123,7 @@ body:has(.weather-bg) {
 
 .glow {
     /* Subtle glow for better performance */
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 20px rgb(var(--wn-accent, 59 130 246) / 0.15);
 }
 
 /* Disable expensive glass blur when effects are off (battery saver) */
@@ -131,7 +131,7 @@ body:has(.weather-bg) {
 .fx-off .glass {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: rgba(26, 35, 50, 0.92);
+    background: rgb(var(--wn-card, 26 35 50) / 0.92);
 }
 
 /* Disable glow effects when effects are off */

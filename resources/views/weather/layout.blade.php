@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ $jsLocale ?? app()->getLocale() }}" class="dark has-weather-bg">
+<html @if(isset($publicAppearance['custom'])) data-custom-theme @endif data-public-theme="{{ $publicAppearance['palette'] ?? 'weathernode' }}" data-default-color-mode="{{ $publicAppearance['mode'] ?? 'dark' }}" data-color-mode="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? 'light' : 'dark' }}" lang="{{ $jsLocale ?? app()->getLocale() }}" class="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? '' : 'dark' }} has-weather-bg">
 @php
     $activeLocale = $activeLocale ?? app()->getLocale();
     $activeUnits = $activeUnits ?? 'metric';
@@ -14,6 +14,7 @@
     };
 @endphp
 <head>
+    <x-public-theme-head />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
@@ -204,130 +205,132 @@
         {!! $customHeadCode !!}
     @endif
 </head>
-<body class="has-weather-bg text-white min-h-screen font-sans {{ ($siteTheme ?? 'fx') === 'flat' ? 'theme-flat effects-disabled' : '' }}"
+<body class="has-weather-bg text-ui-fg min-h-screen font-sans {{ ($siteTheme ?? 'fx') === 'flat' ? 'theme-flat effects-disabled' : '' }}"
       data-side-rails="enabled"
-      x-data="{ backgroundEffectsEnabled: localStorage.getItem('backgroundEffectsEnabled') !== 'false', toggleBackgroundEffects() { this.backgroundEffectsEnabled = !this.backgroundEffectsEnabled; localStorage.setItem('backgroundEffectsEnabled', this.backgroundEffectsEnabled); } }"
-      :class="(@json($siteTheme ?? 'fx') !== 'flat') ? { 'effects-disabled': !backgroundEffectsEnabled } : {}">
+      x-data="{ backgroundEffectsEnabled: (() => { try { return localStorage.getItem('backgroundEffectsEnabled') !== 'false'; } catch { return true; } })(), toggleBackgroundEffects() { this.backgroundEffectsEnabled = !this.backgroundEffectsEnabled; try { localStorage.setItem('backgroundEffectsEnabled', this.backgroundEffectsEnabled); } catch {} } }"
+      :class="(@js($siteTheme ?? 'fx') !== 'flat') ? { 'effects-disabled': !backgroundEffectsEnabled } : {}">
     <!-- Site wrapper: clips weather effects overflow without affecting AdSense side rail ads
          which are injected by Google as direct children of <body> outside this wrapper. -->
     <div id="site-wrapper">
 
     <!-- Fixed background layer (never blocks body scroll) -->
     <div class="weather-bg"
-         :class="(@json($siteTheme ?? 'fx') !== 'flat') ? (backgroundEffectsEnabled ? 'weather-bg--animated' : 'weather-bg--static') : 'weather-bg--static'"
+         :class="(@js($siteTheme ?? 'fx') !== 'flat') ? (backgroundEffectsEnabled ? 'weather-bg--animated' : 'weather-bg--static') : 'weather-bg--static'"
          google-side-rail-overlap="true"
          aria-hidden="true"></div>
 
     <!-- Top Bar: Compact Header -->
-    <header id="site-header" class="glass border-b border-white/10 sticky top-0 z-50 floating-header" google-side-rail-overlap="false">
+    <header id="site-header" class="glass border-b border-ui-line/10 sticky top-0 z-50 floating-header" google-side-rail-overlap="false">
         <div class="max-w-7xl mx-auto px-4 py-2">
             <!-- Mobile: Two rows -->
             <div class="flex flex-col gap-2 lg:hidden">
                 <!-- Row 1: Logo and controls -->
                 <div class="flex flex-wrap items-center justify-between gap-y-2">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 min-w-0">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-8 h-8 bg-gradient-to-br from-ui-accent to-ui-accent-end rounded-lg flex items-center justify-center shadow-lg shadow-ui-accent/30">
+                            <svg class="w-5 h-5 text-on-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
                             </svg>
                         </div>
                         <div>
                             <h1 class="text-lg font-bold">{{ \App\Models\Setting::stationName() }}</h1>
-                            <p class="text-xs text-gray-400">{{ \App\Models\Setting::stationLocation() }}</p>
+                            <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                         </div>
                     </a>
                     <div class="flex items-center gap-2 shrink-0 ml-auto">
+                        <x-public-theme-select />
                         @auth
                             @if(auth()->user()->is_admin)
                                 @if(($siteTheme ?? 'fx') !== 'flat')
-                                    <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-gray-600 hover:bg-gray-500'" class="px-2 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
+                                    <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 text-on-accent hover:bg-emerald-500' : 'bg-ui-disabled hover:bg-ui-inactive'" class="px-2 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
                                         <span class="relative">FX<span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
                                     </button>
                                 @endif
-                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors">{{ __('Admin') }}</a>
+                                <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-ui-accent-strong text-on-accent hover:bg-ui-action rounded transition-colors">{{ __('Admin') }}</a>
                             @endif
                         @endauth
                         <div class="relative" x-data="{ openLang: false }">
-                            <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openLang = !openLang">
+                            <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openLang = !openLang">
                                 {{ $localeOptions[$activeLocale]['short'] ?? strtoupper($activeLocale) }}
                             </button>
-                            <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
+                            <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
                                 @foreach($localeOptions as $code => $meta)
-                                    <a href="{{ localeUrl($code) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeLocale === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                    <a href="{{ localeUrl($code) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeLocale === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                                 @endforeach
                             </div>
                         </div>
                         <div class="relative" x-data="{ openUnits: false }">
-                            <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openUnits = !openUnits">
+                            <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openUnits = !openUnits">
                                 {{ $unitShort }}
                             </button>
-                            <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
+                            <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs z-50">
                                 @foreach($unitOptions as $code => $meta)
-                                    <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeUnits === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                    <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeUnits === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                                 @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Row 2: Time/date (mobile) -->
-                <div class="flex items-center justify-center gap-2 text-sm border-t border-white/5 pt-2">
-                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></span>
-                    <span class="text-gray-300 font-display" id="currentTimeMobile">--:--:--</span>
-                    <span class="text-gray-500">|</span>
-                    <span class="text-gray-300" id="currentDateMobile">--</span>
-                    <span class="text-gray-500 text-xs ml-1" id="currentTimeZoneLabelMobile"></span>
+                <div class="flex items-center justify-center gap-2 text-sm border-t border-ui-line/5 pt-2">
+                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full shadow-lg shadow-green-500/50"></span>
+                    <span class="text-ui-secondary font-display" id="currentTimeMobile">--:--:--</span>
+                    <span class="text-ui-subtle">|</span>
+                    <span class="text-ui-secondary" id="currentDateMobile">--</span>
+                    <span class="text-ui-subtle text-xs ml-1" id="currentTimeZoneLabelMobile"></span>
                 </div>
             </div>
             <!-- Desktop: Single row -->
             <div class="hidden lg:flex items-center justify-between">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 bg-gradient-to-br from-ui-accent to-ui-accent-end rounded-lg flex items-center justify-center shadow-lg shadow-ui-accent/30">
+                        <svg class="w-5 h-5 text-on-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
                         </svg>
                     </div>
                     <div>
                         <h1 class="text-lg font-bold">{{ \App\Models\Setting::stationName() }}</h1>
-                        <p class="text-xs text-gray-400">{{ \App\Models\Setting::stationLocation() }}</p>
+                        <p class="text-xs text-ui-muted">{{ \App\Models\Setting::stationLocation() }}</p>
                     </div>
                 </a>
                 <div class="flex items-center gap-2 text-sm">
-                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></span>
-                    <span class="text-gray-300 font-display" id="currentTime">--:--:--</span>
-                    <span class="text-gray-500">|</span>
-                    <span class="text-gray-300" id="currentDate">--</span>
-                    <span class="text-gray-500 text-xs ml-1" id="currentTimeZoneLabel"></span>
+                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full shadow-lg shadow-green-500/50"></span>
+                    <span class="text-ui-secondary font-display" id="currentTime">--:--:--</span>
+                    <span class="text-ui-subtle">|</span>
+                    <span class="text-ui-secondary" id="currentDate">--</span>
+                    <span class="text-ui-subtle text-xs ml-1" id="currentTimeZoneLabel"></span>
                 </div>
                 <div class="flex items-center gap-2">
-                    @auth
+                    <x-public-theme-select />
+                        @auth
                         @if(auth()->user()->is_admin)
                             @if(($siteTheme ?? 'fx') !== 'flat')
-                                <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-gray-600 hover:bg-gray-500'" class="px-2 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
+                                <button @click="toggleBackgroundEffects()" :class="backgroundEffectsEnabled ? 'bg-emerald-600 text-on-accent hover:bg-emerald-500' : 'bg-ui-disabled hover:bg-ui-inactive'" class="px-2 py-1 text-xs rounded transition-colors flex items-center gap-1" :title="backgroundEffectsEnabled ? '{{ __('Disable background effects') }}' : '{{ __('Enable background effects') }}'">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
                                     <span class="relative">FX<span x-show="!backgroundEffectsEnabled" class="absolute inset-0 flex items-center justify-center"><span class="w-full h-0.5 bg-current rotate-45 absolute"></span></span></span>
                                 </button>
                             @endif
-                            <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded transition-colors">{{ __('Admin') }}</a>
+                            <a href="{{ route('admin.dashboard') }}" class="px-3 py-1 text-xs bg-ui-accent-strong text-on-accent hover:bg-ui-action rounded transition-colors">{{ __('Admin') }}</a>
                         @endif
                     @endauth
                     <div class="relative" x-data="{ openLang: false }">
-                        <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openLang = !openLang">
+                        <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openLang = !openLang">
                             {{ $localeOptions[$activeLocale]['short'] ?? strtoupper($activeLocale) }}
                         </button>
-                        <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs">
+                        <div x-cloak x-show="openLang" @click.outside="openLang = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs">
                             @foreach($localeOptions as $code => $meta)
-                                <a href="{{ localeUrl($code) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeLocale === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                <a href="{{ localeUrl($code) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeLocale === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                             @endforeach
                         </div>
                     </div>
                     <div class="relative" x-data="{ openUnits: false }">
-                        <button type="button" class="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20 transition-colors" @click="openUnits = !openUnits">
+                        <button type="button" class="px-2 py-1 text-xs bg-ui-overlay/10 rounded hover:bg-ui-overlay/20 transition-colors" @click="openUnits = !openUnits">
                             {{ $unitShort }}
                         </button>
-                        <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-white/10 rounded-lg shadow-lg overflow-hidden text-xs">
+                        <div x-cloak x-show="openUnits" @click.outside="openUnits = false" class="absolute right-0 mt-2 w-40 bg-weather-card border border-ui-line/10 rounded-lg shadow-lg overflow-hidden text-xs">
                             @foreach($unitOptions as $code => $meta)
-                                <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-white/10 {{ $activeUnits === $code ? 'text-blue-300' : 'text-gray-200' }}">{{ $meta['label'] }}</a>
+                                <a href="{{ request()->fullUrlWithQuery(['units' => $code]) }}" class="block px-3 py-2 hover:bg-ui-overlay/10 {{ $activeUnits === $code ? 'text-data-blue-300' : 'text-ui-body' }}">{{ $meta['label'] }}</a>
                             @endforeach
                         </div>
                     </div>
@@ -468,7 +471,7 @@
     
     <!-- PWA Install Prompt (Mobile only, non-intrusive) -->
     <div id="pwa-install-prompt" class="fixed bottom-20 left-4 right-4 z-50 hidden" google-side-rail-overlap="true">
-        <div class="glass rounded-2xl p-4 border border-white/20 shadow-xl max-w-md mx-auto">
+        <div class="glass rounded-2xl p-4 border border-ui-line/20 shadow-xl max-w-md mx-auto">
             <div class="flex items-start gap-3">
                 <div class="flex-shrink-0 w-10 h-10 bg-weather-accent/20 rounded-xl flex items-center justify-center">
                     <svg class="w-5 h-5 text-weather-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -476,20 +479,20 @@
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-white">{{ __('Install App') }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ __('Add to home screen for quick access') }}</p>
+                    <p class="text-sm font-medium text-ui-fg">{{ __('Install App') }}</p>
+                    <p class="text-xs text-ui-muted mt-0.5">{{ __('Add to home screen for quick access') }}</p>
                 </div>
-                <button id="pwa-prompt-close" class="flex-shrink-0 p-1 text-gray-400 hover:text-white transition" aria-label="Close">
+                <button id="pwa-prompt-close" class="flex-shrink-0 p-1 text-ui-muted hover:text-ui-fg transition" aria-label="Close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
             <div class="flex gap-2 mt-3">
-                <button id="pwa-prompt-install" class="flex-1 px-4 py-2 bg-weather-accent text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition">
+                <button id="pwa-prompt-install" class="flex-1 px-4 py-2 bg-ui-accent-strong text-on-accent text-sm font-medium rounded-lg hover:bg-ui-accent-strong transition">
                     {{ __('Install') }}
                 </button>
-                <button id="pwa-prompt-later" class="px-4 py-2 text-gray-400 text-sm hover:text-white transition">
+                <button id="pwa-prompt-later" class="px-4 py-2 text-ui-muted text-sm hover:text-ui-fg transition">
                     {{ __('Later') }}
                 </button>
             </div>

@@ -10,45 +10,45 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">{{ __('Forecast') }}</h1>
-            <p class="text-gray-400">{{ __('Forecast page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
+            <p class="text-ui-muted">{{ __('Forecast page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
         </div>
         <div class="flex gap-2">
-            <button @click="view = 'daily'" :class="view === 'daily' ? 'bg-blue-600' : 'bg-white/10 hover:bg-white/20'" class="px-4 py-2 rounded-lg text-sm transition-colors">{{ __('Daily') }}</button>
-            <button @click="view = 'hourly'" :class="view === 'hourly' ? 'bg-blue-600' : 'bg-white/10 hover:bg-white/20'" class="px-4 py-2 rounded-lg text-sm transition-colors">{{ __('Hourly') }}</button>
+            <button @click="view = 'daily'" :class="view === 'daily' ? 'bg-ui-accent-strong text-on-accent' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'" class="px-4 py-2 rounded-lg text-sm transition-colors">{{ __('Daily') }}</button>
+            <button @click="view = 'hourly'" :class="view === 'hourly' ? 'bg-ui-accent-strong text-on-accent' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'" class="px-4 py-2 rounded-lg text-sm transition-colors">{{ __('Hourly') }}</button>
         </div>
     </div>
 
     <!-- Today's Summary -->
-    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-2xl p-4 sm:p-6 border border-white/10">
+    <div class="bg-gradient-to-br from-weather-card to-weather-card/50 rounded-2xl p-4 sm:p-6 border border-ui-line/10">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
             <div class="flex items-center gap-4 md:gap-6">
                 <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getTodayIcon() + '.svg'"
 	                     class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 flex-shrink-0" alt="Weather">
                 <div class="min-w-0">
                     <h2 class="text-base sm:text-xl font-semibold truncate" x-text="getTodayDescription()">{{ __('Loading...') }}</h2>
-                    <p class="text-sm text-gray-400" x-text="formatFullDate(new Date())"></p>
+                    <p class="text-sm text-ui-muted" x-text="formatFullDate(new Date())"></p>
                 </div>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
                 <div class="text-center">
-                    <div class="text-[10px] sm:text-xs text-gray-400 mb-0.5">{{ __('Max') }}</div>
-                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-weather-warm" x-text="formatTemp(forecast[0]?.temp_high)"></div>
+                    <div class="text-[10px] sm:text-xs text-ui-muted mb-0.5">{{ __('Max') }}</div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-data-amber-500" x-text="formatTemp(forecast[0]?.temp_high)"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-[10px] sm:text-xs text-gray-400 mb-0.5">{{ __('Min') }}</div>
-                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-weather-cold" x-text="formatTemp(forecast[0]?.temp_low)"></div>
+                    <div class="text-[10px] sm:text-xs text-ui-muted mb-0.5">{{ __('Min') }}</div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-data-cyan-500" x-text="formatTemp(forecast[0]?.temp_low)"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-[10px] sm:text-xs text-gray-400 mb-0.5">{{ __('Precipitation') }}</div>
-                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-weather-rain" x-text="formatRain(forecast[0]?.precipitation)"></div>
+                    <div class="text-[10px] sm:text-xs text-ui-muted mb-0.5">{{ __('Precipitation') }}</div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-bold text-data-indigo-500" x-text="formatRain(forecast[0]?.precipitation)"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-[10px] sm:text-xs text-gray-400 mb-0.5">{{ __('Wind') }}</div>
+                    <div class="text-[10px] sm:text-xs text-ui-muted mb-0.5">{{ __('Wind') }}</div>
                     <div class="text-xl sm:text-2xl md:text-3xl font-bold" x-text="formatWind(forecast[0]?.wind_speed, 0)"></div>
                 </div>
             </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/10 text-[10px] sm:text-xs text-gray-500">
+        <div class="mt-4 pt-4 border-t border-ui-line/10 text-[10px] sm:text-xs text-ui-subtle">
             {{ __('Source') }}: <span x-text="forecastMeta?.forecast_source || ''"></span>
         </div>
     </div>
@@ -56,8 +56,8 @@
     <!-- Daily Forecast -->
     <div x-show="view === 'daily'" class="space-y-3">
         <template x-for="(day, idx) in forecast" :key="day.date">
-            <div class="bg-weather-card rounded-xl border border-white/10 overflow-hidden"
-                 :class="hasHourlyDataForDay(day.date) ? 'hover:bg-white/5 transition-colors cursor-pointer' : ''"
+            <div class="bg-weather-card rounded-xl border border-ui-line/10 overflow-hidden"
+                 :class="hasHourlyDataForDay(day.date) ? 'hover:bg-ui-overlay/5 transition-colors cursor-pointer' : ''"
                  @click="hasHourlyDataForDay(day.date) && (view = 'hourly', selectedDate = day.date)">
                 <!-- Forecast Data Row -->
                 <div class="p-4">
@@ -67,15 +67,15 @@
 	                                 class="w-10 h-10" alt="Weather">
                             <div class="min-w-[100px]">
                                 <div class="font-semibold" x-text="formatDay(day.date)"></div>
-                                <div class="text-xs text-gray-400" x-text="formatShortDate(day.date)"></div>
+                                <div class="text-xs text-ui-muted" x-text="formatShortDate(day.date)"></div>
                             </div>
-                            <div class="hidden md:block text-sm text-gray-400 flex-1" x-text="getDescription(day.symbol)"></div>
+                            <div class="hidden md:block text-sm text-ui-muted flex-1" x-text="getDescription(day.symbol)"></div>
                         </div>
                         <div class="flex items-center gap-6 md:gap-8">
                             <div class="text-center min-w-[60px]">
-                                <span class="text-xl font-bold text-weather-warm" x-text="formatTemp(day.temp_high)"></span>
-                                <span class="text-gray-500 mx-1">/</span>
-                                <span class="text-xl font-bold text-weather-cold" x-text="formatTemp(day.temp_low)"></span>
+                                <span class="text-xl font-bold text-data-amber-500" x-text="formatTemp(day.temp_high)"></span>
+                                <span class="text-ui-subtle mx-1">/</span>
+                                <span class="text-xl font-bold text-data-cyan-500" x-text="formatTemp(day.temp_low)"></span>
                             </div>
                             <div class="hidden sm:flex items-center gap-2 min-w-[80px]">
 	                                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/raindrops.svg') }}"
@@ -92,17 +92,17 @@
                         </div>
                     </div>
                     <!-- Source for raw data -->
-                    <div class="mt-3 pt-3 border-t border-white/5 text-xs text-gray-500">
+                    <div class="mt-3 pt-3 border-t border-ui-line/5 text-xs text-ui-subtle">
                         {{ __('Source') }}: <span x-text="forecastMeta?.forecast_source || ''"></span>
                     </div>
                 </div>
                 
                 <!-- NLG Text (for all days that have it) -->
                 <template x-if="day.nlg_text">
-                    <div class="px-4 pb-4 border-t border-white/10 pt-3 bg-white/2">
-                        <p class="text-sm text-gray-300 leading-relaxed mb-3" x-text="day.nlg_text"></p>
+                    <div class="px-4 pb-4 border-t border-ui-line/10 pt-3 bg-ui-overlay/2">
+                        <p class="text-sm text-ui-secondary leading-relaxed mb-3" x-text="day.nlg_text"></p>
                         <!-- Source for NLG -->
-                        <div class="text-xs text-gray-500">
+                        <div class="text-xs text-ui-subtle">
                             <span>{{ __('Generated via NLG (Natural Language Generation)') }}</span>
                             <template x-if="day.nlg_meta?.status_label">
                                 <span> • <span x-text="day.nlg_meta.status_label"></span></span>
@@ -119,31 +119,31 @@
         <!-- Back button and day selector -->
         <div class="flex items-center justify-between mb-4">
             <button @click="view = 'daily'; selectedDate = null" 
-                    class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                    class="flex items-center gap-2 text-ui-muted hover:text-ui-fg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
                 {{ __('Back to Daily') }}
             </button>
-            <div class="text-sm text-gray-400" x-show="selectedDate">
+            <div class="text-sm text-ui-muted" x-show="selectedDate">
                 <span x-text="selectedDate ? formatDay(selectedDate) + ', ' + formatShortDate(selectedDate) : ''"></span>
             </div>
         </div>
         
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <h3 class="font-semibold mb-4" x-text="selectedDate ? formatDay(selectedDate) + ' - ' + __('Hourly Forecast') : __('Next 24 hours')"></h3>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <h3 class="font-semibold mb-4" x-text="selectedDate ? formatDay(selectedDate) + ' - ' + @js(__('Hourly Forecast')) : @js(__('Next 24 hours'))"></h3>
             <div class="flex gap-3 overflow-x-auto pb-2">
                 <template x-for="(hour, idx) in getFilteredHourly()" :key="'hour-'+idx">
-                    <div class="text-center p-3 min-w-[80px] bg-white/5 rounded-xl flex-shrink-0 hover:bg-white/10 transition-colors"
-                         :class="idx === 0 ? 'bg-white/10 ring-1 ring-blue-500/50' : ''">
-                        <div class="text-xs text-gray-400" x-text="formatHourTime(hour.time)"></div>
+                    <div class="text-center p-3 min-w-[80px] bg-ui-overlay/5 rounded-xl flex-shrink-0 hover:bg-ui-overlay/10 transition-colors"
+                         :class="idx === 0 ? 'bg-ui-overlay/10 ring-1 ring-blue-500/50' : ''">
+                        <div class="text-xs text-ui-muted" x-text="formatHourTime(hour.time)"></div>
                         <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + getWeatherIcon(hour.symbol, hour.time) + '.svg'"
 	                             class="w-8 h-8 mx-auto my-2" alt="Weather">
                         <div class="font-bold" x-text="formatTemp(hour.temperature)"></div>
-                        <div class="text-xs text-blue-400 mt-1" x-show="hour.precipitation_1h > 0">
+                        <div class="text-xs text-data-blue-400 mt-1" x-show="hour.precipitation_1h > 0">
                             💧<span x-text="formatRain(hour.precipitation_1h)"></span>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1" x-show="!hour.precipitation_1h || hour.precipitation_1h === 0">
+                        <div class="text-xs text-ui-subtle mt-1" x-show="!hour.precipitation_1h || hour.precipitation_1h === 0">
                             <span x-text="Math.round(hour.humidity) + '%'"></span> 💧
                         </div>
                     </div>
@@ -153,7 +153,7 @@
 
         <!-- Wind & Details -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
                 <h3 class="font-semibold mb-4 flex items-center gap-2">
 	                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/wind.svg') }}"
 	                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/wind.svg'"
@@ -162,18 +162,18 @@
                 </h3>
                 <div class="space-y-2">
                     <template x-for="(hour, idx) in getFilteredHourly().slice(0, 8)" :key="'wind-'+idx">
-                        <div class="flex items-center justify-between text-sm py-2 border-b border-white/5 last:border-0">
-                            <span class="text-gray-400" x-text="formatHourTime(hour.time)"></span>
+                        <div class="flex items-center justify-between text-sm py-2 border-b border-ui-line/5 last:border-0">
+                            <span class="text-ui-muted" x-text="formatHourTime(hour.time)"></span>
                             <div class="flex items-center gap-3">
                                 <span x-text="formatWind(hour.wind_speed, 0)"></span>
-                                <span class="text-xs px-2 py-1 bg-white/10 rounded" x-text="getWindDirection(hour.wind_direction)"></span>
+                                <span class="text-xs px-2 py-1 bg-ui-overlay/10 rounded" x-text="getWindDirection(hour.wind_direction)"></span>
                             </div>
                         </div>
                     </template>
                 </div>
             </div>
             
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
                 <h3 class="font-semibold mb-4 flex items-center gap-2">
 	                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/thermometer.svg') }}"
 	                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/thermometer.svg'"
@@ -183,8 +183,8 @@
                 <div class="space-y-2">
                     <template x-for="(hour, idx) in getFilteredHourly().slice(0, 8)" :key="'temp-'+idx">
                         <div class="flex items-center gap-3 text-sm py-1">
-                            <span class="text-gray-400 w-16" x-text="formatHourTime(hour.time)"></span>
-                            <div class="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
+                            <span class="text-ui-muted w-16" x-text="formatHourTime(hour.time)"></span>
+                            <div class="flex-1 bg-ui-overlay/5 rounded-full h-2 overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-weather-cold to-weather-warm" 
                                      :style="'width: ' + Math.max(10, (hour.temperature + 10) * 3) + '%'"></div>
                             </div>
@@ -194,17 +194,17 @@
                 </div>
             </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/10 text-xs text-gray-500">
+        <div class="mt-4 pt-4 border-t border-ui-line/10 text-xs text-ui-subtle">
             {{ __('Source') }}: <span x-text="forecastMeta?.forecast_source || ''"></span>
         </div>
     </div>
 
-    <article class="bg-weather-card rounded-2xl p-6 border border-white/10 prose prose-invert prose-sm max-w-none">
+    <article class="bg-weather-card rounded-2xl p-6 border border-ui-line/10 prose prose-invert prose-sm max-w-none">
         <h2 class="text-lg font-semibold mb-3">{{ __('Forecast page about heading') }}</h2>
-        <p class="text-gray-300 mb-3">{{ __('Forecast page about body 1') }}</p>
-        <p class="text-gray-300 mb-3">{{ __('Forecast page about body 2') }}</p>
-        <p class="text-gray-300 mb-3">{{ __('Forecast page about body 3') }}</p>
-        <footer class="text-xs text-gray-500 mt-4 pt-4 border-t border-white/10">{{ __('Forecast page sources') }}</footer>
+        <p class="text-ui-secondary mb-3">{{ __('Forecast page about body 1') }}</p>
+        <p class="text-ui-secondary mb-3">{{ __('Forecast page about body 2') }}</p>
+        <p class="text-ui-secondary mb-3">{{ __('Forecast page about body 3') }}</p>
+        <footer class="text-xs text-ui-subtle mt-4 pt-4 border-t border-ui-line/10">{{ __('Forecast page sources') }}</footer>
     </article>
 </div>
 

@@ -20,8 +20,8 @@
             background:
                 radial-gradient(1200px 600px at 20% 10%, rgba(56, 189, 248, 0.20), transparent 55%),
                 radial-gradient(900px 500px at 85% 30%, rgba(99, 102, 241, 0.20), transparent 60%),
-                linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.92));
-            border: 1px solid rgba(255, 255, 255, 0.10);
+                linear-gradient(180deg, rgb(var(--wn-card) / 0.85), rgb(var(--wn-bg) / 0.92));
+            border: 1px solid rgb(var(--wn-overlay) / 0.10);
         }
 
         .error-grain::before {
@@ -30,8 +30,8 @@
             inset: 0;
             pointer-events: none;
             background-image:
-                radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-                radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+                radial-gradient(rgb(var(--wn-overlay) / 0.08) 1px, transparent 1px),
+                radial-gradient(rgb(var(--wn-overlay) / 0.04) 1px, transparent 1px);
             background-size: 28px 28px, 18px 18px;
             background-position: 0 0, 11px 7px;
             opacity: 0.35;
@@ -51,26 +51,27 @@
             gap: .5rem;
             padding: .75rem 1rem;
             border-radius: .9rem;
-            border: 1px solid rgba(255,255,255,0.12);
-            background: rgba(255,255,255,0.06);
+            border: 1px solid rgb(var(--wn-overlay) / 0.12);
+            background: rgb(var(--wn-overlay) / 0.06);
             transition: transform .15s ease, background .15s ease, border-color .15s ease;
             backdrop-filter: blur(8px);
         }
 
         .error-btn:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.10);
-            border-color: rgba(255,255,255,0.18);
+            background: rgb(var(--wn-overlay) / 0.10);
+            border-color: rgb(var(--wn-overlay) / 0.18);
         }
 
         .error-btn-primary {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.85), rgba(34, 211, 238, 0.65));
+            color: white;
+            background: rgb(var(--wn-accent-strong));
             border-color: rgba(59, 130, 246, 0.35);
             box-shadow: 0 14px 40px rgba(59, 130, 246, 0.18);
         }
 
         .error-btn-primary:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.92), rgba(34, 211, 238, 0.70));
+            background: rgb(var(--wn-accent-strong));
             border-color: rgba(34, 211, 238, 0.42);
         }
 
@@ -101,7 +102,7 @@
             position: absolute;
             height: 2px;
             border-radius: 999px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.38), transparent);
+            background: linear-gradient(90deg, transparent, rgb(var(--wn-overlay) / 0.38), transparent);
             filter: blur(.1px);
             animation: gust 1.35s ease-in-out infinite;
         }
@@ -112,9 +113,9 @@
             width: 128px;
             height: 164px;
             border-radius: 16px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+            background: linear-gradient(180deg, rgb(var(--wn-overlay) / 0.92), rgb(var(--wn-overlay) / 0.78));
             box-shadow: 0 22px 60px rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.30);
+            border: 1px solid rgb(var(--wn-overlay) / 0.30);
             transform-origin: 30% 60%;
             animation: fly 2.6s ease-in-out infinite alternate;
         }
@@ -137,7 +138,7 @@
             top: 18px;
             width: 26px;
             height: 26px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.65));
+            background: linear-gradient(135deg, rgb(var(--wn-overlay) / 0.92), rgb(var(--wn-overlay) / 0.65));
             border-left: 1px solid rgba(2,6,23,0.08);
             border-bottom: 1px solid rgba(2,6,23,0.08);
             transform: rotate(45deg);
@@ -162,10 +163,10 @@
             height: 56%;
             border-radius: 22px;
             background:
-                radial-gradient(120px 80px at 15% 25%, rgba(255,255,255,0.18), transparent 60%),
-                radial-gradient(140px 90px at 80% 30%, rgba(255,255,255,0.12), transparent 60%),
+                radial-gradient(120px 80px at 15% 25%, rgb(var(--wn-overlay) / 0.18), transparent 60%),
+                radial-gradient(140px 90px at 80% 30%, rgb(var(--wn-overlay) / 0.12), transparent 60%),
                 linear-gradient(180deg, rgba(34, 211, 238, 0.38), rgba(59, 130, 246, 0.22));
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid rgb(var(--wn-overlay) / 0.12);
             overflow: hidden;
         }
         .water::before,
@@ -177,11 +178,11 @@
             top: -22px;
             height: 60px;
             background:
-                radial-gradient(40px 14px at 10% 70%, rgba(255,255,255,0.22), transparent 60%),
-                radial-gradient(50px 16px at 30% 60%, rgba(255,255,255,0.16), transparent 60%),
-                radial-gradient(45px 16px at 55% 75%, rgba(255,255,255,0.18), transparent 60%),
-                radial-gradient(55px 18px at 75% 65%, rgba(255,255,255,0.16), transparent 60%),
-                radial-gradient(40px 14px at 92% 72%, rgba(255,255,255,0.18), transparent 60%);
+                radial-gradient(40px 14px at 10% 70%, rgb(var(--wn-overlay) / 0.22), transparent 60%),
+                radial-gradient(50px 16px at 30% 60%, rgb(var(--wn-overlay) / 0.16), transparent 60%),
+                radial-gradient(45px 16px at 55% 75%, rgb(var(--wn-overlay) / 0.18), transparent 60%),
+                radial-gradient(55px 18px at 75% 65%, rgb(var(--wn-overlay) / 0.16), transparent 60%),
+                radial-gradient(40px 14px at 92% 72%, rgb(var(--wn-overlay) / 0.18), transparent 60%);
             filter: blur(.2px);
             animation: wave 2.8s ease-in-out infinite alternate;
             opacity: .85;
@@ -199,7 +200,7 @@
             height: 110px;
             border-radius: 18px;
             background: rgba(2, 6, 23, 0.45);
-            border: 1px solid rgba(255,255,255,0.14);
+            border: 1px solid rgb(var(--wn-overlay) / 0.14);
             box-shadow: 0 22px 60px rgba(0,0,0,0.35);
             display: grid;
             place-items: center;
@@ -208,7 +209,7 @@
         .float-sign span {
             font-weight: 800;
             letter-spacing: -0.04em;
-            color: rgba(255,255,255,0.92);
+            color: rgb(var(--wn-overlay) / 0.92);
             font-size: 42px;
         }
 
@@ -227,8 +228,8 @@
             width: 150px;
             height: 170px;
             border-radius: 18px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
-            border: 1px solid rgba(255,255,255,0.12);
+            background: linear-gradient(180deg, rgb(var(--wn-overlay) / 0.10), rgb(var(--wn-overlay) / 0.05));
+            border: 1px solid rgb(var(--wn-overlay) / 0.12);
             box-shadow: 0 18px 60px rgba(0,0,0,0.35);
         }
         .server::before {
@@ -241,7 +242,7 @@
                 radial-gradient(6px 6px at 12% 36%, rgba(34, 211, 238, 0.55), transparent 65%),
                 radial-gradient(6px 6px at 12% 60%, rgba(34, 211, 238, 0.25), transparent 65%),
                 linear-gradient(180deg, rgba(2,6,23,0.55), rgba(2,6,23,0.35));
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgb(var(--wn-overlay) / 0.08);
         }
         .bolt {
             position: absolute;
@@ -281,17 +282,17 @@
     <div class="relative p-6 sm:p-10">
         <div class="grid lg:grid-cols-2 gap-8 items-center">
             <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-gray-200">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-ui-line/10 bg-ui-overlay/5 text-xs text-ui-body">
                     <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow shadow-emerald-400/30"></span>
                     <span>{{ __('Weather report') }}</span>
-                    <span class="text-gray-400">—</span>
-                    <span class="text-gray-300">{{ __('error') }} {{ $code }}</span>
+                    <span class="text-ui-muted">—</span>
+                    <span class="text-ui-secondary">{{ __('error') }} {{ $code }}</span>
                 </div>
 
                 <div class="mt-4">
-                    <div class="error-code text-6xl sm:text-7xl font-extrabold text-white/95">{{ $code }}</div>
-                    <h2 class="mt-3 text-2xl sm:text-3xl font-bold text-white">{{ $headline }}</h2>
-                    <p class="mt-3 text-gray-200/90 leading-relaxed max-w-prose">{{ $message }}</p>
+                    <div class="error-code text-6xl sm:text-7xl font-extrabold text-ui-fg/95">{{ $code }}</div>
+                    <h2 class="mt-3 text-2xl sm:text-3xl font-bold text-ui-fg">{{ $headline }}</h2>
+                    <p class="mt-3 text-ui-body/90 leading-relaxed max-w-prose">{{ $message }}</p>
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-3">
@@ -321,7 +322,7 @@
                     </a>
                 </div>
 
-                <p class="mt-5 text-xs text-gray-300/80">
+                <p class="mt-5 text-xs text-ui-secondary/80">
                     {{ __('Tip: If this keeps happening, the atmosphere might be fine — but our server pressure isn’t.') }}
                 </p>
             </div>

@@ -52,7 +52,10 @@ that has just been seeded for the first time.
   - Configure global weather effects (rain/snow/wind/lightning/fog)
   - Tune intensity and test-mode options
 - **Appearance** (`/admin/settings/appearance`)
-  - Site theme: choose **FX** (glass, blur, animations) or **Flat** (simplified design, no glass/blur/animations) for the entire public site. Data and functionality are unchanged; only the visual style switches. Useful for performance, accessibility, or a minimal look.
+  - **Colour palette**: choose WeatherNode (original/default blue), Ocean (optional teal), Forest (green), or Solar Flare (plum, orange and apricot). Each has light and dark versions and works with both FX and Flat.
+  - **Default colour mode**: Dark, Light, or System. Visitors can override it in the public header or return to the station default. Existing installations keep WeatherNode Dark until changed. The admin panel keeps its own theme preference.
+  - Custom colour editing and palette import/export are not included.
+  - Visual effects: choose **FX** (glass, blur, animations) or **Flat** (simplified design, no glass/blur/animations) for the entire public site. Data and functionality are unchanged; only the visual style switches. Useful for performance, accessibility, or a minimal look.
 - **Social Sharing Cards** (`/admin/settings/og`)
   - Enable/disable dynamic Open Graph images for social media previews
   - Shows which image driver (GD / Imagick) is available on the server
@@ -315,3 +318,12 @@ UPDATER_ALLOW_GIT=true
 - Ensure `UPDATER_ENABLED=true` in `.env`
 - Check that you're logged in as an admin user
 - Verify the route is accessible: `/admin/settings/updates`
+
+
+### Theme creator
+
+Open **Settings → Appearance → Theme creator** to start from WeatherNode, Ocean, Forest or Solar Flare. Edit the dark and light colours independently with a colour picker or six-digit hex value. **More colours** exposes secondary surfaces, overlays, dividers and chart grids. The isolated preview is a compact sample using shared dashboard styles, with FX on, FX off (static), and Flat options. Layout, weather data and widget visuals can differ from the actual dashboard; it does not change the public site or admin palette. Contrast warnings check common text/surface pairs against 4.5:1 and do not block saving.
+
+**Save theme** stores a draft in the station's single custom-theme slot. **Save and apply** also publishes a snapshot to the public site. Subsequent draft edits do not alter that snapshot until applied again. The saved custom theme is also available in Appearance alongside the protected presets. The station's default mode, visitor mode choice and FX/Flat selection remain independent.
+
+**Export theme** downloads the current draft as JSON. **Import theme** validates a JSON file and loads it into the editor for review; it does not save or apply it. Export before replacing a custom theme if you want to keep multiple designs. Weather measurements and warning colours cannot be edited. **Restore original theme** switches back to WeatherNode Dark, retaining the saved custom theme and FX preference.

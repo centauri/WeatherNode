@@ -72,9 +72,9 @@
 	                     class="w-8 h-8 md:w-10 md:h-10" alt="">
                 {{ __('Astronomy') }}
             </h1>
-            <p class="text-gray-400">{{ __('Astronomy page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
+            <p class="text-ui-muted">{{ __('Astronomy page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
         </div>
-        <div class="text-right text-sm text-gray-400">
+        <div class="text-right text-sm text-ui-muted">
             <span x-show="loading">{{ __('Loading...') }}</span>
             <span x-show="!loading && lastUpdated" x-text="'{{ __('Updated') }}: ' + lastUpdated"></span>
         </div>
@@ -90,30 +90,30 @@
 	                     class="w-14 h-14" alt="Sun">
                 <div>
                     <h2 class="text-xl font-semibold">{{ __('Sun') }}</h2>
-                    <p class="text-gray-400" x-text="formatDate(new Date())"></p>
+                    <p class="text-ui-muted" x-text="formatDate(new Date())"></p>
                 </div>
             </div>
             
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="text-center p-4 bg-white/5 rounded-xl">
+                <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
 	                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/sunrise.svg') }}"
 	                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/sunrise.svg'"
 	                         class="w-8 h-8 mx-auto mb-2" alt="Sunrise">
-                    <div class="text-xs text-gray-400">{{ __('Sunrise') }}</div>
+                    <div class="text-xs text-ui-muted">{{ __('Sunrise') }}</div>
                     <div class="text-2xl font-bold" x-text="sun?.sunrise ?? '--:--'"></div>
                 </div>
-                <div class="text-center p-4 bg-white/5 rounded-xl">
+                <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
 	                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/sunset.svg') }}"
 	                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/sunset.svg'"
 	                         class="w-8 h-8 mx-auto mb-2" alt="Sunset">
-                    <div class="text-xs text-gray-400">{{ __('Sunset') }}</div>
+                    <div class="text-xs text-ui-muted">{{ __('Sunset') }}</div>
                     <div class="text-2xl font-bold" x-text="sun?.sunset ?? '--:--'"></div>
                 </div>
             </div>
 
             <!-- Sun position arc -->
             <div class="relative h-24 mb-4">
-                <div class="absolute inset-x-0 bottom-0 h-0.5 bg-white/20"></div>
+                <div class="absolute inset-x-0 bottom-0 h-0.5 bg-ui-overlay/20"></div>
                 <svg class="absolute inset-0 w-full h-full" viewBox="0 0 200 80">
                     <defs>
                         <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -131,62 +131,62 @@
                             :style="'opacity:' + (sun?.elevation != null ? Math.min(Math.max(sun.elevation / 5, 0), 1) : 1)"
                             r="10" fill="#fbbf24" class="drop-shadow-lg"/>
                 </svg>
-                <div class="absolute left-2 bottom-2 text-xs text-gray-500" x-text="sun?.sunrise ?? '--:--'"></div>
-                <div class="absolute right-2 bottom-2 text-xs text-gray-500" x-text="sun?.sunset ?? '--:--'"></div>
-                <div class="absolute left-1/2 -translate-x-1/2 top-1 text-xs text-gray-500" x-text="sun?.solar_noon ?? '--:--'"></div>
+                <div class="absolute left-2 bottom-2 text-xs text-ui-subtle" x-text="sun?.sunrise ?? '--:--'"></div>
+                <div class="absolute right-2 bottom-2 text-xs text-ui-subtle" x-text="sun?.sunset ?? '--:--'"></div>
+                <div class="absolute left-1/2 -translate-x-1/2 top-1 text-xs text-ui-subtle" x-text="sun?.solar_noon ?? '--:--'"></div>
             </div>
 
             <div class="grid grid-cols-4 gap-2 text-sm">
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Daylight') }}</div>
-                    <div class="font-bold text-amber-400" x-text="sun?.day_length ?? '--:--'"></div>
+                    <div class="text-ui-muted text-xs">{{ __('Daylight') }}</div>
+                    <div class="font-bold text-data-amber-400" x-text="sun?.day_length ?? '--:--'"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Change') }}</div>
-                    <div class="font-bold" :class="sun?.day_length_change_seconds > 0 ? 'text-green-400' : 'text-red-400'" x-text="sun?.day_length_change ?? '--'"></div>
+                    <div class="text-ui-muted text-xs">{{ __('Change') }}</div>
+                    <div class="font-bold" :class="sun?.day_length_change_seconds > 0 ? 'text-data-green-400' : 'text-data-red-400'" x-text="sun?.day_length_change ?? '--'"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Elevation') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Elevation') }}</div>
                     <div class="font-bold" x-text="sun?.elevation ? sun.elevation + '°' : '--°'"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Azimuth') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Azimuth') }}</div>
                     <div class="font-bold" x-text="sun?.azimuth ? sun.azimuth + '° ' + sun.direction : '--°'"></div>
                 </div>
             </div>
         </div>
 
         <!-- Moon -->
-        <div class="bg-gradient-to-br from-slate-700/50 to-weather-card rounded-2xl p-6 border border-slate-500/20">
+        <div class="bg-gradient-to-br from-ui-slate-soft/50 to-weather-card rounded-2xl p-6 border border-ui-slate-border/20">
             <div class="flex items-center gap-4 mb-6">
                 <img :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/' + (moon?.icon ?? 'moon-waxing-crescent') + '.svg'"
 	                     class="w-14 h-14" alt="Moon phase">
                 <div>
                     <h2 class="text-xl font-semibold">{{ __('Moon') }}</h2>
-                    <p class="text-gray-400" x-text="translateMoonPhase(moon?.phase_name) || '{{ __('Loading...') }}'"></p>
+                    <p class="text-ui-muted" x-text="translateMoonPhase(moon?.phase_name) || '{{ __('Loading...') }}'"></p>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="text-center p-4 bg-white/5 rounded-xl">
+                <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
 		                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moonrise.svg') }}"
 		                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moonrise.svg'"
 		                         class="w-8 h-8 mx-auto mb-2" alt="Moonrise">
-                    <div class="text-xs text-gray-400">{{ __('Moonrise') }}</div>
+                    <div class="text-xs text-ui-muted">{{ __('Moonrise') }}</div>
                     <div class="text-2xl font-bold" x-text="moon?.moonrise ?? '--:--'"></div>
                 </div>
-                <div class="text-center p-4 bg-white/5 rounded-xl">
+                <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
 		                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moonset.svg') }}"
 		                         :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moonset.svg'"
 		                         class="w-8 h-8 mx-auto mb-2" alt="Moonset">
-                    <div class="text-xs text-gray-400">{{ __('Moonset') }}</div>
+                    <div class="text-xs text-ui-muted">{{ __('Moonset') }}</div>
                     <div class="text-2xl font-bold" x-text="moon?.moonset ?? '--:--'"></div>
                 </div>
             </div>
 
             <!-- Moon position arc -->
             <div class="relative h-24 mb-4" x-show="moon?.moonrise || moon?.moonset">
-                <div class="absolute inset-x-0 bottom-0 h-0.5 bg-white/20"></div>
+                <div class="absolute inset-x-0 bottom-0 h-0.5 bg-ui-overlay/20"></div>
                 <svg class="absolute inset-0 w-full h-full" viewBox="0 0 200 80">
                     <defs>
                         <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -204,25 +204,25 @@
                             :style="'opacity:' + (moon?.elevation != null ? Math.min(Math.max((moon.elevation + 5) / 10, 0), 1) : 1)"
                             r="10" fill="#e2e8f0" class="drop-shadow-lg"/>
                 </svg>
-                <div class="absolute left-2 bottom-2 text-xs text-gray-500" x-text="moon?.moonrise ?? '--:--'"></div>
-                <div class="absolute right-2 bottom-2 text-xs text-gray-500" x-text="moon?.moonset ?? '--:--'"></div>
+                <div class="absolute left-2 bottom-2 text-xs text-ui-subtle" x-text="moon?.moonrise ?? '--:--'"></div>
+                <div class="absolute right-2 bottom-2 text-xs text-ui-subtle" x-text="moon?.moonset ?? '--:--'"></div>
             </div>
 
             <div class="grid grid-cols-4 gap-2 text-sm">
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Illumination') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Illumination') }}</div>
                     <div class="font-bold" x-text="moon?.illumination ? moon.illumination + '%' : '--%'"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Age') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Age') }}</div>
                     <div class="font-bold" x-text="moon?.age ? Math.round(moon.age) + ' {{ __('days') }}' : '--'"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Distance') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Distance') }}</div>
                     <div class="font-bold" x-text="formatDistance(moon?.distance)"></div>
                 </div>
                 <div class="text-center">
-                    <div class="text-gray-400 text-xs">{{ __('Elevation') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Elevation') }}</div>
                     <div class="font-bold" x-text="moon?.elevation ? moon.elevation + '°' : '--°'"></div>
                 </div>
             </div>
@@ -230,7 +230,7 @@
     </div>
 
     <!-- Moon Phases -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h3 class="font-semibold mb-4 flex items-center gap-2">
 	            <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moon-waxing-crescent.svg') }}"
 	                 :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moon-waxing-crescent.svg'"
@@ -238,32 +238,32 @@
             {{ __('Moon phases') }}
         </h3>
         <div class="grid grid-cols-4 gap-4">
-            <div class="text-center p-3 bg-white/5 rounded-xl">
+            <div class="text-center p-3 bg-ui-overlay/5 rounded-xl">
 	                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moon-new.svg') }}"
 	                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moon-new.svg'"
 	                     class="w-10 h-10 mx-auto mb-2" alt="New moon">
-                <div class="text-xs text-gray-400">{{ __('New moon') }}</div>
+                <div class="text-xs text-ui-muted">{{ __('New moon') }}</div>
                 <div class="text-sm font-bold" x-text="moon?.next_new_moon ?? '--'"></div>
             </div>
-            <div class="text-center p-3 bg-white/5 rounded-xl">
+            <div class="text-center p-3 bg-ui-overlay/5 rounded-xl">
 	                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moon-first-quarter.svg') }}"
 	                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moon-first-quarter.svg'"
 	                     class="w-10 h-10 mx-auto mb-2" alt="First quarter">
-                <div class="text-xs text-gray-400">{{ __('First quarter') }}</div>
+                <div class="text-xs text-ui-muted">{{ __('First quarter') }}</div>
                 <div class="text-sm font-bold" x-text="moon?.next_first_quarter ?? '--'"></div>
             </div>
-            <div class="text-center p-3 bg-white/5 rounded-xl">
+            <div class="text-center p-3 bg-ui-overlay/5 rounded-xl">
 	                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moon-full.svg') }}"
 	                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moon-full.svg'"
 	                     class="w-10 h-10 mx-auto mb-2" alt="Full moon">
-                <div class="text-xs text-gray-400">{{ __('Full moon') }}</div>
+                <div class="text-xs text-ui-muted">{{ __('Full moon') }}</div>
                 <div class="text-sm font-bold" x-text="moon?.next_full_moon ?? '--'"></div>
             </div>
-            <div class="text-center p-3 bg-white/5 rounded-xl">
+            <div class="text-center p-3 bg-ui-overlay/5 rounded-xl">
 	                <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/moon-last-quarter.svg') }}"
 	                     :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/moon-last-quarter.svg'"
 	                     class="w-10 h-10 mx-auto mb-2" alt="Last quarter">
-                <div class="text-xs text-gray-400">{{ __('Last quarter') }}</div>
+                <div class="text-xs text-ui-muted">{{ __('Last quarter') }}</div>
                 <div class="text-sm font-bold" x-text="moon?.next_last_quarter ?? '--'"></div>
             </div>
         </div>
@@ -272,7 +272,7 @@
     <!-- Aurora / Space Weather -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Aurora / Kp Index -->
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-semibold flex items-center gap-2">
 	                    <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/star.svg') }}"
@@ -289,17 +289,17 @@
                 <div class="w-24 h-24 rounded-full flex items-center justify-center" 
                      :style="'background-color: ' + (aurora?.color ?? '#22c55e') + '33'">
                     <div class="text-center">
-                        <div class="text-3xl font-bold" :style="'color: ' + (aurora?.color ?? '#22c55e')" x-text="aurora?.kp ?? '--'"></div>
-                        <div class="text-xs text-gray-400">{{ __('Kp') }}</div>
+                        <div data-weather-colour-text class="text-3xl font-bold" :style="'color: ' + (aurora?.color ?? '#22c55e')" x-text="aurora?.kp ?? '--'"></div>
+                        <div class="text-xs text-ui-muted">{{ __('Kp') }}</div>
                     </div>
                 </div>
                 <div class="flex-1">
-                    <p class="text-gray-400 text-sm mb-2" x-text="translateAuroraDescription(aurora?.aurora?.description) || '{{ __('Loading...') }}'"></p>
-                    <p class="text-xs text-gray-500" x-text="translateAuroraRadio(aurora?.radio?.description)"></p>
+                    <p class="text-ui-muted text-sm mb-2" x-text="translateAuroraDescription(aurora?.aurora?.description) || '{{ __('Loading...') }}'"></p>
+                    <p class="text-xs text-ui-subtle" x-text="translateAuroraRadio(aurora?.radio?.description)"></p>
                 </div>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-white/10">
+            <div class="mt-4 pt-4 border-t border-ui-line/10">
                 <div class="flex h-4 rounded overflow-hidden gap-0.5">
                     <template x-for="(level, idx) in aurora?.scale ?? []" :key="idx">
                         <div class="flex-1 transition-opacity" 
@@ -308,25 +308,25 @@
                              :title="'Kp ' + level.value + ': ' + translateAuroraScaleLabel(level.label)"></div>
                     </template>
                 </div>
-                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <div class="flex justify-between text-xs text-ui-subtle mt-1">
                     <span>{{ __('Kp') }} 0</span>
                     <span>{{ __('Kp') }} 9</span>
                 </div>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
+            <div class="mt-4 pt-4 border-t border-ui-line/10 grid grid-cols-2 gap-4 text-sm">
                 <div>
-                    <div class="text-gray-400 text-xs">{{ __('A-index (estimated)') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('A-index (estimated)') }}</div>
                     <div class="font-bold" x-text="aurora?.a_index ?? '--'"></div>
                 </div>
                 <div>
-                    <div class="text-gray-400 text-xs">{{ __('Geomagnetic storm') }}</div>
+                    <div class="text-ui-muted text-xs">{{ __('Geomagnetic storm') }}</div>
                     <div class="font-bold" x-text="aurora?.storm?.level ?? '{{ __('None') }}'"></div>
                 </div>
             </div>
 
-            <p class="text-xs text-gray-500 mt-4">
-                {{ __('Data') }}: <a href="https://www.swpc.noaa.gov" target="_blank" class="text-blue-400 hover:underline">NOAA Space Weather Prediction Center</a>
+            <p class="text-xs text-ui-subtle mt-4">
+                {{ __('Data') }}: <a href="https://www.swpc.noaa.gov" target="_blank" class="text-data-blue-400 hover:underline">NOAA Space Weather Prediction Center</a>
             </p>
         </div>
 
@@ -335,13 +335,13 @@
             <div class="iss-flip-card" :class="{ 'flipped': flipped }">
                 <div class="iss-flip-card-inner">
                     <!-- Front of card -->
-                    <div class="iss-flip-card-front bg-weather-card rounded-2xl p-5 border border-white/10 cursor-pointer" @click="flipped = !flipped; $nextTick(() => { setTimeout(() => { if (window.astronomyPageInstance && typeof L !== 'undefined' && !window.astronomyPageInstance.mapInitialized) { window.astronomyPageInstance.initISSTracker(currentStation); } }, 300); })">
+                    <div class="iss-flip-card-front bg-weather-card rounded-2xl p-5 border border-ui-line/10 cursor-pointer" @click="flipped = !flipped; $nextTick(() => { setTimeout(() => { if (window.astronomyPageInstance && typeof L !== 'undefined' && !window.astronomyPageInstance.mapInitialized) { window.astronomyPageInstance.initISSTracker(currentStation); } }, 300); })">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
                                 <!-- Left arrow (show if Tiangong is available and not on ISS) -->
                                 <button @click.stop="if (tiangong && currentStation === 'iss') currentStation = 'tiangong'; else if (iss && currentStation === 'tiangong') currentStation = 'iss';" 
                                         x-show="(iss && tiangong) || (currentStation === 'tiangong' && iss)"
-                                        class="p-1 rounded hover:bg-white/10 transition" 
+                                        class="p-1 rounded hover:bg-ui-overlay/10 transition"
                                         :class="{ 'opacity-50 cursor-not-allowed': !iss || (currentStation === 'iss' && !tiangong) }">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -356,7 +356,7 @@
                                 <!-- Right arrow (show if ISS is available and not on Tiangong) -->
                                 <button @click.stop="if (iss && currentStation === 'tiangong') currentStation = 'iss'; else if (tiangong && currentStation === 'iss') currentStation = 'tiangong';" 
                                         x-show="(iss && tiangong) || (currentStation === 'iss' && tiangong)"
-                                        class="p-1 rounded hover:bg-white/10 transition"
+                                        class="p-1 rounded hover:bg-ui-overlay/10 transition"
                                         :class="{ 'opacity-50 cursor-not-allowed': !tiangong || (currentStation === 'tiangong' && !iss) }">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -364,10 +364,10 @@
                                 </button>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-400">{{ __('Click for map') }}</span>
+                                <span class="text-xs text-ui-muted">{{ __('Click for map') }}</span>
                                 <a :href="currentStation === 'iss' ? 'https://spotthestation.nasa.gov' : 'https://www.cnsa.gov.cn'" 
                                    target="_blank" @click.stop 
-                                   class="text-xs text-blue-400 hover:underline">
+                                   class="text-xs text-data-blue-400 hover:underline">
                                     <span x-show="currentStation === 'iss'">{{ __('NASA') }} →</span>
                                     <span x-show="currentStation === 'tiangong'">{{ __('CNSA') }} →</span>
                                 </a>
@@ -376,74 +376,74 @@
                         
                         <div class="space-y-4">
                             <!-- Current location -->
-                            <div class="p-3 bg-white/5 rounded-lg">
+                            <div class="p-3 bg-ui-overlay/5 rounded-lg">
                                 <div class="flex justify-between items-center">
                                     <div>
                                         <div class="font-semibold">{{ __('Current position') }}</div>
-                                        <div class="text-sm text-gray-400" x-show="currentStation === 'iss' && iss?.location?.success">
+                                        <div class="text-sm text-ui-muted" x-show="currentStation === 'iss' && iss?.location?.success">
                                             <span x-text="iss?.location?.latitude?.toFixed(2) ?? '--'"></span>°, 
                                             <span x-text="iss?.location?.longitude?.toFixed(2) ?? '--'"></span>°
                                         </div>
-                                        <div class="text-sm text-gray-400" x-show="currentStation === 'tiangong' && tiangong?.location?.success">
+                                        <div class="text-sm text-ui-muted" x-show="currentStation === 'tiangong' && tiangong?.location?.success">
                                             <span x-text="tiangong?.location?.latitude?.toFixed(2) ?? '--'"></span>°, 
                                             <span x-text="tiangong?.location?.longitude?.toFixed(2) ?? '--'"></span>°
                                         </div>
-                                        <div class="text-sm text-gray-400" x-show="(currentStation === 'iss' && !iss?.location?.success) || (currentStation === 'tiangong' && !tiangong?.location?.success)">{{ __('Not available') }}</div>
+                                        <div class="text-sm text-ui-muted" x-show="(currentStation === 'iss' && !iss?.location?.success) || (currentStation === 'tiangong' && !tiangong?.location?.success)">{{ __('Not available') }}</div>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-xl font-bold" x-show="currentStation === 'iss'" x-text="formatDistance(iss?.distance_km)"></div>
                                         <div class="text-xl font-bold" x-show="currentStation === 'tiangong'" x-text="formatDistance(tiangong?.distance_km)"></div>
-                                        <div class="text-xs text-gray-400">{{ __('Distance') }}</div>
+                                        <div class="text-xs text-ui-muted">{{ __('Distance') }}</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Next pass -->
-                            <div class="p-3 bg-white/5 rounded-lg">
+                            <div class="p-3 bg-ui-overlay/5 rounded-lg">
                                 <div class="flex justify-between items-center">
                                     <div>
                                         <div class="font-semibold">{{ __('Next pass') }}</div>
-                                        <div class="text-sm text-gray-400" x-show="currentStation === 'iss'" x-text="iss?.next_pass?.visible ? '✓ {{ __('Visible') }}' : '{{ __('Possibly not visible') }}'"></div>
-                                        <div class="text-sm text-gray-400" x-show="currentStation === 'tiangong'" x-text="tiangong?.next_pass?.visible ? '✓ {{ __('Visible') }}' : '{{ __('Possibly not visible') }}'"></div>
+                                        <div class="text-sm text-ui-muted" x-show="currentStation === 'iss'" x-text="iss?.next_pass?.visible ? '✓ {{ __('Visible') }}' : '{{ __('Possibly not visible') }}'"></div>
+                                        <div class="text-sm text-ui-muted" x-show="currentStation === 'tiangong'" x-text="tiangong?.next_pass?.visible ? '✓ {{ __('Visible') }}' : '{{ __('Possibly not visible') }}'"></div>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-xl font-bold" x-show="currentStation === 'iss'" x-text="iss?.next_pass?.rise_time_formatted ?? '--'"></div>
                                         <div class="text-xl font-bold" x-show="currentStation === 'tiangong'" x-text="tiangong?.next_pass?.rise_time_formatted ?? '--'"></div>
-                                        <div class="text-xs text-gray-400" x-show="currentStation === 'iss'" x-text="iss?.next_pass?.duration_formatted ? '{{ __('Duration') }}: ' + iss.next_pass.duration_formatted : ''"></div>
-                                        <div class="text-xs text-gray-400" x-show="currentStation === 'tiangong'" x-text="tiangong?.next_pass?.duration_formatted ? '{{ __('Duration') }}: ' + tiangong.next_pass.duration_formatted : ''"></div>
+                                        <div class="text-xs text-ui-muted" x-show="currentStation === 'iss'" x-text="iss?.next_pass?.duration_formatted ? '{{ __('Duration') }}: ' + iss.next_pass.duration_formatted : ''"></div>
+                                        <div class="text-xs text-ui-muted" x-show="currentStation === 'tiangong'" x-text="tiangong?.next_pass?.duration_formatted ? '{{ __('Duration') }}: ' + tiangong.next_pass.duration_formatted : ''"></div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Astronauts (only for ISS) -->
-                            <div class="p-3 bg-white/5 rounded-lg" x-show="currentStation === 'iss' && astronauts?.success">
+                            <div class="p-3 bg-ui-overlay/5 rounded-lg" x-show="currentStation === 'iss' && astronauts?.success">
                                 <div class="flex justify-between items-center mb-2">
                                     <div>
                                         <div class="font-semibold">{{ __('Astronauts in space') }}</div>
-                                        <div class="text-sm text-gray-400">{{ __('Right now') }}</div>
+                                        <div class="text-sm text-ui-muted">{{ __('Right now') }}</div>
                                     </div>
                                     <div class="text-right">
                                         <div class="text-2xl font-bold" x-text="astronauts?.number ?? '--'"></div>
                                     </div>
                                 </div>
-                                <div class="text-xs text-gray-500 mt-2" x-show="astronauts?.breakdown">
+                                <div class="text-xs text-ui-subtle mt-2" x-show="astronauts?.breakdown">
                                     <span x-text="translations.iss + ': ' + (astronauts?.breakdown?.iss ?? 0)"></span>
                                     <span x-show="astronauts?.breakdown?.tiangong > 0" x-text="' • ' + translations.tiangong + ': ' + (astronauts?.breakdown?.tiangong ?? 0)"></span>
                                 </div>
                             </div>
 
-                            <p class="text-xs text-gray-500" x-show="currentStation === 'iss' && iss?.pass_note" x-text="iss?.pass_note"></p>
-                            <p class="text-xs text-gray-500" x-show="currentStation === 'tiangong' && tiangong?.pass_note" x-text="tiangong?.pass_note"></p>
+                            <p class="text-xs text-ui-subtle" x-show="currentStation === 'iss' && iss?.pass_note" x-text="iss?.pass_note"></p>
+                            <p class="text-xs text-ui-subtle" x-show="currentStation === 'tiangong' && tiangong?.pass_note" x-text="tiangong?.pass_note"></p>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
+                        <div class="mt-4 pt-4 border-t border-ui-line/10 grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <div class="text-gray-400 text-xs">{{ __('Altitude') }}</div>
+                                <div class="text-ui-muted text-xs">{{ __('Altitude') }}</div>
                                 <div class="font-bold" x-show="currentStation === 'iss'" x-text="iss?.altitude_km ? formatDistanceLabel(iss.altitude_km) : '~' + formatDistanceLabel(408)"></div>
                                 <div class="font-bold" x-show="currentStation === 'tiangong'" x-text="tiangong?.altitude_km ? formatDistanceLabel(tiangong.altitude_km) : '~' + formatDistanceLabel(380)"></div>
                             </div>
                             <div>
-                                <div class="text-gray-400 text-xs">{{ __('Speed') }}</div>
+                                <div class="text-ui-muted text-xs">{{ __('Speed') }}</div>
                                 <div class="font-bold" x-show="currentStation === 'iss'" x-text="iss?.speed_kmh ? formatSpeed(iss.speed_kmh) : '--'"></div>
                                 <div class="font-bold" x-show="currentStation === 'tiangong'" x-text="tiangong?.speed_kmh ? formatSpeed(tiangong.speed_kmh) : '--'"></div>
                             </div>
@@ -451,22 +451,22 @@
                     </div>
 
                     <!-- Back of card - Map -->
-                    <div class="iss-flip-card-back bg-weather-card rounded-2xl p-5 border border-white/10">
+                    <div class="iss-flip-card-back bg-weather-card rounded-2xl p-5 border border-ui-line/10">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-semibold">
                                 <span x-show="currentStation === 'iss'">🛸 {{ __('ISS Live Tracking') }}</span>
                                 <span x-show="currentStation === 'tiangong'">🇨🇳 {{ __('Tiangong Live Tracking') }}</span>
                             </h3>
-                            <button @click.stop="flipped = false" class="text-xs text-blue-400 hover:underline">← {{ __('Back') }}</button>
+                            <button @click.stop="flipped = false" class="text-xs text-data-blue-400 hover:underline">← {{ __('Back') }}</button>
                         </div>
                         <div id="iss-map" class="w-full h-64 rounded-lg" style="min-height: 256px;"></div>
-                        <div class="mt-3 text-xs text-gray-400 text-center" x-show="currentStation === 'iss' && iss?.location?.success">
+                        <div class="mt-3 text-xs text-ui-muted text-center" x-show="currentStation === 'iss' && iss?.location?.success">
                             <span x-text="iss?.location?.latitude?.toFixed(2) ?? '--'"></span>°, 
                             <span x-text="iss?.location?.longitude?.toFixed(2) ?? '--'"></span>° 
                             • 
                             <span x-text="formatDistanceLabel(iss?.distance_km, ' {{ __('Distance') }}')"></span>
                         </div>
-        <div class="mt-3 text-xs text-gray-400 text-center" x-show="currentStation === 'tiangong' && tiangong?.location?.success">
+        <div class="mt-3 text-xs text-ui-muted text-center" x-show="currentStation === 'tiangong' && tiangong?.location?.success">
             <span x-text="tiangong?.location?.latitude?.toFixed(2) ?? '--'"></span>°, 
             <span x-text="tiangong?.location?.longitude?.toFixed(2) ?? '--'"></span>° 
             • 
@@ -479,7 +479,7 @@
     </div>
 
     <!-- Twilight Times -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h3 class="font-semibold mb-4 flex items-center gap-2">
 	            <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/horizon.svg') }}"
 	                 :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/horizon.svg'"
@@ -487,53 +487,53 @@
             {{ __('Twilight times') }}
         </h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Astronomical dawn') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Astronomical dawn') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.astronomical_twilight_begin ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('sun -18° below horizon') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('sun -18° below horizon') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Nautical dawn') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Nautical dawn') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.nautical_twilight_begin ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('sun -12° below horizon') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('sun -12° below horizon') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Civil dawn') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Civil dawn') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.civil_twilight_begin ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('sun -6° below horizon') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('sun -6° below horizon') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Sunrise') }}</div>
-                <div class="text-lg font-bold text-amber-400" x-text="sun?.sunrise ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('sun above horizon') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Sunrise') }}</div>
+                <div class="text-lg font-bold text-data-amber-400" x-text="sun?.sunrise ?? '--:--'"></div>
+                <div class="text-xs text-ui-subtle">{{ __('sun above horizon') }}</div>
             </div>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Sunset') }}</div>
-                <div class="text-lg font-bold text-orange-400" x-text="sun?.sunset ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('sun below horizon') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Sunset') }}</div>
+                <div class="text-lg font-bold text-data-orange-400" x-text="sun?.sunset ?? '--:--'"></div>
+                <div class="text-xs text-ui-subtle">{{ __('sun below horizon') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Civil twilight') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Civil twilight') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.civil_twilight_end ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('end') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('end') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Nautical twilight') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Nautical twilight') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.nautical_twilight_end ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('end') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('end') }}</div>
             </div>
-            <div class="text-center p-4 bg-white/5 rounded-xl">
-                <div class="text-xs text-gray-400 mb-2">{{ __('Astronomical twilight') }}</div>
+            <div class="text-center p-4 bg-ui-overlay/5 rounded-xl">
+                <div class="text-xs text-ui-muted mb-2">{{ __('Astronomical twilight') }}</div>
                 <div class="text-lg font-bold" x-text="sun?.astronomical_twilight_end ?? '--:--'"></div>
-                <div class="text-xs text-gray-500">{{ __('total darkness') }}</div>
+                <div class="text-xs text-ui-subtle">{{ __('total darkness') }}</div>
             </div>
         </div>
     </div>
 
     <!-- Meteor Showers -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h3 class="font-semibold mb-4 flex items-center gap-2">
 	            <img src="{{ asset(($weatherIconsPath ?? 'icons/weather') . '/falling-stars.svg') }}"
 	                 :src="(backgroundEffectsEnabled ? window.Meteo.iconsAnimatedBaseUrl : window.Meteo.iconsStaticBaseUrl) + '/falling-stars.svg'"
@@ -550,63 +550,63 @@
 	                                 class="w-8 h-8" alt="">
                             <span class="font-semibold" x-text="meteor.name"></span>
                         </div>
-                        <div class="text-sm text-gray-400" x-text="meteor.from + ' - ' + meteor.to"></div>
-                        <div class="text-xs mt-2 px-2 py-1 rounded bg-purple-500/20 text-purple-300 inline-block" x-show="meteor.peak">{{ __('PEAK') }}</div>
+                        <div class="text-sm text-ui-muted" x-text="meteor.from + ' - ' + meteor.to"></div>
+                        <div class="text-xs mt-2 px-2 py-1 rounded bg-purple-500/20 text-data-purple-300 inline-block" x-show="meteor.peak">{{ __('PEAK') }}</div>
                     </div>
                 </template>
-                <div x-show="getActiveMeteors().length === 0" class="text-gray-500">
+                <div x-show="getActiveMeteors().length === 0" class="text-ui-subtle">
                     {{ __('No active meteor showers at the moment') }}
                 </div>
             </div>
         </div>
-        <p class="text-xs text-gray-500 mt-4">
+        <p class="text-xs text-ui-subtle mt-4">
             {{ __('Tip: Meteor showers are best seen on clear, moonless nights far away from light pollution.') }}
         </p>
     </div>
 
     <!-- Upcoming Events -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10" x-show="events.length > 0" x-data="{ showAll: false }">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10" x-show="events.length > 0" x-data="{ showAll: false }">
         <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold">📅 {{ __('Upcoming astronomical events') }}</h3>
-            <button x-show="events.length > 12" @click="showAll = !showAll" class="text-xs text-violet-400 hover:text-violet-300">
+            <button x-show="events.length > 12" @click="showAll = !showAll" class="text-xs text-data-violet-400 hover:text-data-violet-300">
                 <span x-text="showAll ? '{{ __('Show less') }}' : '{{ __('Show all') }} (' + events.length + ')'"></span>
             </button>
         </div>
         <div class="space-y-2 max-h-[500px] overflow-y-auto" :class="{ 'max-h-none': showAll }">
             <template x-for="event in (showAll ? events : events.slice(0, 12))" :key="event.date + event.event">
-                <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                <div class="flex items-center justify-between p-3 bg-ui-overlay/5 rounded-lg hover:bg-ui-overlay/10 transition-colors">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl" x-text="event.emoji"></span>
                         <div>
                             <div class="font-semibold" x-text="translateEvent(event.event)"></div>
-                            <div class="text-sm text-gray-400 flex items-center gap-2">
+                            <div class="text-sm text-ui-muted flex items-center gap-2">
                                 <span x-text="event.formatted_date"></span>
                                 <!-- Visibility indicator for eclipses -->
                                 <template x-if="event.type === 'eclipse' && event.visible_here">
-                                    <span class="text-green-400 text-xs">✓ {{ __('Visible here') }}</span>
+                                    <span class="text-data-green-400 text-xs">✓ {{ __('Visible here') }}</span>
                                 </template>
                                 <!-- Meteor shower rate -->
                                 <template x-if="event.type === 'meteor' && event.rate">
-                                    <span class="text-yellow-400 text-xs" x-text="'~' + event.rate + '/hr'"></span>
+                                    <span class="text-data-yellow-400 text-xs" x-text="'~' + event.rate + '/hr'"></span>
                                 </template>
                             </div>
                             <template x-if="event.hint">
-                                <div class="text-xs text-gray-500 mt-1" x-text="translateEvent(event.hint)"></div>
+                                <div class="text-xs text-ui-subtle mt-1" x-text="translateEvent(event.hint)"></div>
                             </template>
                         </div>
                     </div>
                     <!-- Event type badge -->
                     <div class="text-xs px-2 py-1 rounded-full"
                          :class="{
-                             'bg-blue-500/20 text-blue-400': event.type === 'moon',
-                             'bg-orange-500/20 text-orange-400': event.type === 'seasonal',
-                             'bg-purple-500/20 text-purple-400': event.type === 'eclipse',
-                             'bg-yellow-500/20 text-yellow-400': event.type === 'meteor',
-                             'bg-cyan-500/20 text-cyan-400': event.type === 'planet',
-                             'bg-green-500/20 text-green-400': event.type === 'earth',
-                             'bg-pink-500/20 text-pink-400': event.type === 'comet',
-                             'bg-indigo-500/20 text-indigo-400': event.type === 'special',
-                             'bg-amber-500/20 text-amber-400': event.type === 'transit'
+                             'bg-blue-500/20 text-data-blue-400': event.type === 'moon',
+                             'bg-orange-500/20 text-data-orange-400': event.type === 'seasonal',
+                             'bg-purple-500/20 text-data-purple-400': event.type === 'eclipse',
+                             'bg-yellow-500/20 text-data-yellow-400': event.type === 'meteor',
+                             'bg-cyan-500/20 text-data-cyan-400': event.type === 'planet',
+                             'bg-green-500/20 text-data-green-400': event.type === 'earth',
+                             'bg-pink-500/20 text-data-pink-400': event.type === 'comet',
+                             'bg-indigo-500/20 text-data-indigo-400': event.type === 'special',
+                             'bg-amber-500/20 text-data-amber-400': event.type === 'transit'
                          }"
                          x-text="eventTypeLabels[event.type] || event.type">
                     </div>
@@ -615,12 +615,12 @@
         </div>
     </div>
 
-    <article class="bg-weather-card rounded-2xl p-6 border border-white/10 prose prose-invert prose-sm max-w-none">
+    <article class="bg-weather-card rounded-2xl p-6 border border-ui-line/10 prose prose-invert prose-sm max-w-none">
         <h2 class="text-lg font-semibold mb-3">{{ __('Astronomy page about heading') }}</h2>
-        <p class="text-gray-300 mb-3">{{ __('Astronomy page about body 1') }}</p>
-        <p class="text-gray-300 mb-3">{{ __('Astronomy page about body 2') }}</p>
-        <p class="text-gray-300 mb-3">{{ __('Astronomy page about body 3') }}</p>
-        <footer class="text-xs text-gray-500 mt-4 pt-4 border-t border-white/10">{{ __('Astronomy page sources') }}</footer>
+        <p class="text-ui-secondary mb-3">{{ __('Astronomy page about body 1') }}</p>
+        <p class="text-ui-secondary mb-3">{{ __('Astronomy page about body 2') }}</p>
+        <p class="text-ui-secondary mb-3">{{ __('Astronomy page about body 3') }}</p>
+        <footer class="text-xs text-ui-subtle mt-4 pt-4 border-t border-ui-line/10">{{ __('Astronomy page sources') }}</footer>
     </article>
 </div>
 
@@ -1011,10 +1011,10 @@ function astronomyPage() {
         },
 
         getKpBadgeClass(kp) {
-            if (kp >= 7) return 'bg-red-500/20 text-red-400';
-            if (kp >= 5) return 'bg-orange-500/20 text-orange-400';
-            if (kp >= 4) return 'bg-yellow-500/20 text-yellow-400';
-            return 'bg-green-500/20 text-green-400';
+            if (kp >= 7) return 'bg-red-500/20 text-data-red-400';
+            if (kp >= 5) return 'bg-orange-500/20 text-data-orange-400';
+            if (kp >= 4) return 'bg-yellow-500/20 text-data-yellow-400';
+            return 'bg-green-500/20 text-data-green-400';
         },
 
         initISSTracker(station = 'iss') {
@@ -1062,7 +1062,7 @@ function astronomyPage() {
             const popupContent = `
                 <div style="text-align: center; min-width: 150px;">
                     <div style="font-weight: bold; margin-bottom: 5px;">${markerEmoji} ${stationName}</div>
-                    <div style="font-size: 0.85em; color: #666;">
+                    <div data-weather-colour-text style="font-size: 0.85em; color: #666;">
                         ${lat.toFixed(2)}°, ${lon.toFixed(2)}°<br>
                         ${this.formatDistanceLabel(stationData?.distance_km, ' {{ __('Distance') }}')}
                     </div>
@@ -1104,7 +1104,7 @@ function astronomyPage() {
                 const popupContent = `
                     <div style="text-align: center; min-width: 150px;">
                         <div style="font-weight: bold; margin-bottom: 5px;">${markerEmoji} ${stationName}</div>
-                        <div style="font-size: 0.85em; color: #666;">
+                        <div data-weather-colour-text style="font-size: 0.85em; color: #666;">
                             ${lat.toFixed(2)}°, ${lon.toFixed(2)}°<br>
                             ${this.formatDistanceLabel(stationData?.distance_km, ' {{ __('Distance') }}')}
                         </div>

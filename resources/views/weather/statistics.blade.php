@@ -16,10 +16,10 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">{{ __('Weather statistics, phenology and records') }}</h1>
-            <p class="text-gray-400 max-w-3xl">{{ __('Monthly averages, climate normals, phenology, growing degree days and weather records for :location.', ['location' => $stationLocation]) }}</p>
+            <p class="text-ui-muted max-w-3xl">{{ __('Monthly averages, climate normals, phenology, growing degree days and weather records for :location.', ['location' => $stationLocation]) }}</p>
         </div>
         <form method="GET" action="{{ route('statistics') }}" class="flex gap-2">
-            <select name="year" onchange="this.form.submit()" class="bg-weather-card border border-white/10 rounded-lg px-3 py-2 text-sm">
+            <select name="year" onchange="this.form.submit()" class="bg-weather-card border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                 @foreach($availableYears as $y)
                     <option value="{{ $y }}" {{ (string)$y === (string)$year ? 'selected' : '' }}>{{ $y }}</option>
                 @endforeach
@@ -29,35 +29,35 @@
 
     <!-- Year Overview -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <div class="text-xs text-gray-400 mb-2">{{ __('Highest temperature') }}</div>
-            <div class="text-3xl font-bold text-weather-warm">{{ $yearlyStats ? $unit->temperature($yearlyStats['temp_high'], $activeUnits) : '--' }}</div>
-            <div class="text-xs text-gray-400 mt-1">{{ $yearlyStats['temp_high_date'] ?? '--' }}</div>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <div class="text-xs text-ui-muted mb-2">{{ __('Highest temperature') }}</div>
+            <div class="text-3xl font-bold text-data-amber-500">{{ $yearlyStats ? $unit->temperature($yearlyStats['temp_high'], $activeUnits) : '--' }}</div>
+            <div class="text-xs text-ui-muted mt-1">{{ $yearlyStats['temp_high_date'] ?? '--' }}</div>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <div class="text-xs text-gray-400 mb-2">{{ __('Lowest temperature') }}</div>
-            <div class="text-3xl font-bold text-weather-cold">{{ $yearlyStats ? $unit->temperature($yearlyStats['temp_low'], $activeUnits) : '--' }}</div>
-            <div class="text-xs text-gray-400 mt-1">{{ $yearlyStats['temp_low_date'] ?? '--' }}</div>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <div class="text-xs text-ui-muted mb-2">{{ __('Lowest temperature') }}</div>
+            <div class="text-3xl font-bold text-data-cyan-500">{{ $yearlyStats ? $unit->temperature($yearlyStats['temp_low'], $activeUnits) : '--' }}</div>
+            <div class="text-xs text-ui-muted mt-1">{{ $yearlyStats['temp_low_date'] ?? '--' }}</div>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <div class="text-xs text-gray-400 mb-2">{{ __('Total precipitation') }}</div>
-            <div class="text-3xl font-bold text-weather-rain">{{ $yearlyStats ? $unit->rain($yearlyStats['rain_total'], $activeUnits) : '--' }}</div>
-            <div class="text-xs text-gray-400 mt-1">{{ $yearlyStats ? $yearlyStats['rain_days'] . ' ' . __('Rain days') : '--' }}</div>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <div class="text-xs text-ui-muted mb-2">{{ __('Total precipitation') }}</div>
+            <div class="text-3xl font-bold text-data-indigo-500">{{ $yearlyStats ? $unit->rain($yearlyStats['rain_total'], $activeUnits) : '--' }}</div>
+            <div class="text-xs text-ui-muted mt-1">{{ $yearlyStats ? $yearlyStats['rain_days'] . ' ' . __('Rain days') : '--' }}</div>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <div class="text-xs text-gray-400 mb-2">{{ __('Strongest wind gust') }}</div>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <div class="text-xs text-ui-muted mb-2">{{ __('Strongest wind gust') }}</div>
             <div class="text-3xl font-bold">{{ $yearlyStats && $yearlyStats['wind_max'] ? $unit->wind($yearlyStats['wind_max'], $activeUnits) : '--' }}</div>
-            <div class="text-xs text-gray-400 mt-1">{{ $yearlyStats['wind_max_date'] ?? '--' }}</div>
+            <div class="text-xs text-ui-muted mt-1">{{ $yearlyStats['wind_max_date'] ?? '--' }}</div>
         </div>
     </div>
 
     <!-- Monthly Averages -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h2 class="font-semibold mb-4">{{ __('Monthly averages') }}</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="text-gray-400 border-b border-white/10">
+                    <tr class="text-ui-muted border-b border-ui-line/10">
                         <th class="text-left py-3 px-2">{{ __('Month') }}</th>
                         <th class="text-right py-3 px-2">{{ __('Avg temp') }}</th>
                         <th class="text-right py-3 px-2">{{ __('Max temp') }}</th>
@@ -68,20 +68,20 @@
                 </thead>
                 <tbody>
                     @for($m = 1; $m <= 12; $m++)
-                        <tr class="border-b border-white/5 hover:bg-white/5">
+                        <tr class="border-b border-ui-line/5 hover:bg-ui-overlay/5">
                             <td class="py-3 px-2 font-medium">{{ \Carbon\Carbon::create(null, $m)->locale($locale)->translatedFormat('M') }}</td>
                             @if(isset($monthlyStats[$m]) && $monthlyStats[$m])
                                 <td class="text-right py-3 px-2">{{ $unit->temperature($monthlyStats[$m]['temp_avg'], $activeUnits) }}</td>
-                                <td class="text-right py-3 px-2 text-weather-warm">{{ $unit->temperature($monthlyStats[$m]['temp_high'], $activeUnits) }}</td>
-                                <td class="text-right py-3 px-2 text-weather-cold">{{ $unit->temperature($monthlyStats[$m]['temp_low'], $activeUnits) }}</td>
-                                <td class="text-right py-3 px-2 text-weather-rain">{{ $unit->rain($monthlyStats[$m]['rain_total'], $activeUnits) }}</td>
+                                <td class="text-right py-3 px-2 text-data-amber-500">{{ $unit->temperature($monthlyStats[$m]['temp_high'], $activeUnits) }}</td>
+                                <td class="text-right py-3 px-2 text-data-cyan-500">{{ $unit->temperature($monthlyStats[$m]['temp_low'], $activeUnits) }}</td>
+                                <td class="text-right py-3 px-2 text-data-indigo-500">{{ $unit->rain($monthlyStats[$m]['rain_total'], $activeUnits) }}</td>
                                 <td class="text-right py-3 px-2">{{ $monthlyStats[$m]['rain_days'] }}</td>
                             @else
-                                <td class="text-right py-3 px-2 text-gray-500">--</td>
-                                <td class="text-right py-3 px-2 text-gray-500">--</td>
-                                <td class="text-right py-3 px-2 text-gray-500">--</td>
-                                <td class="text-right py-3 px-2 text-gray-500">--</td>
-                                <td class="text-right py-3 px-2 text-gray-500">--</td>
+                                <td class="text-right py-3 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-3 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-3 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-3 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-3 px-2 text-ui-subtle">--</td>
                             @endif
                         </tr>
                     @endfor
@@ -97,12 +97,12 @@
         $dc = $ph['day_counts'];
 
         $dayTypes = [
-            ['key' => 'spring_days',   'label' => __('Spring days'),        'sub' => __('Days with T_max ≥ 15°C'), 'color' => 'text-green-400',  'icon' => '🌸'],
-            ['key' => 'summer_days',   'label' => __('Summer days'),        'sub' => __('Days with T_max ≥ 25°C'), 'color' => 'text-amber-400',  'icon' => '☀️'],
-            ['key' => 'tropical_days', 'label' => __('Tropical days'),      'sub' => __('Days with T_max ≥ 30°C'), 'color' => 'text-red-400',    'icon' => '🔥'],
-            ['key' => 'frost_days',    'label' => __('Frost days'),         'sub' => __('Days with T_min < 0°C'),  'color' => 'text-blue-400',   'icon' => '❄️'],
-            ['key' => 'ice_days',      'label' => __('Ice days'),           'sub' => __('Days with T_max < 0°C'),  'color' => 'text-cyan-400',   'icon' => '🧊'],
-            ['key' => 'precip_days',   'label' => __('Precipitation days'), 'sub' => __('Days with rain ≥ 0.1 mm'),'color' => 'text-weather-rain','icon' => '🌧️'],
+            ['key' => 'spring_days',   'label' => __('Spring days'),        'sub' => __('Days with T_max ≥ 15°C'), 'color' => 'text-data-green-400',  'icon' => '🌸'],
+            ['key' => 'summer_days',   'label' => __('Summer days'),        'sub' => __('Days with T_max ≥ 25°C'), 'color' => 'text-data-amber-400',  'icon' => '☀️'],
+            ['key' => 'tropical_days', 'label' => __('Tropical days'),      'sub' => __('Days with T_max ≥ 30°C'), 'color' => 'text-data-red-400',    'icon' => '🔥'],
+            ['key' => 'frost_days',    'label' => __('Frost days'),         'sub' => __('Days with T_min < 0°C'),  'color' => 'text-data-blue-400',   'icon' => '❄️'],
+            ['key' => 'ice_days',      'label' => __('Ice days'),           'sub' => __('Days with T_max < 0°C'),  'color' => 'text-data-cyan-400',   'icon' => '🧊'],
+            ['key' => 'precip_days',   'label' => __('Precipitation days'), 'sub' => __('Days with rain ≥ 0.1 mm'),'color' => 'text-data-indigo-500','icon' => '🌧️'],
         ];
 
         $milestoneRows = [
@@ -114,26 +114,26 @@
             ['key' => 'first_ice',          'label' => __('First ice day'),       'icon' => '🧊'],
         ];
     @endphp
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-        <h2 class="font-semibold mb-4">{{ __('Season Tracker') }} <span class="text-sm text-gray-400 font-normal">{{ $year }}</span></h2>
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+        <h2 class="font-semibold mb-4">{{ __('Season Tracker') }} <span class="text-sm text-ui-muted font-normal">{{ $year }}</span></h2>
 
         {{-- Day-type count grid --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
             @foreach($dayTypes as $dt)
-            <div class="bg-white/5 rounded-xl p-4">
-                <div class="text-xs text-gray-500 mb-1">{{ $dt['icon'] }} {{ $dt['label'] }}</div>
+            <div class="bg-ui-overlay/5 rounded-xl p-4">
+                <div class="text-xs text-ui-subtle mb-1">{{ $dt['icon'] }} {{ $dt['label'] }}</div>
                 <div class="text-3xl font-bold {{ $dt['color'] }}">{{ $dc[$dt['key']] }}</div>
-                <div class="text-xs text-gray-600 mt-1">{{ $dt['sub'] }}</div>
+                <div class="text-xs text-ui-faint mt-1">{{ $dt['sub'] }}</div>
             </div>
             @endforeach
         </div>
 
         {{-- Seasonal milestones table --}}
-        <h3 class="text-sm font-medium text-gray-400 mb-3">{{ __('Seasonal milestones') }}</h3>
+        <h3 class="text-sm font-medium text-ui-muted mb-3">{{ __('Seasonal milestones') }}</h3>
         <div class="overflow-x-auto mb-6">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="text-gray-400 border-b border-white/10">
+                    <tr class="text-ui-muted border-b border-ui-line/10">
                         <th class="text-left py-2 px-2">{{ __('Milestone') }}</th>
                         <th class="text-right py-2 px-2">{{ $year }}</th>
                         <th class="text-right py-2 px-2 hidden sm:table-cell">{{ __('Historical average') }}</th>
@@ -145,12 +145,12 @@
                     @php
                         $ms = $ph['milestones'][$row['key']] ?? null;
                     @endphp
-                    <tr class="border-b border-white/5 hover:bg-white/5">
+                    <tr class="border-b border-ui-line/5 hover:bg-ui-overlay/5">
                         <td class="py-2 px-2 font-medium">{{ $row['icon'] }} {{ $row['label'] }}</td>
                         <td class="text-right py-2 px-2 tabular-nums">
                             {{ $ms ? $ms['formatted'] : '—' }}
                         </td>
-                        <td class="text-right py-2 px-2 text-gray-400 tabular-nums hidden sm:table-cell">
+                        <td class="text-right py-2 px-2 text-ui-muted tabular-nums hidden sm:table-cell">
                             @if($ms && $ms['avg_doy'] !== null)
                                 @php
                                     $avgDate = \Carbon\Carbon::create((int)$year, 1, 1)->addDays($ms['avg_doy'] - 1);
@@ -165,19 +165,19 @@
                                 @php
                                     $d = $ms['diff_days'];
                                     if ($d < 0) {
-                                        $cls  = 'text-blue-400';
+                                        $cls  = 'text-data-blue-400';
                                         $text = abs($d) . ' ' . __('days') . ' ' . __('earlier');
                                     } elseif ($d > 0) {
-                                        $cls  = 'text-amber-400';
+                                        $cls  = 'text-data-amber-400';
                                         $text = $d . ' ' . __('days') . ' ' . __('later');
                                     } else {
-                                        $cls  = 'text-gray-400';
+                                        $cls  = 'text-ui-muted';
                                         $text = __('on average');
                                     }
                                 @endphp
                                 <span class="{{ $cls }}">{{ $text }}</span>
                             @else
-                                <span class="text-gray-600">—</span>
+                                <span class="text-ui-faint">—</span>
                             @endif
                         </td>
                     </tr>
@@ -192,11 +192,11 @@
             $gddBestPeriod = $ph['gdd']['best_period'] ?? null;
             $gddWindowDays = $ph['gdd']['peak_window_days'] ?? 14;
         @endphp
-        <h3 class="text-sm font-medium text-gray-400 mb-1 flex items-center gap-2 flex-wrap">
+        <h3 class="text-sm font-medium text-ui-muted mb-1 flex items-center gap-2 flex-wrap">
             {{ __('Growing Degree Days (base 10 °C)') }}
-            <span class="text-gray-600 font-normal">— {{ __('Total GDD') }}: <span class="text-green-400 font-medium">{{ $ph['gdd']['total'] }}</span></span>
+            <span class="text-ui-faint font-normal">— {{ __('Total GDD') }}: <span class="text-data-green-400 font-medium">{{ $ph['gdd']['total'] }}</span></span>
             <button @click="gddModalOpen = true"
-                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white/5 text-gray-400 hover:bg-white/10 hover:text-gray-200 border border-white/10 transition-colors"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-ui-overlay/5 text-ui-muted hover:bg-ui-overlay/10 hover:text-ui-body border border-ui-line/10 transition-colors"
                     aria-label="{{ __('Explain Growing Degree Days') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0-4h.01"/></svg>
                 {{ __('Explain') }}
@@ -211,20 +211,20 @@
         @endphp
         <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start">
             <div>
-                <h4 class="text-sm font-medium text-gray-400 mb-1">{{ __('Peak GDD period') }}</h4>
-                <p class="text-xs text-gray-500 mb-3">{{ __('Shows daily GDD bars and a :days-day rolling total so warm stretches stand out.', ['days' => $gddWindowDays]) }}</p>
+                <h4 class="text-sm font-medium text-ui-muted mb-1">{{ __('Peak GDD period') }}</h4>
+                <p class="text-xs text-ui-subtle mb-3">{{ __('Shows daily GDD bars and a :days-day rolling total so warm stretches stand out.', ['days' => $gddWindowDays]) }}</p>
                 <div id="gdd-period-chart" class="w-full"></div>
             </div>
             <div class="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
-                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200/80">{{ __('Best :days-day period', ['days' => $gddWindowDays]) }}</div>
-                <div class="mt-3 text-lg font-semibold text-white">
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-data-amber-200/80">{{ __('Best :days-day period', ['days' => $gddWindowDays]) }}</div>
+                <div class="mt-3 text-lg font-semibold text-ui-fg">
                     {{ $gddBestStart->translatedFormat('j M') }}
                     @if($gddBestPeriod['start_date'] !== $gddBestPeriod['end_date'])
                         – {{ $gddBestEnd->translatedFormat('j M') }}
                     @endif
                 </div>
-                <div class="mt-3 text-3xl font-bold text-amber-300">{{ number_format($gddBestPeriod['total'], 1) }} GDD</div>
-                <div class="mt-1 text-sm text-amber-100/80">{{ __('Average per day') }}: {{ number_format($gddBestPeriod['average_per_day'], 1) }} GDD</div>
+                <div class="mt-3 text-3xl font-bold text-data-amber-300">{{ number_format($gddBestPeriod['total'], 1) }} GDD</div>
+                <div class="mt-1 text-sm text-data-amber-100/80">{{ __('Average per day') }}: {{ number_format($gddBestPeriod['average_per_day'], 1) }} GDD</div>
             </div>
         </div>
         @endif
@@ -235,24 +235,24 @@
              class="fixed inset-0 z-50 flex items-center justify-center p-4"
              @keydown.escape.window="gddModalOpen = false">
             {{-- backdrop --}}
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="gddModalOpen = false"></div>
+            <div data-theme-surface="dark" class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="gddModalOpen = false"></div>
             {{-- panel --}}
-            <div class="relative z-10 bg-gray-900 border border-white/10 rounded-2xl shadow-2xl max-w-md w-full p-6 text-sm text-gray-300 space-y-4">
+            <div class="relative z-10 bg-ui-deep border border-ui-line/10 rounded-2xl shadow-2xl max-w-md w-full p-6 text-sm text-ui-secondary space-y-4">
                 <div class="flex items-start justify-between gap-4">
-                    <h4 class="text-base font-semibold text-white">{{ __('What are Growing Degree Days?') }}</h4>
-                    <button @click="gddModalOpen = false" class="text-gray-500 hover:text-gray-200 transition-colors flex-shrink-0" aria-label="{{ __('Close') }}">
+                    <h4 class="text-base font-semibold text-ui-fg">{{ __('What are Growing Degree Days?') }}</h4>
+                    <button @click="gddModalOpen = false" class="text-ui-subtle hover:text-ui-body transition-colors flex-shrink-0" aria-label="{{ __('Close') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
                 <p>{{ __('Growing Degree Days (GDD) measure accumulated heat above a base temperature — not calendar days.') }}</p>
-                <div class="bg-white/5 rounded-xl px-4 py-3 font-mono text-center text-green-400">
+                <div class="bg-ui-overlay/5 rounded-xl px-4 py-3 font-mono text-center text-data-green-400">
                     GDD = max(0, (T<sub class="text-xs">max</sub> + T<sub class="text-xs">min</sub>) / 2 − 10)
                 </div>
                 <p>{{ __('Each day contributes a value equal to how many degrees the average temperature exceeds 10 °C. A day with a high of 26 °C and a low of 12 °C contributes (26 + 12) / 2 − 10 = 9 GDD.') }}</p>
                 <p>{{ __('The total GDD for a year is the sum of all daily values. A warm summer can easily produce 1 000 – 1 500 GDD, which is why the total is much larger than 365.') }}</p>
-                <p class="text-gray-500 text-xs">{{ __('Base temperature: 10 °C (growing threshold for most plants in temperate climates).') }}</p>
+                <p class="text-ui-subtle text-xs">{{ __('Base temperature: 10 °C (growing threshold for most plants in temperate climates).') }}</p>
                 <button @click="gddModalOpen = false"
-                        class="w-full mt-2 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-colors">
+                        class="w-full mt-2 py-2 rounded-xl bg-ui-accent-strong text-on-accent hover:bg-ui-action text-ui-fg text-sm font-medium transition-colors">
                     {{ __('Close') }}
                 </button>
             </div>
@@ -263,14 +263,14 @@
 
     <!-- All-Time Records -->
     @if($records)
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h2 class="font-semibold mb-4">{{ __('All-time records') }}</h2>
 
         <!-- Category Tabs -->
         <div class="flex flex-wrap gap-2 mb-6">
             <template x-for="tab in recordTabs" :key="tab.key">
                 <button @click="activeRecordTab = tab.key"
-                        :class="activeRecordTab === tab.key ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'bg-white/5 text-gray-300 hover:bg-white/10'"
+                        :class="activeRecordTab === tab.key ? 'bg-ui-accent-strong text-on-accent text-ui-fg shadow-lg shadow-ui-accent/30' : 'bg-ui-overlay/5 text-ui-secondary hover:bg-ui-overlay/10'"
                         class="px-3 py-1.5 rounded-lg text-sm transition-colors"
                         x-text="tab.label">
                 </button>
@@ -280,52 +280,52 @@
         <!-- Temperature Records -->
         <div x-show="activeRecordTab === 'temperature'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Highest temperature'), 'record' => $records['temperature']['highest'], 'format' => 'temperature', 'color' => 'text-weather-warm', 'id' => 'rec-temp-high'])
-                @include('weather.partials.statistics-record', ['label' => __('Lowest temperature'), 'record' => $records['temperature']['lowest'], 'format' => 'temperature', 'color' => 'text-weather-cold', 'id' => 'rec-temp-low'])
-                @include('weather.partials.statistics-record', ['label' => __('Warmest day (avg)'), 'record' => $records['temperature']['warmest_avg'], 'format' => 'temperature', 'color' => 'text-weather-warm', 'id' => 'rec-temp-warm-avg'])
-                @include('weather.partials.statistics-record', ['label' => __('Coldest day (avg)'), 'record' => $records['temperature']['coldest_avg'], 'format' => 'temperature', 'color' => 'text-weather-cold', 'id' => 'rec-temp-cold-avg'])
-                @include('weather.partials.statistics-record', ['label' => __('Largest daily range'), 'record' => $records['temperature']['largest_range'], 'format' => 'temperature', 'color' => 'text-purple-400', 'id' => 'rec-temp-range'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest temperature'), 'record' => $records['temperature']['highest'], 'format' => 'temperature', 'color' => 'text-data-amber-500', 'id' => 'rec-temp-high'])
+                @include('weather.partials.statistics-record', ['label' => __('Lowest temperature'), 'record' => $records['temperature']['lowest'], 'format' => 'temperature', 'color' => 'text-data-cyan-500', 'id' => 'rec-temp-low'])
+                @include('weather.partials.statistics-record', ['label' => __('Warmest day (avg)'), 'record' => $records['temperature']['warmest_avg'], 'format' => 'temperature', 'color' => 'text-data-amber-500', 'id' => 'rec-temp-warm-avg'])
+                @include('weather.partials.statistics-record', ['label' => __('Coldest day (avg)'), 'record' => $records['temperature']['coldest_avg'], 'format' => 'temperature', 'color' => 'text-data-cyan-500', 'id' => 'rec-temp-cold-avg'])
+                @include('weather.partials.statistics-record', ['label' => __('Largest daily range'), 'record' => $records['temperature']['largest_range'], 'format' => 'temperature', 'color' => 'text-data-purple-400', 'id' => 'rec-temp-range'])
             </div>
         </div>
 
         <!-- Precipitation Records -->
         <div x-show="activeRecordTab === 'precipitation'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Most precipitation (day)'), 'record' => $records['precipitation']['wettest_day'], 'format' => 'rain', 'color' => 'text-weather-rain', 'id' => 'rec-rain-total'])
-                @include('weather.partials.statistics-record', ['label' => __('Highest rain rate'), 'record' => $records['precipitation']['highest_rate'], 'format' => 'rain', 'color' => 'text-weather-rain', 'id' => 'rec-rain-rate'])
+                @include('weather.partials.statistics-record', ['label' => __('Most precipitation (day)'), 'record' => $records['precipitation']['wettest_day'], 'format' => 'rain', 'color' => 'text-data-indigo-500', 'id' => 'rec-rain-total'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest rain rate'), 'record' => $records['precipitation']['highest_rate'], 'format' => 'rain', 'color' => 'text-data-indigo-500', 'id' => 'rec-rain-rate'])
             </div>
         </div>
 
         <!-- Wind Records -->
         <div x-show="activeRecordTab === 'wind'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Strongest wind gust'), 'record' => $records['wind']['strongest_gust'], 'format' => 'wind', 'color' => 'text-sky-400', 'id' => 'rec-wind-gust'])
-                @include('weather.partials.statistics-record', ['label' => __('Highest average wind'), 'record' => $records['wind']['highest_avg'], 'format' => 'wind', 'color' => 'text-sky-400', 'id' => 'rec-wind-avg'])
+                @include('weather.partials.statistics-record', ['label' => __('Strongest wind gust'), 'record' => $records['wind']['strongest_gust'], 'format' => 'wind', 'color' => 'text-data-sky-400', 'id' => 'rec-wind-gust'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest average wind'), 'record' => $records['wind']['highest_avg'], 'format' => 'wind', 'color' => 'text-data-sky-400', 'id' => 'rec-wind-avg'])
             </div>
         </div>
 
         <!-- Pressure Records -->
         <div x-show="activeRecordTab === 'pressure'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Highest pressure'), 'record' => $records['pressure']['highest'], 'format' => 'pressure', 'color' => 'text-violet-400', 'id' => 'rec-pressure-high'])
-                @include('weather.partials.statistics-record', ['label' => __('Lowest pressure'), 'record' => $records['pressure']['lowest'], 'format' => 'pressure', 'color' => 'text-violet-400', 'id' => 'rec-pressure-low'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest pressure'), 'record' => $records['pressure']['highest'], 'format' => 'pressure', 'color' => 'text-data-violet-400', 'id' => 'rec-pressure-high'])
+                @include('weather.partials.statistics-record', ['label' => __('Lowest pressure'), 'record' => $records['pressure']['lowest'], 'format' => 'pressure', 'color' => 'text-data-violet-400', 'id' => 'rec-pressure-low'])
             </div>
         </div>
 
         <!-- Humidity Records -->
         <div x-show="activeRecordTab === 'humidity'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Highest humidity'), 'record' => $records['humidity']['highest'], 'format' => 'percent', 'color' => 'text-blue-400', 'id' => 'rec-humidity-high'])
-                @include('weather.partials.statistics-record', ['label' => __('Lowest humidity'), 'record' => $records['humidity']['lowest'], 'format' => 'percent', 'color' => 'text-blue-400', 'id' => 'rec-humidity-low'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest humidity'), 'record' => $records['humidity']['highest'], 'format' => 'percent', 'color' => 'text-data-blue-400', 'id' => 'rec-humidity-high'])
+                @include('weather.partials.statistics-record', ['label' => __('Lowest humidity'), 'record' => $records['humidity']['lowest'], 'format' => 'percent', 'color' => 'text-data-blue-400', 'id' => 'rec-humidity-low'])
             </div>
         </div>
 
         <!-- Solar/UV Records -->
         <div x-show="activeRecordTab === 'solar'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @include('weather.partials.statistics-record', ['label' => __('Highest UV index'), 'record' => $records['solar']['highest_uv'], 'format' => 'number', 'color' => 'text-amber-400', 'id' => 'rec-uv-max'])
-                @include('weather.partials.statistics-record', ['label' => __('Highest solar radiation'), 'record' => $records['solar']['highest_solar'], 'format' => 'solar', 'color' => 'text-yellow-400', 'id' => 'rec-solar-max'])
-                @include('weather.partials.statistics-record', ['label' => __('Most sunshine hours'), 'record' => $records['solar']['most_solar_hours'], 'format' => 'hours', 'color' => 'text-yellow-400', 'id' => 'rec-solar-hours'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest UV index'), 'record' => $records['solar']['highest_uv'], 'format' => 'number', 'color' => 'text-data-amber-400', 'id' => 'rec-uv-max'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest solar radiation'), 'record' => $records['solar']['highest_solar'], 'format' => 'solar', 'color' => 'text-data-yellow-400', 'id' => 'rec-solar-max'])
+                @include('weather.partials.statistics-record', ['label' => __('Most sunshine hours'), 'record' => $records['solar']['most_solar_hours'], 'format' => 'hours', 'color' => 'text-data-yellow-400', 'id' => 'rec-solar-hours'])
             </div>
         </div>
     </div>
@@ -333,18 +333,18 @@
 
     <!-- Climate Normals -->
     @if(($climateData['has_data'] ?? false))
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-        <h2 class="font-semibold mb-4">{{ __('Climate normals') }} <span class="text-sm text-gray-400 font-normal">{{ __('vs') }} {{ $year }}</span></h2>
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+        <h2 class="font-semibold mb-4">{{ __('Climate normals') }} <span class="text-sm text-ui-muted font-normal">{{ __('vs') }} {{ $year }}</span></h2>
 
         <!-- Climate Chart -->
         <div id="climate-normals-chart" class="h-72 mb-6"></div>
 
         <!-- Departure Table -->
-        <h3 class="text-sm font-medium text-gray-400 mb-3">{{ __('Departure from normal') }}</h3>
+        <h3 class="text-sm font-medium text-ui-muted mb-3">{{ __('Departure from normal') }}</h3>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="text-gray-400 border-b border-white/10">
+                    <tr class="text-ui-muted border-b border-ui-line/10">
                         <th class="text-left py-2 px-2">{{ __('Month') }}</th>
                         <th class="text-right py-2 px-2">{{ __('Normal avg') }}</th>
                         <th class="text-right py-2 px-2">{{ __('Actual avg') }}</th>
@@ -353,10 +353,10 @@
                 </thead>
                 <tbody>
                     @for($m = 1; $m <= 12; $m++)
-                        <tr class="border-b border-white/5 hover:bg-white/5">
+                        <tr class="border-b border-ui-line/5 hover:bg-ui-overlay/5">
                             <td class="py-2 px-2 font-medium">{{ \Carbon\Carbon::create(null, $m)->locale($locale)->translatedFormat('M') }}</td>
                             @if(isset($climateData['normals'][$m]) && isset($climateData['actuals'][$m]) && isset($climateData['departures'][$m]))
-                                <td class="text-right py-2 px-2 text-gray-400">{{ $unit->temperature($climateData['normals'][$m]['avg_temp'], $activeUnits) }}</td>
+                                <td class="text-right py-2 px-2 text-ui-muted">{{ $unit->temperature($climateData['normals'][$m]['avg_temp'], $activeUnits) }}</td>
                                 <td class="text-right py-2 px-2">{{ $unit->temperature($climateData['actuals'][$m]['avg_temp'], $activeUnits) }}</td>
                                 @php
                                     $dep = $climateData['departures'][$m]['temp'];
@@ -364,13 +364,13 @@
                                     $depConverted = $activeUnits === 'imperial' ? round($dep * 9 / 5, 1) : $dep;
                                     $depSuffix = $activeUnits === 'imperial' ? 'F' : 'C';
                                 @endphp
-                                <td class="text-right py-2 px-2 font-medium {{ $dep > 0 ? 'text-weather-warm' : ($dep < 0 ? 'text-weather-cold' : 'text-gray-400') }}">
+                                <td class="text-right py-2 px-2 font-medium {{ $dep > 0 ? 'text-data-amber-500' : ($dep < 0 ? 'text-data-cyan-500' : 'text-ui-muted') }}">
                                     {{ $dep > 0 ? '+' : '' }}{{ number_format($depConverted, 1) }} {{ $depSuffix }}
                                 </td>
                             @else
-                                <td class="text-right py-2 px-2 text-gray-500">--</td>
-                                <td class="text-right py-2 px-2 text-gray-500">--</td>
-                                <td class="text-right py-2 px-2 text-gray-500">--</td>
+                                <td class="text-right py-2 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-2 px-2 text-ui-subtle">--</td>
+                                <td class="text-right py-2 px-2 text-ui-subtle">--</td>
                             @endif
                         </tr>
                     @endfor
@@ -381,15 +381,15 @@
     @endif
 
     <!-- Compare Tool -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <h2 class="font-semibold mb-4">{{ __('Compare periods') }}</h2>
 
         <!-- Mode Toggle -->
         <div class="flex gap-2 mb-4">
-            <button @click="compareMode = 'year'" :class="compareMode === 'year' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
+            <button @click="compareMode = 'year'" :class="compareMode === 'year' ? 'bg-ui-accent-strong text-on-accent text-ui-fg' : 'bg-ui-overlay/5 text-ui-secondary hover:bg-ui-overlay/10'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
                 {{ __('Compare years') }}
             </button>
-            <button @click="compareMode = 'month'" :class="compareMode === 'month' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
+            <button @click="compareMode = 'month'" :class="compareMode === 'month' ? 'bg-ui-accent-strong text-on-accent text-ui-fg' : 'bg-ui-overlay/5 text-ui-secondary hover:bg-ui-overlay/10'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
                 {{ __('Compare months') }}
             </button>
         </div>
@@ -397,23 +397,23 @@
         <!-- Year Comparison Selectors -->
         <div x-show="compareMode === 'year'" class="flex flex-wrap items-end gap-4 mb-4">
             <div>
-                <label class="text-xs text-gray-400 block mb-1">{{ __('Period A') }}</label>
-                <select x-model="compareA" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                <label class="text-xs text-ui-muted block mb-1">{{ __('Period A') }}</label>
+                <select x-model="compareA" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                     @foreach($availableYears as $y)
                         <option value="{{ $y }}">{{ $y }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="text-gray-500 pb-2">{{ __('vs') }}</div>
+            <div class="text-ui-subtle pb-2">{{ __('vs') }}</div>
             <div>
-                <label class="text-xs text-gray-400 block mb-1">{{ __('Period B') }}</label>
-                <select x-model="compareB" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                <label class="text-xs text-ui-muted block mb-1">{{ __('Period B') }}</label>
+                <select x-model="compareB" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                     @foreach($availableYears as $y)
                         <option value="{{ $y }}">{{ $y }}</option>
                     @endforeach
                 </select>
             </div>
-            <button @click="fetchComparison()" :disabled="compareLoading" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg text-sm transition-colors">
+            <button @click="fetchComparison()" :disabled="compareLoading" class="px-4 py-2 bg-ui-accent-strong text-on-accent hover:bg-ui-action disabled:opacity-50 rounded-lg text-sm transition-colors">
                 <span x-show="!compareLoading">{{ __('Compare') }}</span>
                 <span x-show="compareLoading" x-cloak>{{ __('Loading...') }}</span>
             </button>
@@ -422,37 +422,37 @@
         <!-- Month Comparison Selectors -->
         <div x-show="compareMode === 'month'" class="flex flex-wrap items-end gap-4 mb-4">
             <div>
-                <label class="text-xs text-gray-400 block mb-1">{{ __('Period A') }}</label>
+                <label class="text-xs text-ui-muted block mb-1">{{ __('Period A') }}</label>
                 <div class="flex gap-2">
-                    <select x-model="compareMonthYearA" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                    <select x-model="compareMonthYearA" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                         @foreach($availableYears as $y)
                             <option value="{{ $y }}">{{ $y }}</option>
                         @endforeach
                     </select>
-                    <select x-model="compareMonthA" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                    <select x-model="compareMonthA" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                         @for($m = 1; $m <= 12; $m++)
                             <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}">{{ \Carbon\Carbon::create(null, $m)->locale($locale)->translatedFormat('M') }}</option>
                         @endfor
                     </select>
                 </div>
             </div>
-            <div class="text-gray-500 pb-2">{{ __('vs') }}</div>
+            <div class="text-ui-subtle pb-2">{{ __('vs') }}</div>
             <div>
-                <label class="text-xs text-gray-400 block mb-1">{{ __('Period B') }}</label>
+                <label class="text-xs text-ui-muted block mb-1">{{ __('Period B') }}</label>
                 <div class="flex gap-2">
-                    <select x-model="compareMonthYearB" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                    <select x-model="compareMonthYearB" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                         @foreach($availableYears as $y)
                             <option value="{{ $y }}">{{ $y }}</option>
                         @endforeach
                     </select>
-                    <select x-model="compareMonthB" class="bg-weather-dark border border-white/10 rounded-lg px-3 py-2 text-sm">
+                    <select x-model="compareMonthB" class="bg-weather-dark border border-ui-line/10 rounded-lg px-3 py-2 text-sm">
                         @for($m = 1; $m <= 12; $m++)
                             <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}">{{ \Carbon\Carbon::create(null, $m)->locale($locale)->translatedFormat('M') }}</option>
                         @endfor
                     </select>
                 </div>
             </div>
-            <button @click="fetchComparison()" :disabled="compareLoading" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg text-sm transition-colors">
+            <button @click="fetchComparison()" :disabled="compareLoading" class="px-4 py-2 bg-ui-accent-strong text-on-accent hover:bg-ui-action disabled:opacity-50 rounded-lg text-sm transition-colors">
                 <span x-show="!compareLoading">{{ __('Compare') }}</span>
                 <span x-show="compareLoading" x-cloak>{{ __('Loading...') }}</span>
             </button>
@@ -463,32 +463,32 @@
             <div>
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-white/5 rounded-lg p-4">
-                        <div class="text-xs text-blue-400 font-medium mb-2" x-text="compareResult.a.label"></div>
+                    <div class="bg-ui-overlay/5 rounded-lg p-4">
+                        <div class="text-xs text-data-blue-400 font-medium mb-2" x-text="compareResult.a.label"></div>
                         <template x-if="compareResult.a.summary">
                             <div class="space-y-1 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Highest temp') }}</span><span class="text-weather-warm font-medium" x-text="formatTemp(compareResult.a.summary.temp_high)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Lowest temp') }}</span><span class="text-weather-cold font-medium" x-text="formatTemp(compareResult.a.summary.temp_low)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Precipitation') }}</span><span class="text-weather-rain font-medium" x-text="formatRain(compareResult.a.summary.rain_total)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Max wind') }}</span><span class="font-medium" x-text="formatWind(compareResult.a.summary.wind_max)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Highest temp') }}</span><span class="text-data-amber-500 font-medium" x-text="formatTemp(compareResult.a.summary.temp_high)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Lowest temp') }}</span><span class="text-data-cyan-500 font-medium" x-text="formatTemp(compareResult.a.summary.temp_low)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Precipitation') }}</span><span class="text-data-indigo-500 font-medium" x-text="formatRain(compareResult.a.summary.rain_total)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Max wind') }}</span><span class="font-medium" x-text="formatWind(compareResult.a.summary.wind_max)"></span></div>
                             </div>
                         </template>
                         <template x-if="!compareResult.a.summary">
-                            <p class="text-sm text-gray-500">{{ __('No data') }}</p>
+                            <p class="text-sm text-ui-subtle">{{ __('No data') }}</p>
                         </template>
                     </div>
-                    <div class="bg-white/5 rounded-lg p-4">
-                        <div class="text-xs text-emerald-400 font-medium mb-2" x-text="compareResult.b.label"></div>
+                    <div class="bg-ui-overlay/5 rounded-lg p-4">
+                        <div class="text-xs text-data-emerald-400 font-medium mb-2" x-text="compareResult.b.label"></div>
                         <template x-if="compareResult.b.summary">
                             <div class="space-y-1 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Highest temp') }}</span><span class="text-weather-warm font-medium" x-text="formatTemp(compareResult.b.summary.temp_high)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Lowest temp') }}</span><span class="text-weather-cold font-medium" x-text="formatTemp(compareResult.b.summary.temp_low)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Precipitation') }}</span><span class="text-weather-rain font-medium" x-text="formatRain(compareResult.b.summary.rain_total)"></span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">{{ __('Max wind') }}</span><span class="font-medium" x-text="formatWind(compareResult.b.summary.wind_max)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Highest temp') }}</span><span class="text-data-amber-500 font-medium" x-text="formatTemp(compareResult.b.summary.temp_high)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Lowest temp') }}</span><span class="text-data-cyan-500 font-medium" x-text="formatTemp(compareResult.b.summary.temp_low)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Precipitation') }}</span><span class="text-data-indigo-500 font-medium" x-text="formatRain(compareResult.b.summary.rain_total)"></span></div>
+                                <div class="flex justify-between"><span class="text-ui-muted">{{ __('Max wind') }}</span><span class="font-medium" x-text="formatWind(compareResult.b.summary.wind_max)"></span></div>
                             </div>
                         </template>
                         <template x-if="!compareResult.b.summary">
-                            <p class="text-sm text-gray-500">{{ __('No data') }}</p>
+                            <p class="text-sm text-ui-subtle">{{ __('No data') }}</p>
                         </template>
                     </div>
                 </div>

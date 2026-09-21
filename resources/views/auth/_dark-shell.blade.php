@@ -1,27 +1,7 @@
-{{-- The dark shell shared by the pages shown before anyone is logged in:
+{{-- The public shell shared by the pages shown before anyone is logged in:
      the login page and the first-run admin setup. Kept in one place so the
      first page a new owner ever sees looks like the app they installed. --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        weather: {
-                            dark: '#0f1419',
-                            card: '#1a2332',
-                            accent: '#3b82f6',
-                        }
-                    },
-                    fontFamily: {
-                        display: ['JetBrains Mono', 'monospace'],
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -30,17 +10,17 @@
             z-index: -1; pointer-events: none;
         }
         .weather-bg--animated {
-            background: linear-gradient(-45deg, #0f1419, #1a2744, #0f1419, #1e1b4b, #0f1419);
+            background: linear-gradient(-45deg, rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-mid, 26 39 68)), rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-end, 30 27 75)), rgb(var(--wn-bg, 15 20 25)));
             background-size: 400% 400%;
             animation: gradientShift 20s ease infinite;
         }
         .weather-bg--static {
-            background: linear-gradient(-45deg, #0f1419, #1a2744, #0f1419);
+            background: linear-gradient(-45deg, rgb(var(--wn-bg, 15 20 25)), rgb(var(--wn-gradient-mid, 26 39 68)), rgb(var(--wn-bg, 15 20 25)));
             background-size: 100% 100%;
         }
         .theme-flat .weather-bg--static {
-            background: #1a2332;
-            background-image: linear-gradient(180deg, #0f1419 0%, #1a2332 50%, #151d28 100%);
+            background: rgb(var(--wn-card, 26 35 50));
+            background-image: linear-gradient(180deg, rgb(var(--wn-bg, 15 20 25)) 0%, rgb(var(--wn-card, 26 35 50)) 50%, rgb(var(--wn-bg, 21 29 40)) 100%);
         }
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
@@ -51,7 +31,7 @@
         }
         
         .glass { 
-            background: rgba(26, 35, 50, 0.75); 
+            background: rgb(var(--wn-card, 26 35 50) / 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -59,7 +39,7 @@
         .theme-flat .glass {
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
-            background: rgba(26, 35, 50, 0.98);
+            background: rgb(var(--wn-card, 26 35 50) / 0.98);
         }
         
         .glow { 
@@ -67,7 +47,7 @@
         }
         
         .bg-weather-card {
-            background: #1a2332;
+            background: rgb(var(--wn-card, 26 35 50));
         }
         
         .input-dark {

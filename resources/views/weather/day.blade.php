@@ -20,10 +20,10 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <nav class="text-sm mb-2">
-                <a href="{{ route('history') }}" class="text-gray-400 hover:text-white transition">← {{ __('Back to overview') }}</a>
+                <a href="{{ route('history') }}" class="text-ui-muted hover:text-ui-fg transition">← {{ __('Back to overview') }}</a>
             </nav>
             <h1 class="text-2xl md:text-3xl font-bold">{{ $dateObj->locale($locale)->translatedFormat('l j F Y') }}</h1>
-            <p class="text-gray-400">{{ __('Daily weather data') }}</p>
+            <p class="text-ui-muted">{{ __('Daily weather data') }}</p>
         </div>
         
         <div class="flex gap-2">
@@ -37,13 +37,13 @@
             @endphp
             @if($hasPrevDay)
                 <a href="{{ route('history.day', $prevDay->format('Y-m-d')) }}"
-                   class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition">
+                   class="px-4 py-2 bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded-lg transition">
                     ← {{ $prevDay->locale($locale)->translatedFormat('j M') }}
                 </a>
             @endif
             @if($nextDay->lte(now()))
                 <a href="{{ route('history.day', $nextDay->format('Y-m-d')) }}" 
-                   class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition">
+                   class="px-4 py-2 bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded-lg transition">
                     {{ $nextDay->locale($locale)->translatedFormat('j M') }} →
                 </a>
             @endif
@@ -53,39 +53,39 @@
     <!-- Day Summary Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-gradient-to-br from-weather-warm/20 to-weather-card rounded-2xl p-5 border border-weather-warm/30">
-            <p class="text-xs text-gray-400 mb-2">{{ __('Maximum') }}</p>
-            <p class="text-4xl font-bold text-weather-warm">{{ $summary->temp_high !== null ? $unit->temperature($summary->temp_high, $activeUnits) : '--' }}</p>
+            <p class="text-xs text-ui-muted mb-2">{{ __('Maximum') }}</p>
+            <p class="text-4xl font-bold text-data-amber-500">{{ $summary->temp_high !== null ? $unit->temperature($summary->temp_high, $activeUnits) : '--' }}</p>
         </div>
         <div class="bg-gradient-to-br from-weather-cold/20 to-weather-card rounded-2xl p-5 border border-weather-cold/30">
-            <p class="text-xs text-gray-400 mb-2">{{ __('Minimum') }}</p>
-            <p class="text-4xl font-bold text-weather-cold">{{ $summary->temp_low !== null ? $unit->temperature($summary->temp_low, $activeUnits) : '--' }}</p>
+            <p class="text-xs text-ui-muted mb-2">{{ __('Minimum') }}</p>
+            <p class="text-4xl font-bold text-data-cyan-500">{{ $summary->temp_low !== null ? $unit->temperature($summary->temp_low, $activeUnits) : '--' }}</p>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <p class="text-xs text-gray-400 mb-2">{{ __('Average') }}</p>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <p class="text-xs text-ui-muted mb-2">{{ __('Average') }}</p>
             <p class="text-4xl font-bold">{{ $summary->temp_avg !== null ? $unit->temperature($summary->temp_avg, $activeUnits) : '--' }}</p>
         </div>
         <div class="bg-gradient-to-br from-weather-rain/20 to-weather-card rounded-2xl p-5 border border-weather-rain/30">
-            <p class="text-xs text-gray-400 mb-2">{{ __('Precipitation') }}</p>
-            <p class="text-4xl font-bold text-weather-rain">{{ $summary->rain_total !== null ? $unit->rain($summary->rain_total, $activeUnits) : $unit->rain(0, $activeUnits) }}</p>
+            <p class="text-xs text-ui-muted mb-2">{{ __('Precipitation') }}</p>
+            <p class="text-4xl font-bold text-data-indigo-500">{{ $summary->rain_total !== null ? $unit->rain($summary->rain_total, $activeUnits) : $unit->rain(0, $activeUnits) }}</p>
         </div>
     </div>
 
     <!-- Additional Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <p class="text-xs text-gray-400 mb-2">💨 {{ __('Max wind') }}</p>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <p class="text-xs text-ui-muted mb-2">💨 {{ __('Max wind') }}</p>
             <p class="text-2xl font-bold">{{ $summary->wind_max !== null ? $unit->wind($summary->wind_max, $activeUnits) : '--' }}</p>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <p class="text-xs text-gray-400 mb-2">💨 {{ __('Average wind') }}</p>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <p class="text-xs text-ui-muted mb-2">💨 {{ __('Average wind') }}</p>
             <p class="text-2xl font-bold">{{ $summary->wind_avg !== null ? $unit->wind($summary->wind_avg, $activeUnits) : '--' }}</p>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <p class="text-xs text-gray-400 mb-2">💧 {{ __('Humidity') }}</p>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <p class="text-xs text-ui-muted mb-2">💧 {{ __('Humidity') }}</p>
             <p class="text-2xl font-bold">{{ $summary->humidity_avg ? number_format($summary->humidity_avg, 0) : '--' }}%</p>
         </div>
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <p class="text-xs text-gray-400 mb-2">📊 {{ __('Pressure') }}</p>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <p class="text-xs text-ui-muted mb-2">📊 {{ __('Pressure') }}</p>
             <p class="text-2xl font-bold">{{ $summary->pressure_avg !== null ? $unit->pressure($summary->pressure_avg, $activeUnits) : '--' }}</p>
         </div>
     </div>
@@ -96,31 +96,31 @@
     @endphp
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         @if(in_array('temperature', $cs))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Temperature') }}</h3>
             <div id="day-chart-temps" class="h-72"></div>
         </div>
         @endif
         @if(in_array('wind', $cs))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Wind') }}</h3>
             <div id="day-chart-wind" class="h-72"></div>
         </div>
         @endif
         @if(in_array('humidity', $cs))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Humidity & Dew Point') }}</h3>
             <div id="day-chart-humidity" class="h-72"></div>
         </div>
         @endif
         @if(in_array('solar_uv', $cs))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('UV & Solar radiation') }}</h3>
             <div id="day-chart-solar" class="h-72"></div>
         </div>
         @endif
         @if(in_array('precipitation', $cs))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Precipitation & Pressure') }}</h3>
             <div id="day-chart-precip" class="h-72"></div>
         </div>
@@ -128,43 +128,43 @@
 
         {{-- Sensor charts: only render if admin enabled AND data exists --}}
         @if(in_array('soil', $cs) && ($availableSensors['soil'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Soil') }}</h3>
             <div id="day-chart-soil" class="h-72"></div>
         </div>
         @endif
         @if(in_array('leaf_wetness', $cs) && ($availableSensors['leaf_wetness'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Leaf Wetness') }}</h3>
             <div id="day-chart-leaf" class="h-72"></div>
         </div>
         @endif
         @if(in_array('air_quality', $cs) && ($availableSensors['air_quality'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Air Quality') }}</h3>
             <div id="day-chart-airquality" class="h-72"></div>
         </div>
         @endif
         @if(in_array('co2', $cs) && ($availableSensors['co2'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('CO₂') }}</h3>
             <div id="day-chart-co2" class="h-72"></div>
         </div>
         @endif
         @if(in_array('lightning', $cs) && ($availableSensors['lightning'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Lightning') }}</h3>
             <div id="day-chart-lightning" class="h-72"></div>
         </div>
         @endif
         @if(in_array('water_temp', $cs) && ($availableSensors['water_temp'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Water Temperature') }}</h3>
             <div id="day-chart-water" class="h-72"></div>
         </div>
         @endif
         @if(in_array('extra_sensors', $cs) && ($availableSensors['extra_sensors'] ?? false))
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h3 class="font-semibold mb-4">{{ __('Extra Sensors') }}</h3>
             <div id="day-chart-extra" class="h-72"></div>
         </div>
@@ -173,13 +173,13 @@
 
     <!-- Hourly Data (loaded progressively to avoid slow initial page render) -->
     @if(($readingsCount ?? 0) > 0)
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
                 <h3 class="font-semibold">⏰ {{ __('Hourly measurements') }}</h3>
 
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div id="day-readings-status" class="text-xs text-gray-400 flex items-center gap-2">
-                        <svg id="day-readings-spinner" class="w-4 h-4 animate-spin text-gray-300" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <div id="day-readings-status" class="text-xs text-ui-muted flex items-center gap-2">
+                        <svg id="day-readings-spinner" class="w-4 h-4 animate-spin text-ui-secondary" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                         </svg>
@@ -189,21 +189,21 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
                         <div class="flex items-center gap-2">
                             <button id="day-readings-prev" type="button"
-                                    class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition disabled:opacity-40 disabled:hover:bg-white/10"
+                                    class="px-3 py-2 bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded-lg transition disabled:opacity-40 disabled:hover:bg-ui-overlay/10"
                                     disabled>
                                 ← {{ __('Prev') }}
                             </button>
                             <button id="day-readings-next" type="button"
-                                    class="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition disabled:opacity-40 disabled:hover:bg-white/10"
+                                    class="px-3 py-2 bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded-lg transition disabled:opacity-40 disabled:hover:bg-ui-overlay/10"
                                     disabled>
                                 {{ __('Next') }} →
                             </button>
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-ui-muted">
                             <span>{{ __('Page') }}</span>
                             <input id="day-readings-page-input" type="number" min="1" step="1"
-                                   class="w-20 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white"
+                                   class="w-20 bg-ui-overlay/5 border border-ui-line/10 rounded-lg px-2 py-1 text-ui-fg"
                                    value="{{ (int) ($readingsPage ?? 1) }}">
                             <span id="day-readings-page-of"></span>
 
@@ -211,7 +211,7 @@
 
                             <label for="day-readings-per-page" class="sr-only">{{ __('Rows per page') }}</label>
                             <select id="day-readings-per-page"
-                                    class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white">
+                                    class="bg-ui-overlay/5 border border-ui-line/10 rounded-lg px-2 py-1 text-ui-fg">
                                 @foreach([60, 250, 500, 750, 1000, 1500, 2000] as $opt)
                                     <option value="{{ $opt }}" {{ (int) ($readingsPerPage ?? 60) === $opt ? 'selected' : '' }}>
                                         {{ $opt }}
@@ -225,53 +225,53 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-white/5">
+                    <thead class="bg-ui-overlay/5">
                         <tr>
-                            <th class="px-4 py-3 text-left font-medium text-gray-400">{{ __('Time') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Temp') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Feels like') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Dew point') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('RH') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Wind') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Pressure') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Rain') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('UV') }}</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-400">{{ __('Solar') }}</th>
+                            <th class="px-4 py-3 text-left font-medium text-ui-muted">{{ __('Time') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Temp') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Feels like') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Dew point') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('RH') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Wind') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Pressure') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Rain') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('UV') }}</th>
+                            <th class="px-4 py-3 text-right font-medium text-ui-muted">{{ __('Solar') }}</th>
                         </tr>
                     </thead>
-                    <tbody id="day-readings-body" class="divide-y divide-white/5">
+                    <tbody id="day-readings-body" class="divide-y divide-ui-line/5">
                         {{-- Skeleton rows (replaced by JS) --}}
                         @for($i = 0; $i < 12; $i++)
                             <tr class="animate-pulse">
                                 <td class="px-4 py-3">
-                                    <div class="h-3 w-10 bg-white/10 rounded"></div>
+                                    <div class="h-3 w-10 bg-ui-overlay/10 rounded"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-14 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-14 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-14 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-10 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-10 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-28 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-28 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-20 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-20 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-24 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-24 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-10 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-10 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
-                                    <div class="h-3 w-20 bg-white/10 rounded ml-auto"></div>
+                                    <div class="h-3 w-20 bg-ui-overlay/10 rounded ml-auto"></div>
                                 </td>
                             </tr>
                         @endfor
@@ -280,7 +280,7 @@
             </div>
 
             <noscript>
-                <p class="mt-3 text-xs text-gray-400">
+                <p class="mt-3 text-xs text-ui-muted">
                     {{ __('This table loads with JavaScript enabled.') }}
                 </p>
             </noscript>
@@ -290,7 +290,7 @@
     <!-- Navigation to month -->
     <div class="text-center">
         <a href="{{ route('history', ['month' => $dateObj->month, 'year' => $dateObj->year]) }}" 
-           class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition">
+           class="inline-flex items-center gap-2 px-6 py-3 bg-ui-overlay/10 hover:bg-ui-overlay/20 rounded-lg transition">
             <span>📅</span>
             <span>{{ __('View full month') }} {{ $dateObj->locale($locale)->translatedFormat('F Y') }}</span>
         </a>
@@ -434,7 +434,7 @@
                 const frag = document.createDocumentFragment();
                 for (const row of rows) {
                     const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-white/5';
+                    tr.className = 'hover:bg-ui-overlay/5';
 
                     const tempRaw = row.temperature;
                     const temp = convertTemp(tempRaw);
@@ -456,8 +456,8 @@
 
                     let tempClass = '';
                     if (tempRaw !== null && tempRaw !== undefined) {
-                        if (tempRaw > 20) tempClass = 'text-weather-warm';
-                        if (tempRaw < 5) tempClass = 'text-weather-cold';
+                        if (tempRaw > 20) tempClass = 'text-data-amber-500';
+                        if (tempRaw < 5) tempClass = 'text-data-cyan-500';
                     }
 
                     const fmt = (v, d = 0) => (v === null ? '--' : formatNumber(v, d));
@@ -495,19 +495,19 @@
                         <td class="px-4 py-3 text-right">${dew === null ? '--' : `${formatNumber(dew, tempDecimals)} ${tempUnit}`}</td>
                         <td class="px-4 py-3 text-right">${row.humidity === null || row.humidity === undefined ? '--' : `${formatNumber(row.humidity, 0)}%`}</td>
                         <td class="px-4 py-3 text-right">
-                            ${windParts.length ? windParts.map((p, idx) => idx === 0 ? `<div class="font-medium text-white">${p}</div>` : `<div class="text-[11px] text-gray-400">${p}</div>`).join('') : '--'}
+                            ${windParts.length ? windParts.map((p, idx) => idx === 0 ? `<div class="font-medium text-ui-fg">${p}</div>` : `<div class="text-[11px] text-ui-muted">${p}</div>`).join('') : '--'}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            ${pressParts.length ? pressParts.map((p, idx) => idx === 0 ? `<div class="font-medium text-white">${p}</div>` : `<div class="text-[11px] text-gray-400">${p}</div>`).join('') : '--'}
+                            ${pressParts.length ? pressParts.map((p, idx) => idx === 0 ? `<div class="font-medium text-ui-fg">${p}</div>` : `<div class="text-[11px] text-ui-muted">${p}</div>`).join('') : '--'}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            ${rainParts.length ? rainParts.map((p) => `<div class="text-[11px] text-gray-200">${p}</div>`).join('') : '<span class="text-gray-500">--</span>'}
+                            ${rainParts.length ? rainParts.map((p) => `<div class="text-[11px] text-ui-body">${p}</div>`).join('') : '<span class="text-ui-subtle">--</span>'}
                         </td>
                         <td class="px-4 py-3 text-right">${uv === null ? '--' : formatNumber(uv, 1)}</td>
                         <td class="px-4 py-3 text-right">
                             ${solar === null && lux === null ? '--' : `
-                                <div class="font-medium text-white">${solar === null ? '--' : `${formatNumber(solar, 0)} W/m²`}</div>
-                                <div class="text-[11px] text-gray-400">${lux === null ? '' : `${formatNumber(lux, 0)} lux`}</div>
+                                <div class="font-medium text-ui-fg">${solar === null ? '--' : `${formatNumber(solar, 0)} W/m²`}</div>
+                                <div class="text-[11px] text-ui-muted">${lux === null ? '' : `${formatNumber(lux, 0)} lux`}</div>
                             `}
                         </td>
                     `;
@@ -562,16 +562,16 @@
                     const tr = document.createElement('tr');
                     tr.className = 'animate-pulse';
                     tr.innerHTML = `
-                        <td class="px-4 py-3"><div class="h-3 w-10 bg-white/10 rounded"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-10 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-28 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-20 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-24 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-10 bg-white/10 rounded ml-auto"></div></td>
-                        <td class="px-4 py-3 text-right"><div class="h-3 w-20 bg-white/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3"><div class="h-3 w-10 bg-ui-overlay/10 rounded"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-14 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-10 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-28 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-20 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-24 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-10 bg-ui-overlay/10 rounded ml-auto"></div></td>
+                        <td class="px-4 py-3 text-right"><div class="h-3 w-20 bg-ui-overlay/10 rounded ml-auto"></div></td>
                     `;
                     tbody.appendChild(tr);
                 }
@@ -609,7 +609,7 @@
                     setLoading(false);
                     clearRows();
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td class="px-4 py-6 text-sm text-gray-400" colspan="10">${@json(__('Failed to load data.'))}</td>`;
+                    tr.innerHTML = `<td class="px-4 py-6 text-sm text-ui-muted" colspan="10">${@json(__('Failed to load data.'))}</td>`;
                     tbody.appendChild(tr);
                 }
             };

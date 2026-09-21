@@ -1,0 +1,486 @@
+/* Public colour tokens. FX/Flat only changes effects; data colours keep their meaning. */
+html[data-public-theme] {
+    color-scheme: dark;
+    --wn-body: var(--wn-fg);
+    --wn-faint: var(--wn-subtle);
+    --wn-disabled: var(--wn-soft);
+    --wn-inactive: var(--wn-soft);
+    --wn-divider: var(--wn-border);
+    --wn-slate-deep: var(--wn-deep);
+    --wn-slate-soft: var(--wn-soft);
+    --wn-slate-border: var(--wn-border);
+    --wn-action: var(--wn-accent-strong);
+    --wn-action-deep: var(--wn-accent-strong);
+    --wn-bg: 15 20 25;
+    --wn-card: 26 35 50;
+    --wn-raised: 31 41 55;
+    --wn-deep: 17 24 39;
+    --wn-soft: 55 65 81;
+    --wn-fg: 255 255 255;
+    --wn-secondary: 209 213 219;
+    --wn-muted: 156 163 175;
+    --wn-subtle: 148 163 184;
+    --wn-overlay: 255 255 255;
+    --wn-line: 255 255 255;
+    --wn-border: 75 85 99;
+    --wn-accent: 59 130 246;
+    --wn-accent-strong: 37 99 235;
+    --wn-link: 96 165 250;
+    --wn-accent-end: 34 211 238;
+    --wn-gradient-mid: 26 39 68;
+    --wn-gradient-end: 30 27 75;
+    --wn-grid: 55 65 81;
+    --wn-timestamp: var(--wn-card) / 0.9;
+    --wn-timestamp-raised: var(--wn-card) / 0.9;
+    --wn-browser-color: #1a2332;
+}
+html[data-public-theme][data-color-mode="light"] {
+    color-scheme: light;
+    --wn-bg: 241 245 249;
+    --wn-card: 255 255 255;
+    --wn-raised: 248 250 252;
+    --wn-deep: 226 232 240;
+    --wn-soft: 203 213 225;
+    --wn-fg: 15 23 42;
+    --wn-secondary: 51 65 85;
+    --wn-muted: 71 85 105;
+    --wn-subtle: 71 85 105;
+    --wn-overlay: 15 23 42;
+    --wn-line: 15 23 42;
+    --wn-border: 100 116 139;
+    --wn-link: 29 78 216;
+    --wn-gradient-mid: 219 234 254;
+    --wn-gradient-end: 237 233 254;
+    --wn-grid: 203 213 225;
+    --wn-browser-color: #ffffff;
+}
+html[data-public-theme="ocean"] {
+    --wn-accent: 13 148 136;
+    --wn-accent-strong: 15 118 110;
+    --wn-link: 94 234 212;
+    --wn-accent-end: 34 211 238;
+    --wn-bg: 10 24 30;
+    --wn-card: 19 40 48;
+    --wn-gradient-mid: 15 52 62;
+    --wn-gradient-end: 17 42 67;
+    --wn-browser-color: #132830;
+}
+html[data-public-theme="ocean"][data-color-mode="light"] {
+    --wn-bg: 240 253 250;
+    --wn-card: 255 255 255;
+    --wn-link: 15 118 110;
+    --wn-gradient-mid: 204 251 241;
+    --wn-gradient-end: 224 242 254;
+    --wn-browser-color: #ffffff;
+}
+html[data-public-theme="forest"] {
+    --wn-accent: 22 163 74;
+    --wn-accent-strong: 21 128 61;
+    --wn-link: 134 239 172;
+    --wn-accent-end: 52 211 153;
+    --wn-bg: 16 25 20;
+    --wn-card: 27 42 33;
+    --wn-gradient-mid: 25 50 36;
+    --wn-gradient-end: 39 49 30;
+    --wn-browser-color: #1b2a21;
+}
+html[data-public-theme="forest"][data-color-mode="light"] {
+    --wn-bg: 240 253 244;
+    --wn-card: 255 255 255;
+    --wn-link: 22 101 52;
+    --wn-gradient-mid: 220 252 231;
+    --wn-gradient-end: 236 252 203;
+    --wn-browser-color: #ffffff;
+}
+
+/* Solar Flare: hot orange, magenta and plum inspired by an intense sunset. */
+html[data-public-theme="solar-flare"] {
+    --wn-bg: 26 12 36;
+    --wn-card: 44 24 56;
+    --wn-raised: 59 34 73;
+    --wn-deep: 33 15 44;
+    --wn-soft: 83 50 87;
+    --wn-fg: 255 247 237;
+    --wn-secondary: 241 212 224;
+    --wn-muted: 201 175 199;
+    --wn-subtle: 187 160 187;
+    --wn-overlay: 255 247 237;
+    --wn-line: 255 214 165;
+    --wn-border: 137 103 133;
+    --wn-accent: 249 115 22;
+    --wn-accent-strong: 194 65 12;
+    --wn-link: 253 186 116;
+    --wn-accent-end: 244 114 182;
+    --wn-gradient-mid: 87 32 68;
+    --wn-gradient-end: 120 53 30;
+    --wn-grid: 105 63 93;
+    --wn-browser-color: #2c1838;
+}
+html[data-public-theme="solar-flare"][data-color-mode="light"] {
+    --wn-bg: 255 241 214;
+    --wn-card: 255 250 240;
+    --wn-raised: 255 237 221;
+    --wn-deep: 245 215 203;
+    --wn-soft: 234 192 188;
+    --wn-fg: 66 22 44;
+    --wn-secondary: 98 50 75;
+    --wn-muted: 121 82 100;
+    --wn-subtle: 121 82 100;
+    --wn-overlay: 66 22 44;
+    --wn-line: 66 22 44;
+    --wn-border: 155 104 116;
+    --wn-link: 154 52 18;
+    --wn-gradient-mid: 255 216 168;
+    --wn-gradient-end: 249 184 196;
+    --wn-grid: 231 193 181;
+    --wn-browser-color: #fffaf0;
+}
+
+html[data-public-theme][data-color-mode="dark"] {
+    --wn-data-red-100: 254 226 226;
+    --wn-data-red-200: 254 202 202;
+    --wn-data-red-300: 252 165 165;
+    --wn-data-red-400: 248 113 113;
+    --wn-data-red-500: 248 113 113;
+    --wn-data-red-600: 248 113 113;
+    --wn-data-red-700: 248 113 113;
+    --wn-data-orange-100: 255 237 213;
+    --wn-data-orange-200: 254 215 170;
+    --wn-data-orange-300: 253 186 116;
+    --wn-data-orange-400: 251 146 60;
+    --wn-data-orange-500: 251 146 60;
+    --wn-data-orange-600: 251 146 60;
+    --wn-data-orange-700: 251 146 60;
+    --wn-data-amber-100: 254 243 199;
+    --wn-data-amber-200: 253 230 138;
+    --wn-data-amber-300: 252 211 77;
+    --wn-data-amber-400: 251 191 36;
+    --wn-data-amber-500: 251 191 36;
+    --wn-data-amber-600: 251 191 36;
+    --wn-data-amber-700: 251 191 36;
+    --wn-data-yellow-100: 254 249 195;
+    --wn-data-yellow-200: 254 240 138;
+    --wn-data-yellow-300: 253 224 71;
+    --wn-data-yellow-400: 250 204 21;
+    --wn-data-yellow-500: 250 204 21;
+    --wn-data-yellow-600: 250 204 21;
+    --wn-data-yellow-700: 250 204 21;
+    --wn-data-lime-100: 236 252 203;
+    --wn-data-lime-200: 217 249 157;
+    --wn-data-lime-300: 190 242 100;
+    --wn-data-lime-400: 163 230 53;
+    --wn-data-lime-500: 163 230 53;
+    --wn-data-lime-600: 163 230 53;
+    --wn-data-lime-700: 163 230 53;
+    --wn-data-green-100: 220 252 231;
+    --wn-data-green-200: 187 247 208;
+    --wn-data-green-300: 134 239 172;
+    --wn-data-green-400: 74 222 128;
+    --wn-data-green-500: 74 222 128;
+    --wn-data-green-600: 74 222 128;
+    --wn-data-green-700: 74 222 128;
+    --wn-data-emerald-100: 209 250 229;
+    --wn-data-emerald-200: 167 243 208;
+    --wn-data-emerald-300: 110 231 183;
+    --wn-data-emerald-400: 52 211 153;
+    --wn-data-emerald-500: 52 211 153;
+    --wn-data-emerald-600: 52 211 153;
+    --wn-data-emerald-700: 52 211 153;
+    --wn-data-teal-100: 204 251 241;
+    --wn-data-teal-200: 153 246 228;
+    --wn-data-teal-300: 94 234 212;
+    --wn-data-teal-400: 45 212 191;
+    --wn-data-teal-500: 45 212 191;
+    --wn-data-teal-600: 45 212 191;
+    --wn-data-teal-700: 45 212 191;
+    --wn-data-cyan-100: 207 250 254;
+    --wn-data-cyan-200: 165 243 252;
+    --wn-data-cyan-300: 103 232 249;
+    --wn-data-cyan-400: 34 211 238;
+    --wn-data-cyan-500: 34 211 238;
+    --wn-data-cyan-600: 34 211 238;
+    --wn-data-cyan-700: 34 211 238;
+    --wn-data-sky-100: 224 242 254;
+    --wn-data-sky-200: 186 230 253;
+    --wn-data-sky-300: 125 211 252;
+    --wn-data-sky-400: 56 189 248;
+    --wn-data-sky-500: 56 189 248;
+    --wn-data-sky-600: 56 189 248;
+    --wn-data-sky-700: 56 189 248;
+    --wn-data-blue-100: 219 234 254;
+    --wn-data-blue-200: 191 219 254;
+    --wn-data-blue-300: 147 197 253;
+    --wn-data-blue-400: 96 165 250;
+    --wn-data-blue-500: 96 165 250;
+    --wn-data-blue-600: 96 165 250;
+    --wn-data-blue-700: 96 165 250;
+    --wn-data-indigo-100: 224 231 255;
+    --wn-data-indigo-200: 199 210 254;
+    --wn-data-indigo-300: 165 180 252;
+    --wn-data-indigo-400: 129 140 248;
+    --wn-data-indigo-500: 129 140 248;
+    --wn-data-indigo-600: 129 140 248;
+    --wn-data-indigo-700: 129 140 248;
+    --wn-data-violet-100: 237 233 254;
+    --wn-data-violet-200: 221 214 254;
+    --wn-data-violet-300: 196 181 253;
+    --wn-data-violet-400: 167 139 250;
+    --wn-data-violet-500: 167 139 250;
+    --wn-data-violet-600: 167 139 250;
+    --wn-data-violet-700: 167 139 250;
+    --wn-data-purple-100: 243 232 255;
+    --wn-data-purple-200: 233 213 255;
+    --wn-data-purple-300: 216 180 254;
+    --wn-data-purple-400: 192 132 252;
+    --wn-data-purple-500: 192 132 252;
+    --wn-data-purple-600: 192 132 252;
+    --wn-data-purple-700: 192 132 252;
+    --wn-data-fuchsia-100: 250 232 255;
+    --wn-data-fuchsia-200: 245 208 254;
+    --wn-data-fuchsia-300: 240 171 252;
+    --wn-data-fuchsia-400: 232 121 249;
+    --wn-data-fuchsia-500: 232 121 249;
+    --wn-data-fuchsia-600: 232 121 249;
+    --wn-data-fuchsia-700: 232 121 249;
+    --wn-data-pink-100: 252 231 243;
+    --wn-data-pink-200: 251 207 232;
+    --wn-data-pink-300: 249 168 212;
+    --wn-data-pink-400: 244 114 182;
+    --wn-data-pink-500: 244 114 182;
+    --wn-data-pink-600: 244 114 182;
+    --wn-data-pink-700: 244 114 182;
+    --wn-data-rose-100: 255 228 230;
+    --wn-data-rose-200: 254 205 211;
+    --wn-data-rose-300: 253 164 175;
+    --wn-data-rose-400: 251 113 133;
+    --wn-data-rose-500: 251 113 133;
+    --wn-data-rose-600: 251 113 133;
+    --wn-data-rose-700: 251 113 133;
+}
+
+html[data-public-theme][data-color-mode="light"] {
+    --wn-data-red-100: 153 27 27;
+    --wn-data-red-200: 153 27 27;
+    --wn-data-red-300: 153 27 27;
+    --wn-data-red-400: 153 27 27;
+    --wn-data-red-500: 153 27 27;
+    --wn-data-red-600: 153 27 27;
+    --wn-data-red-700: 153 27 27;
+    --wn-data-orange-100: 154 52 18;
+    --wn-data-orange-200: 154 52 18;
+    --wn-data-orange-300: 154 52 18;
+    --wn-data-orange-400: 154 52 18;
+    --wn-data-orange-500: 154 52 18;
+    --wn-data-orange-600: 154 52 18;
+    --wn-data-orange-700: 154 52 18;
+    --wn-data-amber-100: 146 64 14;
+    --wn-data-amber-200: 146 64 14;
+    --wn-data-amber-300: 146 64 14;
+    --wn-data-amber-400: 146 64 14;
+    --wn-data-amber-500: 146 64 14;
+    --wn-data-amber-600: 146 64 14;
+    --wn-data-amber-700: 146 64 14;
+    --wn-data-yellow-100: 133 77 14;
+    --wn-data-yellow-200: 133 77 14;
+    --wn-data-yellow-300: 133 77 14;
+    --wn-data-yellow-400: 133 77 14;
+    --wn-data-yellow-500: 133 77 14;
+    --wn-data-yellow-600: 133 77 14;
+    --wn-data-yellow-700: 133 77 14;
+    --wn-data-lime-100: 63 98 18;
+    --wn-data-lime-200: 63 98 18;
+    --wn-data-lime-300: 63 98 18;
+    --wn-data-lime-400: 63 98 18;
+    --wn-data-lime-500: 63 98 18;
+    --wn-data-lime-600: 63 98 18;
+    --wn-data-lime-700: 63 98 18;
+    --wn-data-green-100: 22 101 52;
+    --wn-data-green-200: 22 101 52;
+    --wn-data-green-300: 22 101 52;
+    --wn-data-green-400: 22 101 52;
+    --wn-data-green-500: 22 101 52;
+    --wn-data-green-600: 22 101 52;
+    --wn-data-green-700: 22 101 52;
+    --wn-data-emerald-100: 6 95 70;
+    --wn-data-emerald-200: 6 95 70;
+    --wn-data-emerald-300: 6 95 70;
+    --wn-data-emerald-400: 6 95 70;
+    --wn-data-emerald-500: 6 95 70;
+    --wn-data-emerald-600: 6 95 70;
+    --wn-data-emerald-700: 6 95 70;
+    --wn-data-teal-100: 17 94 89;
+    --wn-data-teal-200: 17 94 89;
+    --wn-data-teal-300: 17 94 89;
+    --wn-data-teal-400: 17 94 89;
+    --wn-data-teal-500: 17 94 89;
+    --wn-data-teal-600: 17 94 89;
+    --wn-data-teal-700: 17 94 89;
+    --wn-data-cyan-100: 21 94 117;
+    --wn-data-cyan-200: 21 94 117;
+    --wn-data-cyan-300: 21 94 117;
+    --wn-data-cyan-400: 21 94 117;
+    --wn-data-cyan-500: 21 94 117;
+    --wn-data-cyan-600: 21 94 117;
+    --wn-data-cyan-700: 21 94 117;
+    --wn-data-sky-100: 7 89 133;
+    --wn-data-sky-200: 7 89 133;
+    --wn-data-sky-300: 7 89 133;
+    --wn-data-sky-400: 7 89 133;
+    --wn-data-sky-500: 7 89 133;
+    --wn-data-sky-600: 7 89 133;
+    --wn-data-sky-700: 7 89 133;
+    --wn-data-blue-100: 30 64 175;
+    --wn-data-blue-200: 30 64 175;
+    --wn-data-blue-300: 30 64 175;
+    --wn-data-blue-400: 30 64 175;
+    --wn-data-blue-500: 30 64 175;
+    --wn-data-blue-600: 30 64 175;
+    --wn-data-blue-700: 30 64 175;
+    --wn-data-indigo-100: 55 48 163;
+    --wn-data-indigo-200: 55 48 163;
+    --wn-data-indigo-300: 55 48 163;
+    --wn-data-indigo-400: 55 48 163;
+    --wn-data-indigo-500: 55 48 163;
+    --wn-data-indigo-600: 55 48 163;
+    --wn-data-indigo-700: 55 48 163;
+    --wn-data-violet-100: 91 33 182;
+    --wn-data-violet-200: 91 33 182;
+    --wn-data-violet-300: 91 33 182;
+    --wn-data-violet-400: 91 33 182;
+    --wn-data-violet-500: 91 33 182;
+    --wn-data-violet-600: 91 33 182;
+    --wn-data-violet-700: 91 33 182;
+    --wn-data-purple-100: 107 33 168;
+    --wn-data-purple-200: 107 33 168;
+    --wn-data-purple-300: 107 33 168;
+    --wn-data-purple-400: 107 33 168;
+    --wn-data-purple-500: 107 33 168;
+    --wn-data-purple-600: 107 33 168;
+    --wn-data-purple-700: 107 33 168;
+    --wn-data-fuchsia-100: 134 25 143;
+    --wn-data-fuchsia-200: 134 25 143;
+    --wn-data-fuchsia-300: 134 25 143;
+    --wn-data-fuchsia-400: 134 25 143;
+    --wn-data-fuchsia-500: 134 25 143;
+    --wn-data-fuchsia-600: 134 25 143;
+    --wn-data-fuchsia-700: 134 25 143;
+    --wn-data-pink-100: 157 23 77;
+    --wn-data-pink-200: 157 23 77;
+    --wn-data-pink-300: 157 23 77;
+    --wn-data-pink-400: 157 23 77;
+    --wn-data-pink-500: 157 23 77;
+    --wn-data-pink-600: 157 23 77;
+    --wn-data-pink-700: 157 23 77;
+    --wn-data-rose-100: 159 18 57;
+    --wn-data-rose-200: 159 18 57;
+    --wn-data-rose-300: 159 18 57;
+    --wn-data-rose-400: 159 18 57;
+    --wn-data-rose-500: 159 18 57;
+    --wn-data-rose-600: 159 18 57;
+    --wn-data-rose-700: 159 18 57;
+}
+
+/* The original WeatherNode dark palette is a compatibility contract. New palettes
+   may improve contrast, but must not silently recolour existing installations. */
+html[data-public-theme="weathernode"][data-color-mode="dark"] {
+    --wn-body: 229 231 235;
+    --wn-faint: 75 85 99;
+    --wn-disabled: 75 85 99;
+    --wn-inactive: 107 114 128;
+    --wn-divider: 55 65 81;
+    --wn-slate-deep: 15 23 42;
+    --wn-slate-soft: 51 65 85;
+    --wn-slate-border: 100 116 139;
+    --wn-action: 59 130 246;
+    --wn-action-deep: 29 78 216;
+    --wn-subtle: 107 114 128;
+    --wn-grid: 31 41 55;
+    --wn-timestamp: 0 0 0 / 0.2;
+    --wn-timestamp-raised: 0 0 0 / 0.3;
+    --wn-data-red-500: 239 68 68;
+    --wn-data-red-600: 220 38 38;
+    --wn-data-red-700: 185 28 28;
+    --wn-data-orange-500: 249 115 22;
+    --wn-data-orange-600: 234 88 12;
+    --wn-data-orange-700: 194 65 12;
+    --wn-data-amber-500: 245 158 11;
+    --wn-data-amber-600: 217 119 6;
+    --wn-data-amber-700: 180 83 9;
+    --wn-data-yellow-500: 234 179 8;
+    --wn-data-yellow-600: 202 138 4;
+    --wn-data-yellow-700: 161 98 7;
+    --wn-data-lime-500: 132 204 22;
+    --wn-data-lime-600: 101 163 13;
+    --wn-data-lime-700: 77 124 15;
+    --wn-data-green-500: 34 197 94;
+    --wn-data-green-600: 22 163 74;
+    --wn-data-green-700: 21 128 61;
+    --wn-data-emerald-500: 16 185 129;
+    --wn-data-emerald-600: 5 150 105;
+    --wn-data-emerald-700: 4 120 87;
+    --wn-data-teal-500: 20 184 166;
+    --wn-data-teal-600: 13 148 136;
+    --wn-data-teal-700: 15 118 110;
+    --wn-data-cyan-500: 6 182 212;
+    --wn-data-cyan-600: 8 145 178;
+    --wn-data-cyan-700: 14 116 144;
+    --wn-data-sky-500: 14 165 233;
+    --wn-data-sky-600: 2 132 199;
+    --wn-data-sky-700: 3 105 161;
+    --wn-data-blue-500: 59 130 246;
+    --wn-data-blue-600: 37 99 235;
+    --wn-data-blue-700: 29 78 216;
+    --wn-data-indigo-500: 99 102 241;
+    --wn-data-indigo-600: 79 70 229;
+    --wn-data-indigo-700: 67 56 202;
+    --wn-data-violet-500: 139 92 246;
+    --wn-data-violet-600: 124 58 237;
+    --wn-data-violet-700: 109 40 217;
+    --wn-data-purple-500: 168 85 247;
+    --wn-data-purple-600: 147 51 234;
+    --wn-data-purple-700: 126 34 206;
+    --wn-data-fuchsia-500: 217 70 239;
+    --wn-data-fuchsia-600: 192 38 211;
+    --wn-data-fuchsia-700: 162 28 175;
+    --wn-data-pink-500: 236 72 153;
+    --wn-data-pink-600: 219 39 119;
+    --wn-data-pink-700: 190 24 93;
+    --wn-data-rose-500: 244 63 94;
+    --wn-data-rose-600: 225 29 72;
+    --wn-data-rose-700: 190 18 60;
+}
+
+html[data-public-theme] body { color: rgb(var(--wn-fg)); background-color: rgb(var(--wn-bg)); }
+html[data-public-theme] :focus-visible { outline: 2px solid rgb(var(--wn-link)); outline-offset: 3px; }
+html[data-public-theme] .public-theme-control select {
+    font: inherit; font-size: 0.75rem; line-height: 1.25rem;
+    color: rgb(var(--wn-fg)); background-color: rgb(var(--wn-card));
+    border: 1px solid rgb(var(--wn-border)); border-radius: 0.5rem;
+    padding: 0.25rem 1.6rem 0.25rem 0.5rem; max-width: 10rem;
+}
+html[data-public-theme] .public-theme-control option { background: rgb(var(--wn-card)); color: rgb(var(--wn-fg)); }
+html[data-public-theme] .public-theme-control { display: inline-flex; align-items: center; }
+/* Explicit on-colour text stays white on filled controls and photo overlays. */
+html[data-public-theme] .text-on-accent { color: #fff; }
+html[data-public-theme] .btn-primary { color: #fff; background: rgb(var(--wn-accent-strong)); }
+html[data-public-theme] .input-dark { color: rgb(var(--wn-fg)); background: rgb(var(--wn-card)); border-color: rgb(var(--wn-border)); }
+html[data-public-theme] .input-dark:focus { border-color: rgb(var(--wn-link)); }
+html[data-public-theme] .apexcharts-tooltip,
+html[data-public-theme] .apexcharts-tooltip-title,
+html[data-public-theme] .apexcharts-menu {
+    color: rgb(var(--wn-fg)); background: rgb(var(--wn-card)); border-color: rgb(var(--wn-border));
+}
+html[data-public-theme] .apexcharts-xaxistooltip,
+html[data-public-theme] .apexcharts-yaxistooltip { color: rgb(var(--wn-fg)); background: rgb(var(--wn-card)); }
+/* External imagery and measurement ramps retain their original colours. */
+html[data-public-theme] .leaflet-popup-content-wrapper,
+html[data-public-theme] .leaflet-popup-tip { background: rgb(var(--wn-card)); color: rgb(var(--wn-fg)); }
+
+html[data-public-theme] [data-theme-surface="dark"] {
+    --wn-fg: 255 255 255; --wn-secondary: 229 231 235; --wn-muted: 209 213 219;
+    --wn-subtle: 209 213 219; --wn-line: 255 255 255; --wn-overlay: 255 255 255;
+    color: rgb(var(--wn-fg));
+}
+html[data-public-theme][data-color-mode="light"] [data-weather-colour-text] {
+    color: rgb(var(--wn-fg)) !important;
+}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html @if(isset($publicAppearance['custom'])) data-custom-theme @endif data-public-theme="{{ $publicAppearance['palette'] ?? 'weathernode' }}" data-default-color-mode="{{ $publicAppearance['mode'] ?? 'dark' }}" data-color-mode="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? 'light' : 'dark' }}" lang="en">
 <head>
+    <x-public-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AdSense Test</title>

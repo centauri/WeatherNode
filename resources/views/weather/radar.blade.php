@@ -40,22 +40,22 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">📡 {{ __('Precipitation radar') }}</h1>
-            <p class="text-gray-400">{{ __('Radar page intro', ['location' => $stationLocation]) }}</p>
+            <p class="text-ui-muted">{{ __('Radar page intro', ['location' => $stationLocation]) }}</p>
         </div>
         <div class="flex gap-2" x-data="{ activeProvider: '{{ $radarProvider }}' }" x-init="$watch('activeProvider', value => window.switchRadarProvider(value))">
             @foreach($visibleSources as $sourceId)
             <button @click="activeProvider = '{{ $sourceId }}'" 
-                    :class="activeProvider === '{{ $sourceId }}' ? 'bg-blue-600' : 'bg-white/10 hover:bg-white/20'"
+                    :class="activeProvider === '{{ $sourceId }}' ? 'bg-ui-accent-strong text-on-accent' : 'bg-ui-overlay/10 hover:bg-ui-overlay/20'"
                     class="px-4 py-2 rounded-lg text-sm transition-colors">{{ $radarSources[$sourceId]['label'] }}</button>
             @endforeach
         </div>
     </div>
 
     <!-- Main Radar -->
-    <div class="bg-weather-card rounded-2xl p-4 border border-white/10" 
+    <div class="bg-weather-card rounded-2xl p-4 border border-ui-line/10"
          x-data="radarDisplay()" 
          x-init="init(); window.radarDisplayInstance = $data">
-        <div class="aspect-[4/5] md:aspect-[16/10] [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative radar-main-stage">
+        <div data-theme-surface="dark" class="aspect-[4/5] md:aspect-[16/10] [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative radar-main-stage">
             
             @if($showKnmi)
             {{-- KNMI Radar --}}
@@ -64,7 +64,7 @@
                      src="{{ $radarUrl ?: 'https://cdn.knmi.nl/knmi/map/page/weer/actueel-weer/neerslagradar/WWWRADARTMP_loop.gif' }}?t={{ time() }}" 
                      alt="{{ __('Precipitation radar for :location', ['location' => $stationLocation]) }}" 
                      class="w-full h-full object-contain"
-                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-500\'>📡 {{ __('Radar not available') }}</div>'">
+                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-ui-subtle\'>📡 {{ __('Radar not available') }}</div>'">
             </div>
             
             @endif
@@ -76,7 +76,7 @@
                      src="https://api.buienradar.nl/image/1.0/radarmapnl?w=1200&h=800&t={{ time() }}" 
                      alt="Buienradar" 
                      class="w-full h-full object-contain"
-                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-500\'>{{ __('Radar not available') }}</div>'">
+                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-ui-subtle\'>{{ __('Radar not available') }}</div>'">
             </div>
             
             @endif
@@ -98,33 +98,33 @@
                 </iframe>
             </div>
             
-            <div class="absolute bottom-6 left-2 md:bottom-4 md:left-4 radar-overlay-panel pointer-events-none text-xs bg-black/70 px-2 py-1.5 md:px-3 md:py-2 rounded-lg max-w-[60%] md:max-w-none">
+            <div data-theme-surface="dark" class="absolute bottom-6 left-2 md:bottom-4 md:left-4 radar-overlay-panel pointer-events-none text-xs bg-black/70 px-2 py-1.5 md:px-3 md:py-2 rounded-lg max-w-[60%] md:max-w-none">
                 <div class="flex items-center gap-2">
-                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span class="live-indicator inline-block w-2 h-2 bg-green-500 text-on-accent rounded-full"></span>
                     <span x-text="'{{ __('Live') }} - ' + getProviderLabel(currentProvider)"></span>
                 </div>
-                <div class="mt-1 text-[11px] text-gray-300 truncate" x-text="stationLocationLabel"></div>
+                <div class="mt-1 text-[11px] text-ui-secondary truncate" x-text="stationLocationLabel"></div>
             </div>
             <div class="absolute top-2 right-2 md:top-4 md:right-4 radar-overlay-panel pointer-events-none space-y-2">
-                <div class="bg-black/70 px-3 py-2 rounded-lg text-xs text-right">
-                    <div class="text-gray-300">{{ __('Last update') }}</div>
+                <div data-theme-surface="dark" class="bg-black/70 px-3 py-2 rounded-lg text-xs text-right">
+                    <div class="text-ui-secondary">{{ __('Last update') }}</div>
                     <div class="font-semibold" x-text="radarFrameTimeLabel || radarFrameTimeFallback"></div>
                 </div>
-                <div class="bg-black/70 px-3 py-2 rounded-lg text-xs">
+                <div data-theme-surface="dark" class="bg-black/70 px-3 py-2 rounded-lg text-xs">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 bg-blue-300 rounded-sm"></div>
                         <span>{{ __('Light intensity') }}</span>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
-                        <div class="w-3 h-3 bg-blue-500 rounded-sm"></div>
+                        <div class="w-3 h-3 bg-blue-500 text-on-accent rounded-sm"></div>
                         <span>{{ __('Moderate') }}</span>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
-                        <div class="w-3 h-3 bg-blue-700 rounded-sm"></div>
+                        <div class="w-3 h-3 bg-blue-700 text-on-accent rounded-sm"></div>
                         <span>{{ __('Heavy intensity') }}</span>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
-                        <div class="w-3 h-3 bg-purple-600 rounded-sm"></div>
+                        <div class="w-3 h-3 bg-purple-600 text-on-accent rounded-sm"></div>
                         <span>{{ __('Very heavy') }}</span>
                     </div>
                 </div>
@@ -136,14 +136,14 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Buienradar -->
         @if($showBuienradar)
-        <div class="bg-weather-card rounded-2xl p-4 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-4 border border-ui-line/10">
             <h3 class="font-semibold mb-3">Buienradar</h3>
-            <div class="aspect-square md:aspect-video [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative">
+            <div data-theme-surface="dark" class="aspect-square md:aspect-video [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative">
                 <img id="radar-buienradar-image" 
                      src="https://api.buienradar.nl/image/1.0/radarmapnl?w=500&h=512&t={{ time() }}" 
                      alt="Buienradar" 
                      class="w-full h-full object-contain"
-                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-500\'>{{ __('Radar not available') }}</div>'">
+                     onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-ui-subtle\'>{{ __('Radar not available') }}</div>'">
             </div>
         </div>
 
@@ -151,7 +151,7 @@
 
         <!-- Satellite -->
         @if($satelliteEnabled)
-        <div class="bg-weather-card rounded-2xl p-4 border border-white/10 md:col-span-2">
+        <div class="bg-weather-card rounded-2xl p-4 border border-ui-line/10 md:col-span-2">
             @php
                 $yesterdayUtc = gmdate('Y-m-d', time() - 86400);
                 $satelliteProvider = \App\Models\Setting::getValue('satellite.provider', 'nasa');
@@ -178,10 +178,10 @@
             <div class="flex items-start justify-between gap-4 mb-3">
                 <h3 class="font-semibold">{{ __('Satellite image') }}</h3>
                 <div class="text-right">
-                    <div class="text-sm text-gray-300">
+                    <div class="text-sm text-ui-secondary">
                         <span id="satellite-source-text">{{ $providerLabel ?? '' }}</span>
                     </div>
-                    <div class="text-xs text-gray-400 leading-tight">
+                    <div class="text-xs text-ui-muted leading-tight">
                         @php
                             $isGibs = isset($chosenUrl) && is_string($chosenUrl) && (str_contains($chosenUrl, 'gibs.earthdata.nasa.gov') || str_contains($chosenUrl, 'earthdata.nasa.gov'));
                         @endphp
@@ -194,7 +194,7 @@
                     </div>
                 </div>
             </div>
-            <div class="aspect-square md:aspect-video [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative">
+            <div data-theme-surface="dark" class="aspect-square md:aspect-video [@media(max-height:600px)]:max-h-[70vh] bg-black/30 rounded-xl overflow-hidden relative">
                 @if($looksLikeTile($chosenUrl))
                     <div id="satellite-map-main"
                          class="w-full h-full"
@@ -206,7 +206,7 @@
                          src="{{ $chosenUrl }}?t={{ time() }}" 
                          alt="{{ __('Satellite image') }}" 
                          class="w-full h-full object-contain"
-                         onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-500\'>{{ __('Satellite image not available') }}</div>'">
+                         onerror="this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-ui-subtle\'>{{ __('Satellite image not available') }}</div>'">
                 @endif
             </div>
         </div>
@@ -214,7 +214,7 @@
     </div>
 
     <!-- Local Forecast -->
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10"
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10"
          x-data="precipForecast()"
          x-init="init()">
         <div class="flex items-start justify-between gap-4 mb-4">
@@ -224,12 +224,12 @@
 	                     class="w-5 h-5" alt="">
                 {{ __('Precipitation forecast for the coming hours') }}
             </h3>
-            <div class="text-right text-xs text-gray-400 leading-tight" x-show="sourceUpdatedLabel">
+            <div class="text-right text-xs text-ui-muted leading-tight" x-show="sourceUpdatedLabel">
                 <div x-text="sourceUpdatedLabel"></div>
             </div>
         </div>
 
-        <div class="precip-panel rounded-xl border border-white/10 overflow-hidden relative">
+        <div class="precip-panel rounded-xl border border-ui-line/10 overflow-hidden relative">
             <div class="precip-grid pointer-events-none absolute inset-0 opacity-70"></div>
             <div class="p-4 md:p-5 relative">
                 <div class="h-24 md:h-28">
@@ -262,29 +262,29 @@
                         <path x-show="!loading && !error" :d="linePath" fill="none" stroke="url(#precipStroke)" stroke-width="3" filter="url(#precipGlow)"></path>
 
                         <!-- Baseline -->
-                        <line x1="0" y1="102" x2="1000" y2="102" stroke="rgba(255,255,255,0.10)" stroke-width="1"></line>
+                        <line x1="0" y1="102" x2="1000" y2="102" stroke="rgb(var(--wn-fg) / 0.10)" stroke-width="1"></line>
                     </svg>
                 </div>
 
                 <div class="mt-4 grid grid-cols-6 md:grid-cols-12 gap-2">
                     <template x-for="slot in slots" :key="slot.key">
                         <div class="text-center">
-                            <div class="text-xs text-gray-300/80 mb-2" x-text="slot.label"></div>
-                            <div class="h-16 bg-white/5 rounded-lg relative overflow-hidden border border-white/5">
+                            <div class="text-xs text-ui-secondary/80 mb-2" x-text="slot.label"></div>
+                            <div class="h-16 bg-ui-overlay/5 rounded-lg relative overflow-hidden border border-ui-line/5">
                                 <div class="absolute inset-0 precip-bar-sheen opacity-30"></div>
                                 <div class="absolute bottom-0 left-0 right-0 precip-bar-fill transition-all duration-700 ease-out"
                                      :style="`height: ${slot.height}%`"></div>
                             </div>
-                            <div class="text-xs text-gray-400 mt-1" x-text="slot.amount"></div>
+                            <div class="text-xs text-ui-muted mt-1" x-text="slot.amount"></div>
                         </div>
                     </template>
                     <template x-if="loading">
-                        <div class="col-span-6 md:col-span-12 text-center text-sm text-gray-400 py-4">
+                        <div class="col-span-6 md:col-span-12 text-center text-sm text-ui-muted py-4">
                             <span x-text="loadingText"></span>
                         </div>
                     </template>
                     <template x-if="!loading && error">
-                        <div class="col-span-6 md:col-span-12 text-center text-sm text-red-300 py-4">
+                        <div class="col-span-6 md:col-span-12 text-center text-sm text-data-red-300 py-4">
                             <span x-text="error"></span>
                         </div>
                     </template>
@@ -300,33 +300,33 @@
         $nowcastAutoPlay = \App\Models\Setting::getValue('radar.nowcast_autoplay', false);
     @endphp
     @if($nowcastEnabled)
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10" 
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10"
              x-data="radarNowcast()" 
              x-init="init()">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="font-semibold">{{ __('2-Hour Precipitation Forecast') }}</h3>
-                    <p class="text-xs text-gray-400 mt-1">{{ __('KNMI Radar Nowcast - Netherlands') }}</p>
+                    <p class="text-xs text-ui-muted mt-1">{{ __('KNMI Radar Nowcast - Netherlands') }}</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button @click="togglePlay()" 
-                            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition">
+                            class="px-3 py-1.5 bg-ui-accent-strong text-on-accent hover:bg-ui-action-deep text-ui-fg rounded-lg text-sm transition">
                         <span x-show="!isPlaying">{{ __('Play') }}</span>
                         <span x-show="isPlaying">{{ __('Pause') }}</span>
                     </button>
-                    <span class="text-xs text-gray-400" x-text="currentTimeLabel"></span>
+                    <span class="text-xs text-ui-muted" x-text="currentTimeLabel"></span>
                 </div>
             </div>
-            <div class="aspect-video md:aspect-[16/10] bg-black/30 rounded-xl overflow-hidden relative">
+            <div data-theme-surface="dark" class="aspect-video md:aspect-[16/10] bg-black/30 rounded-xl overflow-hidden relative">
                 <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                     <div class="text-center">
-                        <div class="text-sm text-gray-400 mb-2">{{ __('Loading forecast data...') }}</div>
+                        <div class="text-sm text-ui-muted mb-2">{{ __('Loading forecast data...') }}</div>
                     </div>
                 </div>
                 <div x-show="error" class="absolute inset-0 flex items-center justify-center">
                     <div class="text-center p-4">
-                        <div class="text-sm text-red-400 mb-2">{{ __('Error loading data') }}</div>
-                        <div class="text-xs text-gray-500" x-text="error"></div>
+                        <div class="text-sm text-data-red-400 mb-2">{{ __('Error loading data') }}</div>
+                        <div class="text-xs text-ui-subtle" x-text="error"></div>
                     </div>
                 </div>
                 <div id="nowcast-map" class="w-full h-full" x-show="!error"></div>
@@ -336,8 +336,8 @@
                            :max="totalSteps - 1" 
                            x-model="currentStep" 
                            @input="showFrame(currentStep)"
-                           class="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer">
-                    <div class="flex justify-between text-xs text-gray-300 mt-1">
+                           class="w-full h-2 bg-ui-overlay/20 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-xs text-ui-secondary mt-1">
                         <span>Now</span>
                         <span>+2 hours</span>
                     </div>
@@ -347,15 +347,15 @@
     @endif
 
     <!-- About precipitation radar (scientific) -->
-    <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="radar-about-heading">
+    <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="radar-about-heading">
         <h2 id="radar-about-heading" class="text-xl font-semibold mb-4">{{ __('Radar page about heading') }}</h2>
-        <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+        <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
             <p>{{ __('Radar page about body 1') }}</p>
             <p>{{ __('Radar page about body 2') }}</p>
             <p>{{ __('Radar page about body 3') }}</p>
         </div>
-        <footer class="mt-6 pt-4 border-t border-white/10">
-            <p class="text-xs text-gray-500">{{ __('Radar page sources') }}</p>
+        <footer class="mt-6 pt-4 border-t border-ui-line/10">
+            <p class="text-xs text-ui-subtle">{{ __('Radar page sources') }}</p>
         </footer>
     </article>
 </div>
@@ -369,13 +369,13 @@
         background:
             radial-gradient(1200px 240px at 20% 0%, rgba(59, 130, 246, 0.20), transparent 55%),
             radial-gradient(900px 240px at 85% 10%, rgba(14, 165, 233, 0.16), transparent 60%),
-            linear-gradient(180deg, rgba(15, 23, 42, 0.62), rgba(2, 6, 23, 0.40));
+            linear-gradient(180deg, rgb(var(--wn-card) / 0.62), rgb(var(--wn-bg) / 0.4));
     }
     .precip-grid {
         background-image:
-            linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-            radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.06), transparent 45%);
+            linear-gradient(to right, rgb(var(--wn-line) / 0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(var(--wn-line) / 0.06) 1px, transparent 1px),
+            radial-gradient(circle at 30% 20%, rgb(var(--wn-line) / 0.06), transparent 45%);
         background-size: 64px 64px, 64px 64px, 100% 100%;
         mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.35));
     }

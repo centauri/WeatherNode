@@ -19,6 +19,7 @@ use App\Services\OpenData\NoaaProvider;
 use App\Services\Mail\MailConfigService;
 use App\Services\OpenData\OpenDataProviderRegistry;
 use App\Models\Setting;
+use App\Support\PublicAppearance;
 use App\Services\Security\ApiKeyService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
@@ -152,6 +153,9 @@ class AppServiceProvider extends ServiceProvider
             $siteTheme = 'fx';
         }
         View::share('siteTheme', $siteTheme);
+        View::composer(['weather.*', 'auth.login', 'auth.initial-admin-setup', 'errors.*'], function ($view) {
+            $view->with('publicAppearance', PublicAppearance::settings());
+        });
 
         $weatherIconsPath = $siteTheme === 'flat' ? 'icons/weather-static' : 'icons/weather';
         View::share('weatherIconsPath', $weatherIconsPath);

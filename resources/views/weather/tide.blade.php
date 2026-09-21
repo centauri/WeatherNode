@@ -48,7 +48,7 @@
     $currentLevel       = $tideData['current_level_cm'] ?? null;
     $trend              = $tideData['trend'] ?? 'steady';
     $trendIcon          = match($trend) { 'rising' => '↑', 'falling' => '↓', default => '→' };
-    $trendClass         = match($trend) { 'rising' => 'text-cyan-400', 'falling' => 'text-blue-400', default => 'text-gray-400' };
+    $trendClass         = match($trend) { 'rising' => 'text-data-cyan-400', 'falling' => 'text-data-blue-400', default => 'text-ui-muted' };
     $nowMs              = now()->timestamp * 1000;
 
     $upcoming = collect($tideData['tides'] ?? [])
@@ -114,34 +114,34 @@
         default        => 'sst_hot',
     };
     $sstComfortClass = match($sstComfortKey) {
-        'sst_cold'        => 'bg-blue-900/40 text-blue-300 border border-blue-800/30',
-        'sst_cool'        => 'bg-cyan-900/40 text-cyan-300 border border-cyan-800/30',
-        'sst_comfortable' => 'bg-teal-900/40 text-teal-300 border border-teal-800/30',
-        'sst_warm'        => 'bg-orange-900/40 text-orange-300 border border-orange-800/30',
-        'sst_hot'         => 'bg-red-900/40 text-red-300 border border-red-800/30',
-        default           => 'bg-gray-800/40 text-gray-400 border border-gray-700/30',
+        'sst_cold'        => 'bg-blue-900/40 text-data-blue-300 border border-blue-800/30',
+        'sst_cool'        => 'bg-cyan-900/40 text-data-cyan-300 border border-cyan-800/30',
+        'sst_comfortable' => 'bg-teal-900/40 text-data-teal-300 border border-teal-800/30',
+        'sst_warm'        => 'bg-orange-900/40 text-data-orange-300 border border-orange-800/30',
+        'sst_hot'         => 'bg-red-900/40 text-data-red-300 border border-red-800/30',
+        default           => 'bg-ui-raised/40 text-ui-muted border border-ui-divider/30',
     };
 
     // ── Tab active-state helpers ───────────────────────────────────────────────
     $tabActive   = fn(string $t) => $activeTab === $t
-        ? 'bg-{c}-600 shadow-lg shadow-{c}-600/30 text-white'  // replaced per-tab below
-        : 'bg-white/10 text-gray-300 hover:bg-white/20';
+        ? 'bg-{c}-600 shadow-lg shadow-{c}-600/30 text-ui-fg'  // replaced per-tab below
+        : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20';
     $tabClass = [
-        'tides'  => $activeTab === 'tides'  ? 'bg-cyan-600 shadow-lg shadow-cyan-600/30 text-white'      : 'bg-white/10 text-gray-300 hover:bg-white/20',
-        'waves'  => $activeTab === 'waves'  ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white'      : 'bg-white/10 text-gray-300 hover:bg-white/20',
-        'temp'   => $activeTab === 'temp'   ? 'bg-orange-500 shadow-lg shadow-orange-500/30 text-white'  : 'bg-white/10 text-gray-300 hover:bg-white/20',
-        'rivers' => $activeTab === 'rivers' ? 'bg-emerald-600 shadow-lg shadow-emerald-600/30 text-white': 'bg-white/10 text-gray-300 hover:bg-white/20',
+        'tides'  => $activeTab === 'tides'  ? 'bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg'      : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
+        'waves'  => $activeTab === 'waves'  ? 'bg-ui-accent-strong text-on-accent shadow-lg shadow-ui-accent/30 text-ui-fg'      : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
+        'temp'   => $activeTab === 'temp'   ? 'bg-orange-500 text-on-accent shadow-lg shadow-orange-500/30 text-ui-fg'  : 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
+        'rivers' => $activeTab === 'rivers' ? 'bg-emerald-600 text-on-accent shadow-lg shadow-emerald-600/30 text-ui-fg': 'bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20',
     ];
 @endphp
 
 {{-- ── Sky & Water top tab strip ─────────────────────────────────────────── --}}
 <div class="flex gap-2 mb-4">
     <a href="{{ route('aviation') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-white/10 text-gray-300 hover:bg-white/20">
+       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20">
         ✈ {{ __('Aviation') }}
     </a>
     <a href="{{ route('water') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-cyan-600 shadow-lg shadow-cyan-600/30 text-white">
+       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg">
         🌊 {{ __('Water') }}
     </a>
 </div>
@@ -178,16 +178,16 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🌊 {{ __('Tides') }}</h1>
-            <p class="text-gray-400">{{ $stationNameDisplay }}
+            <p class="text-ui-muted">{{ $stationNameDisplay }}
                 @if($tideData)· {{ __('Updated') }} {{ $updatedAt }}@endif
             </p>
         </div>
         @if($tideData)
-            <div class="text-right text-sm text-gray-500">
+            <div class="text-right text-sm text-ui-subtle">
                 {{ __('Data source') }}:
                 @if($sourceDocUrl)
                     <a href="{{ $sourceDocUrl }}" target="_blank" rel="noopener"
-                       class="text-blue-400 hover:underline">{{ $sourceLabel }}</a>
+                       class="text-data-blue-400 hover:underline">{{ $sourceLabel }}</a>
                 @else
                     <span>{{ $sourceLabel }}</span>
                 @endif
@@ -197,98 +197,98 @@
 
     @if(!$tideEnabled)
         <div class="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">🔧 {{ __('Tides not enabled') }}</h2>
-            <p class="text-gray-300 mb-4">{{ __('Enable tides in settings to show live tide times and water levels.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">🔧 {{ __('Tides not enabled') }}</h2>
+            <p class="text-ui-secondary mb-4">{{ __('Enable tides in settings to show live tide times and water levels.') }}</p>
             <a href="{{ route('admin.settings.group', 'tide') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors">
+               class="inline-flex items-center gap-2 px-4 py-2 bg-ui-accent-strong text-on-accent hover:bg-ui-action-deep rounded-lg text-sm font-medium transition-colors">
                 ⚙️ {{ __('Configure Tides') }}
             </a>
         </div>
 
     @elseif(!$tideData)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">⏳ {{ __('No tide data yet') }}</h2>
-            <p class="text-gray-300">{{ __('Tide data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No tide data yet') }}</h2>
+            <p class="text-ui-secondary">{{ __('Tide data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>
         </div>
 
     @else
         {{-- Summary cards --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Current Level') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Current Level') }}</div>
                 <div class="flex items-end gap-1">
-                    <span class="text-3xl font-bold text-white">
+                    <span class="text-3xl font-bold text-ui-fg">
                         {{ $currentLevel !== null ? number_format($toUnit($currentLevel), $levelDecimals) : '--' }}
                     </span>
-                    <span class="text-gray-400 mb-1 text-sm">{{ $unitLabel }} {{ $datumLabel }}</span>
+                    <span class="text-ui-muted mb-1 text-sm">{{ $unitLabel }} {{ $datumLabel }}</span>
                 </div>
                 <div class="mt-2 text-sm {{ $trendClass }} font-medium">
                     {{ $trendIcon }} {{ __('tide_trend_' . $trend) }}
                 </div>
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Next High Tide') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Next High Tide') }}</div>
                 @if($nextHigh)
-                    <div class="text-2xl font-bold text-cyan-300">
+                    <div class="text-2xl font-bold text-data-cyan-300">
                         {{ Carbon::parse($nextHigh['timestamp'])->format('H:i') }}
                     </div>
-                    <div class="text-sm text-gray-400 mt-1">
+                    <div class="text-sm text-ui-muted mt-1">
                         {{ Carbon::parse($nextHigh['timestamp'])->isoFormat('ddd D MMM') }}
                     </div>
-                    <div class="text-sm text-gray-300 mt-1 font-medium">
+                    <div class="text-sm text-ui-secondary mt-1 font-medium">
                         {{ number_format($toUnit($nextHigh['level_cm']), $levelDecimals) }} {{ $unitLabel }}
                     </div>
                 @else
-                    <div class="text-2xl font-bold text-gray-500">--</div>
+                    <div class="text-2xl font-bold text-ui-subtle">--</div>
                 @endif
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Next Low Tide') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Next Low Tide') }}</div>
                 @if($nextLow)
-                    <div class="text-2xl font-bold text-blue-300">
+                    <div class="text-2xl font-bold text-data-blue-300">
                         {{ Carbon::parse($nextLow['timestamp'])->format('H:i') }}
                     </div>
-                    <div class="text-sm text-gray-400 mt-1">
+                    <div class="text-sm text-ui-muted mt-1">
                         {{ Carbon::parse($nextLow['timestamp'])->isoFormat('ddd D MMM') }}
                     </div>
-                    <div class="text-sm text-gray-300 mt-1 font-medium">
+                    <div class="text-sm text-ui-secondary mt-1 font-medium">
                         {{ number_format($toUnit($nextLow['level_cm']), $levelDecimals) }} {{ $unitLabel }}
                     </div>
                 @else
-                    <div class="text-2xl font-bold text-gray-500">--</div>
+                    <div class="text-2xl font-bold text-ui-subtle">--</div>
                 @endif
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Tidal Range') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Tidal Range') }}</div>
                 @php
                     $range = ($nextHigh && $nextLow)
                         ? abs($nextHigh['level_cm'] - $nextLow['level_cm'])
                         : null;
                 @endphp
-                <div class="text-2xl font-bold text-white">
+                <div class="text-2xl font-bold text-ui-fg">
                     {{ $range !== null ? number_format($toUnit($range), $levelDecimals) : '--' }}
-                    @if($range !== null)<span class="text-gray-400 text-lg font-normal"> {{ $unitLabel }}</span>@endif
+                    @if($range !== null)<span class="text-ui-muted text-lg font-normal"> {{ $unitLabel }}</span>@endif
                 </div>
-                <div class="text-xs text-gray-400 mt-2">{{ __('high minus low') }}</div>
+                <div class="text-xs text-ui-muted mt-2">{{ __('high minus low') }}</div>
             </div>
 
         </div>
 
         {{-- Tidal chart --}}
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <h2 class="font-semibold text-white mb-4">{{ __('Tidal Chart') }} — {{ $stationNameDisplay }}
-                <span class="text-sm font-normal text-gray-400 ml-2">{{ __('(48-hour window)') }}</span>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <h2 class="font-semibold text-ui-fg mb-4">{{ __('Tidal Chart') }} — {{ $stationNameDisplay }}
+                <span class="text-sm font-normal text-ui-muted ml-2">{{ __('(48-hour window)') }}</span>
             </h2>
             <div id="tide-chart" class="w-full" style="min-height:220px;"></div>
         </div>
 
         {{-- 3-day tide table --}}
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <h2 class="font-semibold text-white mb-4">{{ __('Tide Forecast') }}</h2>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <h2 class="font-semibold text-ui-fg mb-4">{{ __('Tide Forecast') }}</h2>
 
             @forelse($groupedTides as $date => $dayTides)
                 @php
@@ -298,7 +298,7 @@
                         : ($dateObj->isTomorrow() ? __('Tomorrow') : $dateObj->isoFormat('dddd D MMMM'));
                 @endphp
                 <div class="mb-5 last:mb-0">
-                    <div class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 pb-1 border-b border-white/10">
+                    <div class="text-sm font-semibold text-ui-secondary uppercase tracking-wider mb-3 pb-1 border-b border-ui-line/10">
                         {{ $dateLabel }}
                     </div>
                     <div class="space-y-2">
@@ -311,37 +311,37 @@
                                 <div class="flex items-center gap-3">
                                     <span class="text-lg">{{ $isHigh ? '🔼' : '🔽' }}</span>
                                     <div>
-                                        <span class="font-semibold text-white text-lg">{{ $time }}</span>
-                                        <span class="text-sm ml-2 {{ $isHigh ? 'text-cyan-400' : 'text-blue-400' }}">
+                                        <span class="font-semibold text-ui-fg text-lg">{{ $time }}</span>
+                                        <span class="text-sm ml-2 {{ $isHigh ? 'text-data-cyan-400' : 'text-data-blue-400' }}">
                                             {{ $isHigh ? __('High Tide') : __('Low Tide') }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="font-bold text-white text-lg">{{ number_format($toUnit($tide['level_cm']), $levelDecimals) }}</span>
-                                    <span class="text-gray-400 text-sm ml-1">{{ $unitLabel }} {{ $datumLabel }}</span>
+                                    <span class="font-bold text-ui-fg text-lg">{{ number_format($toUnit($tide['level_cm']), $levelDecimals) }}</span>
+                                    <span class="text-ui-muted text-sm ml-1">{{ $unitLabel }} {{ $datumLabel }}</span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @empty
-                <p class="text-gray-400">{{ __('No upcoming tide data available.') }}</p>
+                <p class="text-ui-muted">{{ __('No upcoming tide data available.') }}</p>
             @endforelse
         </div>
 
         {{-- Datum explanation + attribution --}}
-        <div class="bg-gray-900/40 rounded-2xl p-5 border border-white/5 text-sm text-gray-400">
+        <div class="bg-ui-deep/40 rounded-2xl p-5 border border-ui-line/5 text-sm text-ui-muted">
             @if(($source ?? 'rws') === 'rws')
-                <h3 class="font-semibold text-gray-300 mb-2">{{ __('About NAP') }}</h3>
+                <h3 class="font-semibold text-ui-secondary mb-2">{{ __('About NAP') }}</h3>
                 <p class="mb-2">{{ __('nap_explanation') }}</p>
             @else
-                <h3 class="font-semibold text-gray-300 mb-2">{{ __('About MSL') }}</h3>
+                <h3 class="font-semibold text-ui-secondary mb-2">{{ __('About MSL') }}</h3>
                 <p class="mb-2">{{ __('msl_explanation') }}</p>
             @endif
             <p>{{ __('Tide data provided by') }}
                 @if($sourceDocUrl)
-                    <a href="{{ $sourceDocUrl }}" target="_blank" rel="noopener" class="text-blue-400 hover:underline">{{ $sourceLabel }}</a>
+                    <a href="{{ $sourceDocUrl }}" target="_blank" rel="noopener" class="text-data-blue-400 hover:underline">{{ $sourceLabel }}</a>
                 @else
                     <span>{{ $sourceLabel }}</span>
                 @endif.
@@ -349,16 +349,16 @@
         </div>
 
         {{-- About tides (scientific) --}}
-        <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="water-tides-about-heading">
+        <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="water-tides-about-heading">
             <h2 id="water-tides-about-heading" class="text-xl font-semibold mb-4">{{ __('Water tides about heading') }}</h2>
-            <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+            <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
                 <p>{{ __('Water tides about body 1') }}</p>
                 <p>{{ __('Water tides about body 2') }}</p>
                 <p>{{ __('Water tides about body 3') }}</p>
-                <p class="text-cyan-200/90 italic border-l-2 border-cyan-500/50 pl-4">{{ __('Water tides about fun') }}</p>
+                <p class="text-data-cyan-200/90 italic border-l-2 border-cyan-500/50 pl-4">{{ __('Water tides about fun') }}</p>
             </div>
-            <footer class="mt-6 pt-4 border-t border-white/10">
-                <p class="text-xs text-gray-500">{{ __('Water tides page sources') }}</p>
+            <footer class="mt-6 pt-4 border-t border-ui-line/10">
+                <p class="text-xs text-ui-subtle">{{ __('Water tides page sources') }}</p>
             </footer>
         </article>
 
@@ -377,92 +377,92 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">〰 {{ __('Waves') }}</h1>
-            <p class="text-gray-400">
+            <p class="text-ui-muted">
                 {{ $waveLoc }}
                 @if($waveData)· {{ __('Updated') }} {{ $waveUpdatedAt }}@endif
             </p>
         </div>
-        <div class="text-right text-sm text-gray-500">
+        <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
             <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Open-Meteo Marine</a>
+               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
         </div>
     </div>
 
     @if(!$waveData)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">⏳ {{ __('No wave data yet') }}</h2>
-            <p class="text-gray-300">{{ __('Wave data is being fetched. Check back in a few minutes.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No wave data yet') }}</h2>
+            <p class="text-ui-secondary">{{ __('Wave data is being fetched. Check back in a few minutes.') }}</p>
         </div>
     @else
 
         {{-- Summary cards --}}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Wave Height') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Wave Height') }}</div>
                 <div class="flex items-end gap-1">
-                    <span class="text-3xl font-bold text-cyan-300">
+                    <span class="text-3xl font-bold text-data-cyan-300">
                         {{ $waveHeight !== null ? number_format($toWaveUnit($waveHeight), $waveDecimals) : '--' }}
                     </span>
-                    <span class="text-gray-400 mb-1 text-sm">{{ $waveUnit }}</span>
+                    <span class="text-ui-muted mb-1 text-sm">{{ $waveUnit }}</span>
                 </div>
                 @if($waveHeight !== null)
                     <div class="mt-2">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-900/40 text-cyan-300 border border-cyan-800/30">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-900/40 text-data-cyan-300 border border-cyan-800/30">
                             {{ __($beaufortKey) }}
                         </span>
                     </div>
                 @endif
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Wave Period') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Wave Period') }}</div>
                 <div class="flex items-end gap-1">
-                    <span class="text-3xl font-bold text-white">
+                    <span class="text-3xl font-bold text-ui-fg">
                         {{ $wavePeriod !== null ? number_format($wavePeriod, 0) : '--' }}
                     </span>
-                    <span class="text-gray-400 mb-1 text-sm">s</span>
+                    <span class="text-ui-muted mb-1 text-sm">s</span>
                 </div>
-                <div class="mt-2 text-xs text-gray-500">{{ __('mean period') }}</div>
+                <div class="mt-2 text-xs text-ui-subtle">{{ __('mean period') }}</div>
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Wave Direction') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Wave Direction') }}</div>
                 <div class="flex items-center gap-3 mt-1">
                     @if($waveDir !== null)
                         <span class="text-3xl" style="display:inline-block;transform:rotate({{ $waveDir }}deg);transition:transform 0.5s ease;">↑</span>
                     @else
-                        <span class="text-3xl text-gray-500">→</span>
+                        <span class="text-3xl text-ui-subtle">→</span>
                     @endif
                     <div>
-                        <div class="text-xl font-bold text-white">{{ $waveCardinal }}</div>
+                        <div class="text-xl font-bold text-ui-fg">{{ $waveCardinal }}</div>
                         @if($waveDir !== null)
-                            <div class="text-xs text-gray-500">{{ round($waveDir) }}°</div>
+                            <div class="text-xs text-ui-subtle">{{ round($waveDir) }}°</div>
                         @endif
                     </div>
                 </div>
             </div>
 
-            <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-                <div class="text-xs text-gray-400 uppercase tracking-wider mb-2">{{ __('Swell Height') }}</div>
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Swell Height') }}</div>
                 <div class="flex items-end gap-1">
-                    <span class="text-3xl font-bold text-blue-300">
+                    <span class="text-3xl font-bold text-data-blue-300">
                         {{ $swellH !== null ? number_format($toWaveUnit($swellH), $waveDecimals) : '--' }}
                     </span>
-                    <span class="text-gray-400 mb-1 text-sm">{{ $waveUnit }}</span>
+                    <span class="text-ui-muted mb-1 text-sm">{{ $waveUnit }}</span>
                 </div>
                 @if($swellPeriod !== null)
-                    <div class="mt-2 text-xs text-gray-500">{{ number_format($swellPeriod, 0) }} s {{ __('period') }}</div>
+                    <div class="mt-2 text-xs text-ui-subtle">{{ number_format($swellPeriod, 0) }} s {{ __('period') }}</div>
                 @endif
             </div>
 
         </div>
 
         {{-- 48-h wave chart --}}
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <h2 class="font-semibold text-white mb-4">{{ __('Wave Height Forecast') }}
-                <span class="text-sm font-normal text-gray-400 ml-2">{{ __('(48-hour window)') }}</span>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <h2 class="font-semibold text-ui-fg mb-4">{{ __('Wave Height Forecast') }}
+                <span class="text-sm font-normal text-ui-muted ml-2">{{ __('(48-hour window)') }}</span>
             </h2>
             <div id="wave-chart" class="w-full" style="min-height:220px;"></div>
         </div>
@@ -473,19 +473,19 @@
             <div class="bg-blue-950/30 rounded-2xl p-5 border border-blue-900/30">
                 <div class="flex items-center gap-2 mb-4">
                     <span class="text-lg">💨</span>
-                    <h3 class="font-semibold text-blue-300">{{ __('Wind Waves') }}</h3>
+                    <h3 class="font-semibold text-data-blue-300">{{ __('Wind Waves') }}</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <div class="text-xs text-gray-400 mb-1">{{ __('Height') }}</div>
-                        <div class="text-xl font-bold text-white">
+                        <div class="text-xs text-ui-muted mb-1">{{ __('Height') }}</div>
+                        <div class="text-xl font-bold text-ui-fg">
                             {{ $windWaveH !== null ? number_format($toWaveUnit($windWaveH), $waveDecimals) : '--' }}
-                            <span class="text-sm text-gray-400 font-normal">{{ $waveUnit }}</span>
+                            <span class="text-sm text-ui-muted font-normal">{{ $waveUnit }}</span>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-400 mb-1">{{ __('Direction') }}</div>
-                        <div class="text-xl font-bold text-white">{{ $waveCardinal }}</div>
+                        <div class="text-xs text-ui-muted mb-1">{{ __('Direction') }}</div>
+                        <div class="text-xl font-bold text-ui-fg">{{ $waveCardinal }}</div>
                     </div>
                 </div>
             </div>
@@ -493,22 +493,22 @@
             <div class="bg-indigo-950/30 rounded-2xl p-5 border border-indigo-900/30">
                 <div class="flex items-center gap-2 mb-4">
                     <span class="text-lg">〜</span>
-                    <h3 class="font-semibold text-indigo-300">{{ __('Swell') }}</h3>
+                    <h3 class="font-semibold text-data-indigo-300">{{ __('Swell') }}</h3>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <div class="text-xs text-gray-400 mb-1">{{ __('Height') }}</div>
-                        <div class="text-xl font-bold text-white">
+                        <div class="text-xs text-ui-muted mb-1">{{ __('Height') }}</div>
+                        <div class="text-xl font-bold text-ui-fg">
                             {{ $swellH !== null ? number_format($toWaveUnit($swellH), $waveDecimals) : '--' }}
-                            <span class="text-sm text-gray-400 font-normal">{{ $waveUnit }}</span>
+                            <span class="text-sm text-ui-muted font-normal">{{ $waveUnit }}</span>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-400 mb-1">{{ __('Direction') }}</div>
-                        <div class="text-xl font-bold text-white">
+                        <div class="text-xs text-ui-muted mb-1">{{ __('Direction') }}</div>
+                        <div class="text-xl font-bold text-ui-fg">
                             {{ $swellCardinal }}
                             @if($swellPeriod !== null)
-                                <span class="text-xs text-gray-400 font-normal block">{{ number_format($swellPeriod, 0) }} s</span>
+                                <span class="text-xs text-ui-muted font-normal block">{{ number_format($swellPeriod, 0) }} s</span>
                             @endif
                         </div>
                     </div>
@@ -518,24 +518,24 @@
         </div>
 
         {{-- Attribution --}}
-        <div class="bg-gray-900/40 rounded-2xl p-4 border border-white/5 text-sm text-gray-400">
+        <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('Wave data provided by') }}
             <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Open-Meteo Marine</a>
+               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
             — {{ __('free, model-based, global coverage') }}.
         </div>
 
         {{-- About waves (scientific) --}}
-        <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="water-waves-about-heading">
+        <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="water-waves-about-heading">
             <h2 id="water-waves-about-heading" class="text-xl font-semibold mb-4">{{ __('Water waves about heading') }}</h2>
-            <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+            <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
                 <p>{{ __('Water waves about body 1') }}</p>
                 <p>{{ __('Water waves about body 2') }}</p>
                 <p>{{ __('Water waves about body 3') }}</p>
-                <p class="text-blue-200/90 italic border-l-2 border-blue-500/50 pl-4">{{ __('Water waves about fun') }}</p>
+                <p class="text-data-blue-200/90 italic border-l-2 border-blue-500/50 pl-4">{{ __('Water waves about fun') }}</p>
             </div>
-            <footer class="mt-6 pt-4 border-t border-white/10">
-                <p class="text-xs text-gray-500">{{ __('Water waves page sources') }}</p>
+            <footer class="mt-6 pt-4 border-t border-ui-line/10">
+                <p class="text-xs text-ui-subtle">{{ __('Water waves page sources') }}</p>
             </footer>
         </article>
 
@@ -554,35 +554,35 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🌡 {{ __('Sea Surface Temperature') }}</h1>
-            <p class="text-gray-400">
+            <p class="text-ui-muted">
                 {{ $waveLoc }}
                 @if($waveData)· {{ __('Updated') }} {{ $waveUpdatedAt }}@endif
             </p>
         </div>
-        <div class="text-right text-sm text-gray-500">
+        <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
             <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Open-Meteo Marine</a>
+               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
         </div>
     </div>
 
     @if(!$waveData || $sstC === null)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">⏳ {{ __('No sea temperature data yet') }}</h2>
-            <p class="text-gray-300">{{ __('Sea temperature data is being fetched. Check back in a few minutes.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No sea temperature data yet') }}</h2>
+            <p class="text-ui-secondary">{{ __('Sea temperature data is being fetched. Check back in a few minutes.') }}</p>
         </div>
     @else
 
         {{-- Main SST card --}}
-        <div class="bg-weather-card rounded-2xl p-6 border border-white/10">
+        <div class="bg-weather-card rounded-2xl p-6 border border-ui-line/10">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div>
-                    <div class="text-xs text-gray-400 uppercase tracking-wider mb-3">{{ __('Current Sea Surface Temp') }}</div>
+                    <div class="text-xs text-ui-muted uppercase tracking-wider mb-3">{{ __('Current Sea Surface Temp') }}</div>
                     <div class="flex items-end gap-3">
-                        <span class="text-6xl font-bold text-white">
+                        <span class="text-6xl font-bold text-ui-fg">
                             {{ $sstDisplay !== null ? number_format($sstDisplay, $sstDecimals) : '--' }}
                         </span>
-                        <span class="text-2xl text-gray-400 mb-2">{{ $sstUnit }}</span>
+                        <span class="text-2xl text-ui-muted mb-2">{{ $sstUnit }}</span>
                     </div>
                     @if($sstComfortKey)
                         <div class="mt-4">
@@ -596,22 +596,22 @@
 
                 {{-- 5-day sparkline --}}
                 <div class="w-full sm:w-72 flex-shrink-0">
-                    <div class="text-xs text-gray-400 mb-2">{{ __('5-day trend') }}</div>
+                    <div class="text-xs text-ui-muted mb-2">{{ __('5-day trend') }}</div>
                     <div id="sst-chart" style="min-height:140px;"></div>
                 </div>
             </div>
         </div>
 
         {{-- Comfort guide --}}
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
-            <h3 class="font-semibold text-white mb-4">{{ __('Sea Temperature Guide') }}</h3>
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+            <h3 class="font-semibold text-ui-fg mb-4">{{ __('Sea Temperature Guide') }}</h3>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
                 @foreach([
-                    ['< 10 °C',  'sst_cold',        'bg-blue-900/40 text-blue-300 border-blue-800/30'],
-                    ['10–15 °C', 'sst_cool',        'bg-cyan-900/40 text-cyan-300 border-cyan-800/30'],
-                    ['15–20 °C', 'sst_comfortable', 'bg-teal-900/40 text-teal-300 border-teal-800/30'],
-                    ['20–25 °C', 'sst_warm',        'bg-orange-900/40 text-orange-300 border-orange-800/30'],
-                    ['> 25 °C',  'sst_hot',         'bg-red-900/40 text-red-300 border-red-800/30'],
+                    ['< 10 °C',  'sst_cold',        'bg-blue-900/40 text-data-blue-300 border-blue-800/30'],
+                    ['10–15 °C', 'sst_cool',        'bg-cyan-900/40 text-data-cyan-300 border-cyan-800/30'],
+                    ['15–20 °C', 'sst_comfortable', 'bg-teal-900/40 text-data-teal-300 border-teal-800/30'],
+                    ['20–25 °C', 'sst_warm',        'bg-orange-900/40 text-data-orange-300 border-orange-800/30'],
+                    ['> 25 °C',  'sst_hot',         'bg-red-900/40 text-data-red-300 border-red-800/30'],
                 ] as [$range, $key, $cls])
                     <div class="rounded-xl p-3 border {{ $cls }} {{ $sstComfortKey === $key ? 'ring-2 ring-current ring-offset-1 ring-offset-weather-card' : '' }}">
                         <div class="font-medium">{{ __($key) }}</div>
@@ -622,24 +622,24 @@
         </div>
 
         {{-- Attribution --}}
-        <div class="bg-gray-900/40 rounded-2xl p-4 border border-white/5 text-sm text-gray-400">
+        <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('Sea temperature data provided by') }}
             <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Open-Meteo Marine</a>
+               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
             — {{ __('free, model-based, global coverage') }}.
         </div>
 
         {{-- About sea temperature (scientific) --}}
-        <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="water-temp-about-heading">
+        <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="water-temp-about-heading">
             <h2 id="water-temp-about-heading" class="text-xl font-semibold mb-4">{{ __('Water temp about heading') }}</h2>
-            <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+            <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
                 <p>{{ __('Water temp about body 1') }}</p>
                 <p>{{ __('Water temp about body 2') }}</p>
                 <p>{{ __('Water temp about body 3') }}</p>
-                <p class="text-orange-200/90 italic border-l-2 border-orange-500/50 pl-4">{{ __('Water temp about fun') }}</p>
+                <p class="text-data-orange-200/90 italic border-l-2 border-orange-500/50 pl-4">{{ __('Water temp about fun') }}</p>
             </div>
-            <footer class="mt-6 pt-4 border-t border-white/10">
-                <p class="text-xs text-gray-500">{{ __('Water temp page sources') }}</p>
+            <footer class="mt-6 pt-4 border-t border-ui-line/10">
+                <p class="text-xs text-ui-subtle">{{ __('Water temp page sources') }}</p>
             </footer>
         </article>
 
@@ -658,25 +658,25 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🏞 {{ __('River Levels') }}</h1>
-            <p class="text-gray-400">{{ __('Real-time gauge measurements') }} · Rijkswaterstaat</p>
+            <p class="text-ui-muted">{{ __('Real-time gauge measurements') }} · Rijkswaterstaat</p>
         </div>
-        <div class="text-right text-sm text-gray-500">
+        <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
             <a href="https://waterinfo.rws.nl" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Rijkswaterstaat</a>
+               class="text-data-blue-400 hover:underline">Rijkswaterstaat</a>
         </div>
     </div>
 
     @if(!$riversEnabled)
         <div class="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">🔧 {{ __('River Levels not enabled') }}</h2>
-            <p class="text-gray-300">{{ __('Enable river levels in settings to show real-time gauge readings.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">🔧 {{ __('River Levels not enabled') }}</h2>
+            <p class="text-ui-secondary">{{ __('Enable river levels in settings to show real-time gauge readings.') }}</p>
         </div>
 
     @elseif(!$riverData)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-white mb-2">⏳ {{ __('No river data yet') }}</h2>
-            <p class="text-gray-300">{{ __('River data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>
+            <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No river data yet') }}</h2>
+            <p class="text-ui-secondary">{{ __('River data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>
         </div>
 
     @else
@@ -688,9 +688,9 @@
                     $riverTrend      = $station['trend'] ?? 'steady';
                     $riverTrendIcon  = match($riverTrend) { 'rising' => '↑', 'falling' => '↓', default => '→' };
                     $riverTrendClass = match($riverTrend) {
-                        'rising'  => 'text-orange-400',
-                        'falling' => 'text-blue-400',
-                        default   => 'text-gray-400',
+                        'rising'  => 'text-data-orange-400',
+                        'falling' => 'text-data-blue-400',
+                        default   => 'text-ui-muted',
                     };
                     $riverLevel     = $station['level_cm'] ?? null;
                     $riverUpdatedAt = ($station['updated_at'] ?? null)
@@ -698,9 +698,9 @@
                         : null;
                     $riverStatus      = $station['status'] ?? 'normal';
                     $riverStatusBadge = match($riverStatus) {
-                        'warning' => 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-                        'watch'   => 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-                        default   => 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+                        'warning' => 'bg-orange-500/20 text-data-orange-400 border border-orange-500/30',
+                        'watch'   => 'bg-yellow-500/20 text-data-yellow-400 border border-yellow-500/30',
+                        default   => 'bg-emerald-500/20 text-data-emerald-400 border border-emerald-500/30',
                     };
                     $riverStatusDot = match($riverStatus) {
                         'warning' => 'bg-orange-400',
@@ -716,18 +716,18 @@
                 <div class="bg-emerald-900/20 rounded-2xl p-5 border border-emerald-800/30">
                     <div class="flex items-center justify-between mb-3">
                         <div>
-                            <div class="text-xs text-emerald-400 uppercase tracking-wider font-medium">
+                            <div class="text-xs text-data-emerald-400 uppercase tracking-wider font-medium">
                                 {{ $station['river'] }}
                             </div>
-                            <div class="font-semibold text-white mt-0.5">{{ $station['name'] }}</div>
+                            <div class="font-semibold text-ui-fg mt-0.5">{{ $station['name'] }}</div>
                         </div>
                         <span class="text-2xl">🏞</span>
                     </div>
                     <div class="flex items-end gap-1">
-                        <span class="text-3xl font-bold text-white">
+                        <span class="text-3xl font-bold text-ui-fg">
                             {{ $riverLevel !== null ? number_format($riverLevel, 0) : '--' }}
                         </span>
-                        <span class="text-gray-400 mb-1 text-sm">cm NAP</span>
+                        <span class="text-ui-muted mb-1 text-sm">cm NAP</span>
                     </div>
                     <div class="mt-2 flex items-center justify-between">
                         <div class="text-sm {{ $riverTrendClass }} font-medium">
@@ -744,31 +744,31 @@
                         </span>
                     </div>
                     @if($riverUpdatedAt)
-                        <div class="mt-2 text-xs text-gray-500">{{ __('Updated') }} {{ $riverUpdatedAt }}</div>
+                        <div class="mt-2 text-xs text-ui-subtle">{{ __('Updated') }} {{ $riverUpdatedAt }}</div>
                     @endif
                 </div>
             @endforeach
         </div>
 
         {{-- Attribution --}}
-        <div class="bg-gray-900/40 rounded-2xl p-4 border border-white/5 text-sm text-gray-400">
+        <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('River level data provided by') }}
             <a href="https://waterinfo.rws.nl" target="_blank" rel="noopener"
-               class="text-blue-400 hover:underline">Rijkswaterstaat WaterWebservices</a>
+               class="text-data-blue-400 hover:underline">Rijkswaterstaat WaterWebservices</a>
             — {{ __('real-time gauge measurements') }}.
         </div>
 
         {{-- About river levels (scientific) --}}
-        <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="water-rivers-about-heading">
+        <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="water-rivers-about-heading">
             <h2 id="water-rivers-about-heading" class="text-xl font-semibold mb-4">{{ __('Water rivers about heading') }}</h2>
-            <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+            <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
                 <p>{{ __('Water rivers about body 1') }}</p>
                 <p>{{ __('Water rivers about body 2') }}</p>
                 <p>{{ __('Water rivers about body 3') }}</p>
-                <p class="text-emerald-200/90 italic border-l-2 border-emerald-500/50 pl-4">{{ __('Water rivers about fun') }}</p>
+                <p class="text-data-emerald-200/90 italic border-l-2 border-emerald-500/50 pl-4">{{ __('Water rivers about fun') }}</p>
             </div>
-            <footer class="mt-6 pt-4 border-t border-white/10">
-                <p class="text-xs text-gray-500">{{ __('Water rivers page sources') }}</p>
+            <footer class="mt-6 pt-4 border-t border-ui-line/10">
+                <p class="text-xs text-ui-subtle">{{ __('Water rivers page sources') }}</p>
             </footer>
         </article>
 

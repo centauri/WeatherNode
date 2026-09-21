@@ -16,10 +16,14 @@ use App\Services\Nlg\NlgProviderModelDiscovery;
 use App\Services\OpenData\OpenDataProviderRegistry;
 use App\Services\Radar\RadarFutureFramesService;
 use App\Services\Tide\TideServiceFactory;
+use App\Support\CustomTheme;
 use App\Support\MenuFeatureMap;
+use App\Support\PublicAppearance;
 use App\Support\StatTileRegistry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
@@ -335,7 +339,7 @@ class SettingsController extends Controller
         ],
         'appearance' => [
             'label' => 'Appearance',
-            'description' => 'Site theme (FX vs Flat)',
+            'description' => 'Public colour palette, light/dark mode and visual effects',
             'icon' => 'paint',
             'color' => 'slate',
             'category' => 'display',
@@ -1329,6 +1333,9 @@ class SettingsController extends Controller
     public function appearance()
     {
         return view('admin.settings.appearance', [
+            'publicAppearance' => PublicAppearance::settings(),
+            'palettes' => PublicAppearance::PALETTES,
+            'customTheme' => CustomTheme::stored(),
             'allGroups' => $this->groups,
         ]);
     }
@@ -1338,11 +1345,22 @@ class SettingsController extends Controller
      */
     public function updateAppearance(Request $request)
     {
-        $theme = in_array($request->input('appearance_theme'), ['fx', 'flat'], true)
-            ? $request->input('appearance_theme')
-            : 'fx';
-        Setting::setValue('appearance.theme', $theme, 'select', 'appearance');
-        Cache::forget('setting.appearance.theme');
+        $validated = $request->validate([
+            'appearance_theme' => ['required', 'in:fx,flat'],
+            'appearance_palette' => ['sometimes', 'required', Rule::in(array_merge(array_keys(PublicAppearance::PALETTES), CustomTheme::stored() ? ['custom'] : []))],
+            'appearance_color_mode' => ['sometimes', 'required', Rule::in(PublicAppearance::MODES)],
+        ]);
+        // Older clients posting only FX/Flat retain their existing colour settings.
+        DB::transaction(function () use ($validated) {
+            if (($validated['appearance_palette'] ?? null) === 'custom') {
+                Setting::setValue('appearance.active_custom_theme', CustomTheme::stored(), 'json', 'appearance');
+            }
+            foreach (['theme', 'palette', 'color_mode'] as $field) {
+                if (array_key_exists('appearance_'.$field, $validated)) {
+                    Setting::setValue('appearance.'.$field, $validated['appearance_'.$field], 'select', 'appearance');
+                }
+            }
+        });
         $this->clearSettingsCache();
 
         return redirect()

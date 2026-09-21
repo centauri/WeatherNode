@@ -53,9 +53,9 @@
     <div class="mb-6">
         <div class="flex items-start justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-white">{{ __('Weather Alerts') }}</h1>
+                <h1 class="text-2xl font-bold text-ui-fg">{{ __('Weather Alerts') }}</h1>
                 @if($regionName)
-                    <p class="text-sm text-gray-400 mt-0.5">{{ $regionName }}</p>
+                    <p class="text-sm text-ui-muted mt-0.5">{{ $regionName }}</p>
                 @endif
             </div>
             <div class="flex items-center gap-2 mt-1">
@@ -68,13 +68,13 @@
                             default      => '#FBEA55',
                         };
                     @endphp
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                    <span data-weather-colour-text class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
                           style="background: {{ $maxColor }}22; color: {{ $maxColor }}; border: 1px solid {{ $maxColor }}44">
                         <span class="w-2 h-2 rounded-full animate-pulse" style="background: {{ $maxColor }}"></span>
                         {{ $_activeCount }} {{ $_activeCount === 1 ? __('active warning') : __('active warnings') }}
                     </span>
                 @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-data-emerald-400 border border-emerald-500/30">
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         {{ __('All clear') }}
                     </span>
@@ -83,7 +83,7 @@
         </div>
 
         @unless($enabled)
-            <div class="mt-4 p-3 rounded-lg bg-gray-700/50 text-xs text-gray-400">
+            <div class="mt-4 p-3 rounded-lg bg-ui-soft/50 text-xs text-ui-muted">
                 {{ __('Weather alert monitoring is disabled. Enable it in admin settings.') }}
             </div>
         @endunless

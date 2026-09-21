@@ -26,7 +26,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🛰️ {{ __('Satellite Data') }}</h1>
-            <p class="text-gray-400">{{ __('Satellite page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
+            <p class="text-ui-muted">{{ __('Satellite page intro', ['location' => \App\Models\Setting::stationLocation() ?: \App\Models\Setting::stationName()]) }}</p>
         </div>
     </div>
 
@@ -35,8 +35,8 @@
             <div class="flex items-start gap-3">
                 <span class="text-xl flex-shrink-0">⚠️</span>
                 <div>
-                    <p class="text-sm text-yellow-200 font-medium">{{ __('Location Notice') }}</p>
-                    <p class="text-xs text-yellow-300 mt-1">
+                    <p class="text-sm text-data-yellow-200 font-medium">{{ __('Location Notice') }}</p>
+                    <p class="text-xs text-data-yellow-300 mt-1">
                         {{ __('KNMI satellite data covers the Netherlands region. Your station appears to be outside this area, so the data may not be relevant for your location.') }}
                     </p>
                 </div>
@@ -50,20 +50,20 @@
         $solarForecastHours = \App\Models\Setting::getValue('solar_forecast.forecast_hours', 48);
     @endphp
     @if($solarForecastEnabled)
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10" 
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10"
              x-data="solarNowcast()" 
              x-init="init()">
             <div class="mb-3">
                 <h3 class="font-semibold">☀️ {{ __('Solar Radiation Forecast') }}</h3>
-                <p class="text-xs text-gray-400 mt-0.5" x-text="sourceLabel ? '{{ __("Powered by") }} ' + sourceLabel : '{{ __('Loading...') }}'"></p>
+                <p class="text-xs text-ui-muted mt-0.5" x-text="sourceLabel ? '{{ __("Powered by") }} ' + sourceLabel : '{{ __('Loading...') }}'"></p>
             </div>
 
             <div x-show="loading" class="py-8 text-center">
-                <div class="text-sm text-gray-400">{{ __('Loading solar forecast...') }}</div>
+                <div class="text-sm text-ui-muted">{{ __('Loading solar forecast...') }}</div>
             </div>
             <div x-show="error" class="py-8 text-center p-4">
-                <div class="text-sm text-red-400 mb-2">{{ __('Error loading data') }}</div>
-                <div class="text-xs text-gray-500" x-text="error"></div>
+                <div class="text-sm text-data-red-400 mb-2">{{ __('Error loading data') }}</div>
+                <div class="text-xs text-ui-subtle" x-text="error"></div>
             </div>
 
             <template x-if="!loading && !error && chartData && chartData.length > 0">
@@ -73,19 +73,19 @@
                         <button type="button"
                                 @click="goPrev()"
                                 :disabled="!canGoPrev"
-                                :class="canGoPrev ? 'text-amber-400 hover:text-amber-300' : 'text-gray-600 cursor-not-allowed'"
+                                :class="canGoPrev ? 'text-data-amber-400 hover:text-data-amber-300' : 'text-ui-faint cursor-not-allowed'"
                                 class="p-2 rounded-lg transition"
                                 aria-label="{{ __('Previous day') }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </button>
                         <div class="flex flex-col items-center min-w-[140px]">
                             <span class="text-sm font-medium" x-text="selectedDayLabel"></span>
-                            <span class="text-xs text-gray-400" x-show="visibleTimeRange" x-text="visibleTimeRange"></span>
+                            <span class="text-xs text-ui-muted" x-show="visibleTimeRange" x-text="visibleTimeRange"></span>
                         </div>
                         <button type="button"
                                 @click="goNext()"
                                 :disabled="!canGoNext"
-                                :class="canGoNext ? 'text-amber-400 hover:text-amber-300' : 'text-gray-600 cursor-not-allowed'"
+                                :class="canGoNext ? 'text-data-amber-400 hover:text-data-amber-300' : 'text-ui-faint cursor-not-allowed'"
                                 class="p-2 rounded-lg transition"
                                 aria-label="{{ __('Next day') }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -101,8 +101,8 @@
                                     <stop offset="100%" stop-color="rgba(251,191,36,0.02)"></stop>
                                 </linearGradient>
                             </defs>
-                            <path :d="getHorizontalGridPath()" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 4"></path>
-                            <path :d="getVerticalGridPathFor(visibleChartData)" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="4 4"></path>
+                            <path :d="getHorizontalGridPath()" fill="none" stroke="rgb(var(--wn-fg) / 0.12)" stroke-width="1" stroke-dasharray="4 4"></path>
+                            <path :d="getVerticalGridPathFor(visibleChartData)" fill="none" stroke="rgb(var(--wn-fg) / 0.12)" stroke-width="1" stroke-dasharray="4 4"></path>
                             <g x-html="getGridLabelsHtml()"></g>
                             <g x-html="getVerticalGridLabelsHtmlFor(visibleChartData)"></g>
                             <path :d="getAreaPathFor(visibleChartData)" fill="url(#solarFillVisible)"></path>
@@ -110,22 +110,22 @@
                         </svg>
                     </div>
 
-                    <div x-show="chartData.length > 0 && todayChartData.length === 0 && tomorrowChartData.length === 0" class="py-4 text-center text-gray-500 text-sm">
+                    <div x-show="chartData.length > 0 && todayChartData.length === 0 && tomorrowChartData.length === 0" class="py-4 text-center text-ui-subtle text-sm">
                         {{ __('No daylight in forecast window') }}
                     </div>
 
                     <!-- Statistics -->
                     <div class="grid grid-cols-3 gap-3">
-                        <div class="text-center p-3 bg-black/20 rounded-lg">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Current') }}</div>
+                        <div data-theme-surface="dark" class="text-center p-3 bg-black/20 rounded-lg">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Current') }}</div>
                             <div class="text-lg font-semibold" x-text="formatValue(currentValue)"></div>
                         </div>
-                        <div class="text-center p-3 bg-black/20 rounded-lg">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Peak') }}</div>
+                        <div data-theme-surface="dark" class="text-center p-3 bg-black/20 rounded-lg">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Peak') }}</div>
                             <div class="text-lg font-semibold" x-text="formatValue(peakValue)"></div>
                         </div>
-                        <div class="text-center p-3 bg-black/20 rounded-lg">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Average') }}</div>
+                        <div data-theme-surface="dark" class="text-center p-3 bg-black/20 rounded-lg">
+                            <div class="text-xs text-ui-muted mb-1">{{ __('Average') }}</div>
                             <div class="text-lg font-semibold" x-text="formatValue(averageValue)"></div>
                         </div>
                     </div>
@@ -133,8 +133,8 @@
             </template>
 
             <div x-show="!loading && !error && (!chartData || chartData.length === 0)" class="py-8 text-center">
-                <div class="text-gray-500 text-sm mb-2">{{ __('No solar forecast data available') }}</div>
-                <div class="text-gray-600 text-xs" x-show="(() => { const tz = stationTz(); const h = parseInt(new Intl.DateTimeFormat('en-CA', { hour: '2-digit', hour12: false, timeZone: tz }).format(new Date()), 10); return h < 5 || h > 21; })()">
+                <div class="text-ui-subtle text-sm mb-2">{{ __('No solar forecast data available') }}</div>
+                <div class="text-ui-faint text-xs" x-show="(() => { const tz = stationTz(); const h = parseInt(new Intl.DateTimeFormat('en-CA', { hour: '2-digit', hour12: false, timeZone: tz }).format(new Date()), 10); return h < 5 || h > 21; })()">
                     {{ __('Solar radiation data is only available during daytime hours') }}
                 </div>
             </div>
@@ -150,27 +150,27 @@
         $wmsAnimationSpeed = \App\Models\Setting::getValue('satellite.wms_animation_speed', 0.5);
     @endphp
     @if($wmsEnabled)
-        <div class="bg-weather-card rounded-2xl p-5 border border-white/10" 
+        <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10"
              x-data="knmiWmsManager()" 
              x-init="init()">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="font-semibold">🌍 {{ __('Satellite Analysis') }}</h3>
-                    <p class="text-xs text-gray-400 mt-1">
+                    <p class="text-xs text-ui-muted mt-1">
                         {{ __('KNMI WMS Layers - Netherlands') }}
-                        <span class="inline-block ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded text-[10px] font-medium">
+                        <span class="inline-block ml-2 px-2 py-0.5 bg-blue-500/20 text-data-blue-300 rounded text-[10px] font-medium">
                             {{ __('HISTORICAL DATA') }}
                         </span>
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button @click="toggleAnimation()" 
-                            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition">
+                            class="px-3 py-1.5 bg-ui-accent-strong text-on-accent hover:bg-ui-action-deep text-ui-fg rounded-lg text-sm transition">
                         <span x-show="!isAnimating">{{ __('Play') }}</span>
                         <span x-show="isAnimating">{{ __('Pause') }}</span>
                     </button>
                     <button @click="showControls = !showControls" 
-                            class="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm transition">
+                            class="px-3 py-1.5 bg-ui-disabled hover:bg-ui-soft text-ui-fg rounded-lg text-sm transition">
                         {{ __('Controls') }}
                     </button>
                 </div>
@@ -179,43 +179,43 @@
             <!-- Controls Panel -->
             <div x-show="showControls" 
                  x-transition
-                 class="mb-4 p-4 bg-black/20 rounded-xl space-y-4">
+                 data-theme-surface="dark" class="mb-4 p-4 bg-black/20 rounded-xl space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-xs font-medium text-gray-300 mb-1">{{ __('Layer') }}</label>
+                        <label class="block text-xs font-medium text-ui-secondary mb-1">{{ __('Layer') }}</label>
                         <select x-model="currentLayer" 
                                 @change="changeLayer()"
-                                class="w-full rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full rounded-lg border-ui-border bg-ui-soft text-ui-fg text-sm focus:ring-blue-500 focus:border-blue-500">
                             <template x-for="(layer, key) in availableLayers" :key="key">
                                 <option :value="key" x-text="layer.name"></option>
                             </template>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-300 mb-1">
+                        <label class="block text-xs font-medium text-ui-secondary mb-1">
                             {{ __('Historical Date') }}
-                            <span class="text-[10px] text-gray-500">({{ __('7 days archive') }})</span>
+                            <span class="text-[10px] text-ui-subtle">({{ __('7 days archive') }})</span>
                         </label>
                         <select x-model="selectedDate" 
                                 @change="loadTimesForDate()"
-                                class="w-full rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full rounded-lg border-ui-border bg-ui-soft text-ui-fg text-sm focus:ring-blue-500 focus:border-blue-500">
                             <template x-for="date in availableDates" :key="date">
                                 <option :value="date" x-text="formatDateOption(date)"></option>
                             </template>
                         </select>
                     </div>
                     <div x-show="currentLayerStyles.length > 1">
-                        <label class="block text-xs font-medium text-gray-300 mb-1">{{ __('Style') }}</label>
+                        <label class="block text-xs font-medium text-ui-secondary mb-1">{{ __('Style') }}</label>
                         <select x-model="currentStyle" 
                                 @change="changeStyle()"
-                                class="w-full rounded-lg border-gray-600 bg-gray-700 text-white text-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full rounded-lg border-ui-border bg-ui-soft text-ui-fg text-sm focus:ring-blue-500 focus:border-blue-500">
                             <template x-for="style in currentLayerStyles" :key="style">
                                 <option :value="style" x-text="style"></option>
                             </template>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-300 mb-1">
+                        <label class="block text-xs font-medium text-ui-secondary mb-1">
                             {{ __('Opacity') }}: <span x-text="Math.round(opacity * 100)"></span>%
                         </label>
                         <input type="range" 
@@ -227,7 +227,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-300 mb-1">
+                    <label class="block text-xs font-medium text-ui-secondary mb-1">
                         {{ __('Time') }}: <span x-text="currentTimeLabel"></span>
                     </label>
                     <input type="range" 
@@ -236,56 +236,56 @@
                            x-model="currentTimeIndex"
                            @input="changeTime()"
                            class="w-full">
-                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <div class="flex justify-between text-xs text-ui-muted mt-1">
                         <span x-text="formatTime(availableTimes[0])"></span>
                         <span x-text="formatTime(availableTimes[availableTimes.length - 1])"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="aspect-video md:aspect-[16/10] bg-black/30 rounded-xl overflow-hidden relative">
+            <div data-theme-surface="dark" class="aspect-video md:aspect-[16/10] bg-black/30 rounded-xl overflow-hidden relative">
                 <div x-show="loading" class="absolute inset-0 flex items-center justify-center">
                     <div class="text-center">
-                        <div class="text-sm text-gray-400 mb-2">{{ __('Loading satellite data...') }}</div>
+                        <div class="text-sm text-ui-muted mb-2">{{ __('Loading satellite data...') }}</div>
                     </div>
                 </div>
                 <div x-show="error" class="absolute inset-0 flex items-center justify-center">
                     <div class="text-center p-4">
-                        <div class="text-sm text-red-400 mb-2">{{ __('Error loading data') }}</div>
-                        <div class="text-xs text-gray-500" x-text="error"></div>
+                        <div class="text-sm text-data-red-400 mb-2">{{ __('Error loading data') }}</div>
+                        <div class="text-xs text-ui-subtle" x-text="error"></div>
                     </div>
                 </div>
                 <div id="wms-map" class="w-full h-full" x-show="!loading && !error"></div>
-                <div class="absolute top-4 right-4 bg-black/70 px-3 py-2 rounded-lg text-xs" x-show="!loading && !error">
+                <div data-theme-surface="dark" class="absolute top-4 right-4 bg-black/70 px-3 py-2 rounded-lg text-xs" x-show="!loading && !error">
                     <div x-show="legendUrl" class="mb-2">
                         <img :src="legendUrl" alt="Legend" class="max-h-32">
                     </div>
-                    <div class="text-gray-300" x-text="currentLayerInfo?.description || ''"></div>
+                    <div class="text-ui-secondary" x-text="currentLayerInfo?.description || ''"></div>
                 </div>
             </div>
         </div>
     @endif
 
     @if(!$solarForecastEnabled && !$wmsEnabled)
-        <div class="bg-weather-card rounded-2xl p-8 border border-white/10 text-center">
+        <div class="bg-weather-card rounded-2xl p-8 border border-ui-line/10 text-center">
             <div class="text-6xl mb-4">🛰️</div>
             <h3 class="text-lg font-semibold mb-2">{{ __('No Satellite Data Enabled') }}</h3>
-            <p class="text-gray-400 text-sm">
+            <p class="text-ui-muted text-sm">
                 {{ __('No satellite data sources have been enabled. Please check back later.') }}
             </p>
         </div>
     @endif
 
     <!-- About satellite imagery (scientific) -->
-    <article class="bg-weather-card rounded-2xl border border-white/10 p-6 md:p-8" aria-labelledby="satellite-about-heading">
+    <article class="bg-weather-card rounded-2xl border border-ui-line/10 p-6 md:p-8" aria-labelledby="satellite-about-heading">
         <h2 id="satellite-about-heading" class="text-xl font-semibold mb-4">{{ __('Satellite page about heading') }}</h2>
-        <div class="prose prose-invert prose-sm max-w-none text-gray-300 space-y-4">
+        <div class="prose prose-invert prose-sm max-w-none text-ui-secondary space-y-4">
             <p>{{ __('Satellite page about body 1') }}</p>
             <p>{{ __('Satellite page about body 2') }}</p>
             <p>{{ __('Satellite page about body 3') }}</p>
         </div>
-        <footer class="mt-6 pt-4 border-t border-white/10">
-            <p class="text-xs text-gray-500">{{ __('Satellite page sources') }}</p>
+        <footer class="mt-6 pt-4 border-t border-ui-line/10">
+            <p class="text-xs text-ui-subtle">{{ __('Satellite page sources') }}</p>
         </footer>
     </article>
 </div>
@@ -561,7 +561,7 @@
                 if (!this.chartData || this.chartData.length === 0) return '';
                 return this.gridLineValues.map(v => {
                     const y = this.getY(v);
-                    return `<text x="${this.CX - 8}" y="${y}" dominant-baseline="middle" text-anchor="end" fill="rgba(255,255,255,0.55)" font-size="11" font-family="system-ui,sans-serif">${v}</text>`;
+                    return `<text x="${this.CX - 8}" y="${y}" dominant-baseline="middle" text-anchor="end" fill="rgb(var(--wn-fg) / 0.55)" font-size="11" font-family="system-ui,sans-serif">${v}</text>`;
                 }).join('');
             },
 
@@ -611,7 +611,7 @@
                 const y = this.CB + 18;
                 return this.getVerticalTicksFor(data).map(t => {
                     const escaped = (t.label || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return `<text x="${t.x}" y="${y}" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="11" font-family="system-ui,sans-serif">${escaped}</text>`;
+                    return `<text x="${t.x}" y="${y}" text-anchor="middle" fill="rgb(var(--wn-fg) / 0.55)" font-size="11" font-family="system-ui,sans-serif">${escaped}</text>`;
                 }).join('');
             },
 

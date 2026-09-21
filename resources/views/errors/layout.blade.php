@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" class="dark">
+<html @if(isset($publicAppearance['custom'])) data-custom-theme @endif data-public-theme="{{ $publicAppearance['palette'] ?? 'weathernode' }}" data-default-color-mode="{{ $publicAppearance['mode'] ?? 'dark' }}" data-color-mode="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? 'light' : 'dark' }}" lang="{{ app()->getLocale() }}" class="{{ ($publicAppearance['mode'] ?? 'dark') === 'light' ? '' : 'dark' }}">
 <head>
+    <x-public-theme-head />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Error') — {{ config('app.name', 'WeatherNode') }}</title>
@@ -17,31 +18,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (CDN fallback for error pages) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'weather-card': 'rgba(30, 41, 59, 0.65)',
-                    }
-                }
-            }
-        }
-    </script>
-    
+    @if(is_file(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css'])
+    @endif
+
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         
         :root {
-            --bg-base: #0f1419;
-            --bg-card: rgba(30, 41, 59, 0.65);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.25);
+            --bg-base: rgb(var(--wn-bg, 15 20 25));
+            --bg-card: rgb(var(--wn-card) / 0.9);
+            --text-primary: rgb(var(--wn-fg));
+            --text-secondary: rgb(var(--wn-muted));
+            --accent: rgb(var(--wn-link));
+            --accent-glow: rgb(var(--wn-accent) / 0.25);
         }
         
         html { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
@@ -67,8 +57,8 @@
         /* Header */
         .header {
             padding: 1rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: rgba(15, 20, 25, 0.75);
+            border-bottom: 1px solid rgb(var(--wn-line) / 0.1);
+            background: rgb(var(--wn-card) / 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -76,7 +66,7 @@
         .theme-flat .header {
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
-            background: rgba(15, 20, 25, 0.98);
+            background: rgb(var(--wn-card) / 0.98);
         }
         
         .theme-flat .error-btn {
@@ -94,7 +84,7 @@
         .logo {
             width: 2rem;
             height: 2rem;
-            background: linear-gradient(135deg, #3b82f6, #22d3ee);
+            background: linear-gradient(135deg, rgb(var(--wn-accent)), rgb(var(--wn-accent-end)));
             border-radius: 0.5rem;
             display: grid;
             place-items: center;
@@ -120,7 +110,7 @@
         /* Footer */
         .footer {
             padding: 1.25rem 0;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            border-top: 1px solid rgb(var(--wn-line) / 0.1);
             text-align: center;
             font-size: 0.75rem;
             color: var(--text-secondary);

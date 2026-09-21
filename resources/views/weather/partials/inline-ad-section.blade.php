@@ -49,19 +49,19 @@
 
 @if($adsEnabled)
 <section id="inline-ad-section" class="max-w-7xl mx-auto px-4 pb-6 relative z-10">
-    <div class="bg-weather-card rounded-2xl p-5 border border-white/10">
+    <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
         <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold">📢 {{ __('Advertisement') }}</h3>
             @if($adCompany !== '')
-                <span class="text-xs text-gray-400">{{ $adCompany }} · {{ $pageAdUnitTypeLabel }}</span>
+                <span class="text-xs text-ui-muted">{{ $adCompany }} · {{ $pageAdUnitTypeLabel }}</span>
             @else
-                <span class="text-xs text-gray-400">{{ $pageAdUnitTypeLabel }}</span>
+                <span class="text-xs text-ui-muted">{{ $pageAdUnitTypeLabel }}</span>
             @endif
         </div>
         <div id="inline-ad-slot" class="ad-container w-full min-h-[100px]"></div>
-        <p id="inline-ad-hint" class="mt-3 text-xs text-gray-400">{{ __('Advertisement loads when visible') }}</p>
-        <p id="inline-ad-unfilled" class="mt-3 text-xs text-amber-300 hidden">{{ __('No ad available right now (ad network returned no fill).') }}</p>
-        <p id="inline-ad-error" class="mt-3 text-xs text-gray-400 hidden">{{ __('Advertisement could not be loaded.') }}</p>
+        <p id="inline-ad-hint" class="mt-3 text-xs text-ui-muted">{{ __('Advertisement loads when visible') }}</p>
+        <p id="inline-ad-unfilled" class="mt-3 text-xs text-data-amber-300 hidden">{{ __('No ad available right now (ad network returned no fill).') }}</p>
+        <p id="inline-ad-error" class="mt-3 text-xs text-ui-muted hidden">{{ __('Advertisement could not be loaded.') }}</p>
     </div>
 </section>
 

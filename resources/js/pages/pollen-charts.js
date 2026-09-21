@@ -5,7 +5,7 @@
 const initPollenChart = async () => {
     let ApexCharts;
     try {
-        ({ default: ApexCharts } = await import('apexcharts'));
+        ({ default: ApexCharts } = await import('../themed-apexcharts'));
     } catch (error) {
         console.error('Failed to load ApexCharts for pollen chart:', error);
         return;
@@ -22,8 +22,8 @@ const initPollenChart = async () => {
 
     const isDark          = document.documentElement.classList.contains('dark');
     const effectsDisabled = document.body.classList.contains('effects-disabled');
-    const axisLabelColor  = isDark ? '#9ca3af' : '#475569';
-    const gridColor       = isDark ? '#1f2937' : '#e2e8f0';
+    const axisLabelColor  = '#9ca3af'; // Original dark shade; the shared theme adapter handles other modes.
+    const gridColor       = '#1f2937';
 
     // Risk index → colour
     const riskColor = (idx) => ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'][idx] ?? '#22c55e';
