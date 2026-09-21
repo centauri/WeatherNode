@@ -67,7 +67,7 @@
         if (\App\Models\Setting::getValue('og.enabled', false)) {
             $yielded = trim($__env->yieldContent('og_image'));
             if ($yielded !== '') {
-                $dynamicOgImage = $yielded;
+                $dynamicOgImage = \App\Support\OgAppearance::imageUrl($yielded);
             }
         }
         $resolvedOgImage = $dynamicOgImage ?: $seoOgImage;

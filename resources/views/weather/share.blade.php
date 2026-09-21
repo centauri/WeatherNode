@@ -80,6 +80,13 @@
             'og'    => $ogEnabled ? route('og.aviation', ['icao' => strtolower($primaryIcao)]) : null,
         ];
     }
+    // Published appearance versions bypass stale image URLs after a theme change.
+    foreach ($pages as &$page) {
+        if ($page['og']) {
+            $page['og'] = \App\Support\OgAppearance::imageUrl($page['og']);
+        }
+    }
+    unset($page);
 @endphp
 
 <div class="max-w-4xl mx-auto px-4 py-8">

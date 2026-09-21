@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\WeatherReading;
 use App\Services\FireWeatherCalculator;
 use App\Services\OgImageService;
+use App\Support\OgAppearance;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
@@ -43,7 +44,7 @@ class OgImageController extends Controller
     {
         return response($png, 200, [
             'Content-Type'  => 'image/png',
-            'Cache-Control' => "public, max-age={$maxAge}, immutable",
+            'Cache-Control' => "public, max-age={$maxAge}",
             'X-OG-Driver'   => OgImageService::resolvedDriver() ?? 'none',
         ]);
     }
@@ -71,6 +72,7 @@ class OgImageController extends Controller
      */
     private function cachedPng(string $key, mixed $ttl, \Closure $generate, int $maxAge = 1800): Response
     {
+        $key .= '_appearance_'.OgAppearance::fingerprint();
         try {
             // Validate any existing cached value; purge corrupted entries.
             $existing = Cache::get($key);

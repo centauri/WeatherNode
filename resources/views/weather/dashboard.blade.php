@@ -517,7 +517,7 @@
         // Dynamic OG image for the home/dashboard page.
         $dynamicOgImage = '';
         if (\App\Models\Setting::getValue('og.enabled', false)) {
-            $dynamicOgImage = route('og.home');
+            $dynamicOgImage = \App\Support\OgAppearance::imageUrl(route('og.home'));
         }
         $resolvedOgImage = $dynamicOgImage ?: $seoOgImage;
         $seoTitle = $seoSiteTitle;

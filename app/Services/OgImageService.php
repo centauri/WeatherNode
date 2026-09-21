@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Support\OgAppearance;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
@@ -63,6 +64,9 @@ class OgImageService
     private string          $fontRegular;
     private string          $fontBold;
     private string          $currentAccent = self::BLUE;
+    private string          $currentBrandText = self::BLUE;
+    private array           $appearance = [];
+    private bool            $classicAppearance = true;
 
     private function __construct() {}
 
@@ -73,6 +77,9 @@ class OgImageService
     public static function make(): static
     {
         $svc = new static();
+        $appearance = OgAppearance::current();
+        $svc->appearance = $appearance['tokens'];
+        $svc->classicAppearance = $appearance['classic'];
         $svc->setupDriver();
         $svc->setupFonts();
         return $svc;
@@ -132,7 +139,7 @@ class OgImageService
 
         // Big temperature
         $temp = ($d['temperature'] !== null ? number_format((float)$d['temperature'], 1) : '—') . ($d['unit_temp'] ?? '°C');
-        $this->t($temp, self::PAD_X, 130, $this->fontBold, 88, self::WHITE);
+        $this->t($temp, self::PAD_X, 130, $this->fontBold, 88, $this->colour('fg'));
 
         // Feels like
         $feelsLine = [];
@@ -143,7 +150,7 @@ class OgImageService
             $feelsLine[] = 'Dew point ' . number_format((float)$d['dew_point'], 1) . ($d['unit_temp'] ?? '°C');
         }
         if ($feelsLine) {
-            $this->t(implode('  ·  ', $feelsLine), self::PAD_X, 245, $this->fontRegular, 22, self::SECONDARY);
+            $this->t(implode('  ·  ', $feelsLine), self::PAD_X, 245, $this->fontRegular, 22, $this->colour('secondary'));
         }
 
         // Row 1: Humidity, Wind, Pressure
@@ -180,7 +187,7 @@ class OgImageService
 
         $days = $d['days'] ?? [];   // array of ['label','high','low','symbol','rain','wind']
         if (empty($days)) {
-            $this->t('Forecast data unavailable', self::PAD_X, 220, $this->fontRegular, 32, self::SECONDARY);
+            $this->t('Forecast data unavailable', self::PAD_X, 220, $this->fontRegular, 32, $this->colour('secondary'));
         } else {
             $colW = (self::PAD_X_R - self::PAD_X) / min(count($days), 3);
 
@@ -188,13 +195,13 @@ class OgImageService
             $day0 = $days[0] ?? null;
             if ($day0) {
                 $x0 = (int)(self::PAD_X + $colW / 2);
-                $this->t($day0['label'] ?? '', $x0, 140, $this->fontRegular, 22, self::SECONDARY, 'center');
+                $this->t($day0['label'] ?? '', $x0, 140, $this->fontRegular, 22, $this->colour('secondary'), 'center');
                 $hi = $day0['high'] !== null ? number_format((float)$day0['high'], 0) . ($d['unit_temp'] ?? '°C') : '—';
                 $lo = $day0['low']  !== null ? number_format((float)$day0['low'], 0)  . ($d['unit_temp'] ?? '°C') : '—';
-                $this->t($hi, $x0, 178, $this->fontBold,    52, self::WHITE,     'center');
-                $this->t($lo, $x0, 245, $this->fontRegular, 30, self::SECONDARY, 'center');
+                $this->t($hi, $x0, 178, $this->fontBold,    52, $this->colour('fg'), 'center');
+                $this->t($lo, $x0, 245, $this->fontRegular, 30, $this->colour('secondary'), 'center');
                 if (!empty($day0['symbol'])) {
-                    $this->t($day0['symbol'], $x0, 292, $this->fontRegular, 22, self::MUTED, 'center');
+                    $this->t($day0['symbol'], $x0, 292, $this->fontRegular, 22, $this->colour('muted'), 'center');
                 }
                 $sub = [];
                 if (($day0['rain'] ?? null) !== null) {
@@ -204,7 +211,7 @@ class OgImageService
                     $sub[] = number_format((float)$day0['wind'], 0) . ' ' . ($d['unit_wind'] ?? 'km/h');
                 }
                 if ($sub) {
-                    $this->t(implode('  ·  ', $sub), $x0, 330, $this->fontRegular, 18, self::MUTED, 'center');
+                    $this->t(implode('  ·  ', $sub), $x0, 330, $this->fontRegular, 18, $this->colour('muted'), 'center');
                 }
                 $this->drawWeatherIcon($this->detectForecastCondition($day0), $x0, 440, 45);
             }
@@ -212,10 +219,10 @@ class OgImageService
             // ── Days 2 & 3: icon teaser only (no temperatures) ───────────────
             foreach (array_slice($days, 1, 2) as $i => $day) {
                 $x = (int)(self::PAD_X + ($i + 1) * $colW + $colW / 2);
-                $this->t($day['label'] ?? '', $x, 185, $this->fontRegular, 22, self::SECONDARY, 'center');
+                $this->t($day['label'] ?? '', $x, 185, $this->fontRegular, 22, $this->colour('secondary'), 'center');
                 $this->drawWeatherIcon($this->detectForecastCondition($day), $x, 350, 60);
                 $this->t('Tap for full temperatures & hourly forecast →',
-                    $x, 430, $this->fontRegular, 13, self::MUTED, 'center');
+                    $x, 430, $this->fontRegular, 13, $this->colour('muted'), 'center');
             }
         }
 
@@ -233,19 +240,19 @@ class OgImageService
         $this->drawHeader($d['station_name'], $d['station_location'], 'WEATHER HISTORY', self::AMBER);
 
         $dateLabel = $d['date_label'] ?? 'Today';
-        $this->t($dateLabel, self::PAD_X, 130, $this->fontBold, 48, self::WHITE);
+        $this->t($dateLabel, self::PAD_X, 130, $this->fontBold, 48, $this->colour('fg'));
 
         if ($d['has_data']) {
             $hiLo = (($d['temp_high'] !== null) ? number_format((float)$d['temp_high'], 1) : '—')
                 . ' / ' .
                 (($d['temp_low'] !== null) ? number_format((float)$d['temp_low'], 1) : '—')
                 . ($d['unit_temp'] ?? '°C');
-            $this->t($hiLo, self::PAD_X, 205, $this->fontRegular, 40, self::PRIMARY);
+            $this->t($hiLo, self::PAD_X, 205, $this->fontRegular, 40, $this->colour('primary'));
 
             // Avg temp sub-line
             if (($d['temp_avg'] ?? null) !== null) {
                 $this->t('avg ' . number_format((float)$d['temp_avg'], 1) . ($d['unit_temp'] ?? '°C'),
-                    self::PAD_X, 262, $this->fontRegular, 20, self::SECONDARY);
+                    self::PAD_X, 262, $this->fontRegular, 20, $this->colour('secondary'));
             }
 
             // Row 1: Rain, Max Wind, Sun
@@ -267,7 +274,7 @@ class OgImageService
             ];
             $this->drawStatsRow($cols2, 435, 475);
         } else {
-            $this->t('No data available for this date', self::PAD_X, 240, $this->fontRegular, 28, self::MUTED);
+            $this->t('No data available for this date', self::PAD_X, 240, $this->fontRegular, 28, $this->colour('muted'));
         }
 
         $this->drawFooter($d['updated_at'], $d['domain'],
@@ -284,8 +291,8 @@ class OgImageService
         $this->drawHeader($d['station_name'], $d['station_location'], 'STATISTICS', self::AMBER);
 
         $year = $d['year'] ?? date('Y');
-        $this->t((string)$year, self::PAD_X, 130, $this->fontBold, 72, self::WHITE);
-        $this->t('Weather statistics', self::PAD_X, 222, $this->fontRegular, 24, self::SECONDARY);
+        $this->t((string)$year, self::PAD_X, 130, $this->fontBold, 72, $this->colour('fg'));
+        $this->t('Weather statistics', self::PAD_X, 222, $this->fontRegular, 24, $this->colour('secondary'));
 
         // Row 1: Hottest, Coldest, Total Rain
         $row1 = [];
@@ -359,9 +366,9 @@ class OgImageService
         $angstrom = ($d['angstrom'] ?? null) !== null
             ? number_format((float)$d['angstrom'], 1)
             : '—';
-        $numColor = ($d['angstrom'] ?? null) !== null ? $dangerColor : self::MUTED;
+        $numColor = ($d['angstrom'] ?? null) !== null ? $dangerColor : $this->colour('muted');
         $this->t($angstrom, self::PAD_X, 125, $this->fontBold, 96, $numColor);
-        $this->t('Angström Index', self::PAD_X, 248, $this->fontRegular, 24, self::SECONDARY);
+        $this->t('Angström Index', self::PAD_X, 248, $this->fontRegular, 24, $this->colour('secondary'));
 
         // ── Danger level badge ────────────────────────────────────────────────
         $danger = ucfirst(strtolower($d['danger_level'] ?? 'Unknown'));
@@ -387,7 +394,7 @@ class OgImageService
             $this->rect($sx, $scaleY, $segW, $scaleH, $col . $opacity);
             $this->t($lbl, $sx + (int)($segW / 2), $scaleY + $scaleH + 8,
                 $this->fontRegular, 14,
-                $active ? $col : self::MUTED,
+                $active ? $col : $this->colour('muted'),
                 'center', 'top');
             // Active level marker triangle (dot above)
             if ($active) {
@@ -406,14 +413,14 @@ class OgImageService
             [self::PAD_X + 220, 'MIN RH',      ($d['min_humidity'] ?? null) !== null ? (int)$d['min_humidity'] . '%'                      : '—'],
             [self::PAD_X + 420, 'DRY DAYS',    ($d['dry_days']     ?? null) !== null ? (int)$d['dry_days'] . ' d'                         : '—'],
         ];
-        $this->drawStatsRow($cols1, 418, 458);
+        $this->drawStatsRow($cols1, 408, 438);
 
         // ── Stats row 2: 7-day and 30-day rain ────────────────────────────────
         $cols2 = [
             [self::PAD_X,       '7-DAY RAIN',  ($d['rain_7d']  ?? null) !== null ? number_format((float)$d['rain_7d'],  1) . ' mm' : '—'],
             [self::PAD_X + 220, '30-DAY RAIN', ($d['rain_30d'] ?? null) !== null ? number_format((float)$d['rain_30d'], 1) . ' mm' : '—'],
         ];
-        $this->drawStatsRow($cols2, 500, 540);
+        $this->drawStatsRow($cols2, 485, 515);
 
         $this->drawFooter($d['updated_at'], $d['domain'],
             'Full fire risk analysis, trends & local weather →');
@@ -436,7 +443,7 @@ class OgImageService
         $this->drawAqiDecoration(940, 215, 88, $aqi, $aqiColor);
 
         $this->t($aqiDisplay, self::PAD_X, 130, $this->fontBold, 88, $aqiColor);
-        $this->t('AQI — ' . ($d['aqi_label'] ?? 'Air Quality Index'), self::PAD_X, 245, $this->fontRegular, 24, self::SECONDARY);
+        $this->t('AQI — ' . ($d['aqi_label'] ?? 'Air Quality Index'), self::PAD_X, 245, $this->fontRegular, 24, $this->colour('secondary'));
 
         // Row 1: PM2.5, PM10, Source
         $cols1 = [
@@ -471,7 +478,7 @@ class OgImageService
         $this->createCanvas(self::CYAN);
         $this->drawHeader($d['station_name'], $d['station_location'], 'ASTRONOMY', self::CYAN);
 
-        $this->t($d['date_label'] ?? date('j F Y'), self::PAD_X, 130, $this->fontBold, 40, self::WHITE);
+        $this->t($d['date_label'] ?? date('j F Y'), self::PAD_X, 130, $this->fontBold, 40, $this->colour('fg'));
 
         // Moon phase SVG icon (top-right, same row as moon text)
         if (!empty($d['moon_phase'])) {
@@ -484,7 +491,7 @@ class OgImageService
             $moonLine .= ($moonLine ? '  ·  ' : '') . (int)$d['moon_illumination'] . '% illuminated';
         }
         if ($moonLine) {
-            $this->t($moonLine, self::PAD_X, 185, $this->fontRegular, 22, self::SECONDARY);
+            $this->t($moonLine, self::PAD_X, 185, $this->fontRegular, 22, $this->colour('secondary'));
         }
 
         // Row 1: Sunrise, Sunset, Day length
@@ -540,11 +547,11 @@ class OgImageService
         $this->drawHeader($d['station_name'], $d['station_location'], 'AVIATION', $fcColor);
 
         // ── ICAO code (hero text, left) ───────────────────────────────────────
-        $this->t($icao, self::PAD_X, 125, $this->fontBold, 88, self::WHITE);
+        $this->t($icao, self::PAD_X, 125, $this->fontBold, 88, $this->colour('fg'));
 
         // ── Airport name ──────────────────────────────────────────────────────
         if (!empty($d['airport_name'])) {
-            $this->t($d['airport_name'], self::PAD_X, 238, $this->fontRegular, 20, self::SECONDARY);
+            $this->t($d['airport_name'], self::PAD_X, 238, $this->fontRegular, 20, $this->colour('secondary'));
         }
 
         // ── Flight category badge ─────────────────────────────────────────────
@@ -559,7 +566,7 @@ class OgImageService
         $this->rect(self::PAD_X, 270, 340, 52, $fcColor . '22');
         $this->rect(self::PAD_X, 270, 6,   52, $fcColor);
         $this->t($fcLabel, self::PAD_X + 24, 270, $this->fontBold,    32, $fcColor,         'left', 'top');
-        $this->t($fcDesc,  self::PAD_X + 90, 283, $this->fontRegular, 18, self::SECONDARY, 'left', 'top');
+        $this->t($fcDesc,  self::PAD_X + 90, 283, $this->fontRegular, 18, $this->colour('secondary'), 'left', 'top');
 
         // ── Compass rose (right side, centred in the open space) ─────────────
         if ($d['has_data']) {
@@ -577,12 +584,12 @@ class OgImageService
 
             // ── Cloud layers summary ──────────────────────────────────────────
             if (!empty($d['clouds_summary'])) {
-                $this->t('CLOUDS', self::PAD_X, 468, $this->fontRegular, 15, self::MUTED);
-                $this->t($d['clouds_summary'], self::PAD_X, 486, $this->fontRegular, 20, self::SECONDARY);
+                $this->t('CLOUDS', self::PAD_X, 468, $this->fontRegular, 15, $this->colour('muted'));
+                $this->t($d['clouds_summary'], self::PAD_X, 486, $this->fontRegular, 20, $this->colour('secondary'));
             }
         } else {
             $this->t('METAR data unavailable — visit site for live conditions',
-                self::PAD_X, 380, $this->fontRegular, 26, self::MUTED);
+                self::PAD_X, 380, $this->fontRegular, 26, $this->colour('muted'));
         }
 
         $this->drawFooter($d['updated_at'], $d['domain'],
@@ -599,9 +606,9 @@ class OgImageService
         $this->createCanvas($d['accent'] ?? self::SLATE);
         $this->drawHeader($d['station_name'], $d['station_location'], strtoupper($d['page_label'] ?? 'WEATHER'), $d['accent'] ?? self::SLATE);
 
-        $this->t($d['page_title'] ?? 'Weather', self::PAD_X, 150, $this->fontBold, 72, self::WHITE);
+        $this->t($d['page_title'] ?? 'Weather', self::PAD_X, 150, $this->fontBold, 72, $this->colour('fg'));
         $this->t($d['tagline'] ?? ($d['station_name'] . ' — ' . $d['station_location']),
-            self::PAD_X, 255, $this->fontRegular, 28, self::SECONDARY);
+            self::PAD_X, 255, $this->fontRegular, 28, $this->colour('secondary'));
 
         $this->drawFooter($d['updated_at'], $d['domain'],
             'Live weather station · data, charts & analysis →');
@@ -614,10 +621,12 @@ class OgImageService
 
     private function createCanvas(string $accentColor): void
     {
+        $accentColor = $this->brandAccent($accentColor);
         $this->currentAccent = $accentColor;
+        $this->currentBrandText = $this->classicAppearance ? $accentColor : $this->colour('link');
 
         $this->img = $this->manager->create(self::W, self::H);
-        $this->img->fill(self::BG);
+        $this->img->fill($this->colour('bg'));
 
         // Subtle accent glow bleeding down from the top
         $this->rect(0, 0, self::W, 300, $accentColor . '0e');  // ~5.5% tint across top
@@ -650,13 +659,14 @@ class OgImageService
      */
     private function drawHeader(string $stationName, string $location, string $pageLabel, string $accentColor): void
     {
+        $accentColor = $this->brandAccent($accentColor);
         // Logo — placed at the very left of the header; returns actual width or 0 if unavailable
         $logoWidth = $this->placeLogo(self::PAD_X, 10);
 
         // Station name and location — offset right of the logo when present
         $textX = self::PAD_X + ($logoWidth > 0 ? $logoWidth + 18 : 0);
-        $this->t($stationName, $textX, self::TOP_Y, $this->fontBold, 24, self::WHITE);
-        $this->t($location,    $textX, self::TOP_Y + 34, $this->fontRegular, 17, self::SECONDARY);
+        $this->t($stationName, $textX, self::TOP_Y, $this->fontBold, 24, $this->colour('fg'));
+        $this->t($location,    $textX, self::TOP_Y + 34, $this->fontRegular, 17, $this->colour('secondary'));
 
         // Page type badge (top right) — coloured pill with left accent border
         $badgeW = 240;
@@ -666,10 +676,10 @@ class OgImageService
         $this->rect($badgeX,     $badgeY, $badgeW, $badgeH, $accentColor . '22');
         $this->rect($badgeX,     $badgeY, 4,       $badgeH, $accentColor);
         $this->t($pageLabel, self::PAD_X_R - 14, $badgeY + (int)($badgeH / 2),
-            $this->fontRegular, 14, $accentColor, 'right', 'middle');
+            $this->fontRegular, 14, $this->currentBrandText, 'right', 'middle');
 
         // Divider
-        $this->rect(self::PAD_X, self::DIV1_Y, self::PAD_X_R - self::PAD_X, 1, self::BORDER);
+        $this->rect(self::PAD_X, self::DIV1_Y, self::PAD_X_R - self::PAD_X, 1, $this->colour('border'));
     }
 
     /**
@@ -678,7 +688,7 @@ class OgImageService
     private function drawFooter(mixed $updatedAt, string $domain, string $cta = 'More data, charts & history →'): void
     {
         // Bottom divider
-        $this->rect(self::PAD_X, self::DIV2_Y, self::PAD_X_R - self::PAD_X, 1, self::BORDER);
+        $this->rect(self::PAD_X, self::DIV2_Y, self::PAD_X_R - self::PAD_X, 1, $this->colour('border'));
 
         // Timestamp
         $ts = '';
@@ -688,15 +698,15 @@ class OgImageService
             $ts = $updatedAt;
         }
         if ($ts !== '') {
-            $this->t($ts, self::PAD_X, self::FOOT_Y, $this->fontRegular, 17, self::MUTED);
+            $this->t($ts, self::PAD_X, self::FOOT_Y, $this->fontRegular, 17, $this->colour('muted'));
         }
 
         // Domain (right-aligned, accent coloured)
-        $this->t($domain, self::PAD_X_R, self::FOOT_Y, $this->fontRegular, 17, $this->currentAccent, 'right');
+        $this->t($domain, self::PAD_X_R, self::FOOT_Y, $this->fontRegular, 17, $this->currentBrandText, 'right');
 
         // CTA — targeted per-card line to pull visitors in
         $this->t($cta, self::PAD_X_R, self::FOOT_Y + 22,
-            $this->fontRegular, 14, self::SECONDARY, 'right');
+            $this->fontRegular, 14, $this->colour('secondary'), 'right');
     }
 
     /**
@@ -709,9 +719,30 @@ class OgImageService
     private function drawStatsRow(array $cols, int $labelY, int $valueY): void
     {
         foreach ($cols as [$x, $label, $value]) {
-            $this->t($label, $x, $labelY, $this->fontRegular, 15, self::MUTED);
-            $this->t($value, $x, $valueY, $this->fontBold,    32, self::PRIMARY);
+            $this->t($label, $x, $labelY, $this->fontRegular, 15, $this->colour('muted'));
+            $this->t($value, $x, $valueY, $this->fontBold,    32, $this->colour('primary'));
         }
+    }
+
+    private function colour(string $token): string
+    {
+        return $this->appearance[$token] ?? match ($token) {
+            'bg' => self::BG,
+            'card' => self::SURFACE,
+            'fg' => self::WHITE,
+            'primary' => $this->classicAppearance ? self::PRIMARY : ($this->appearance['fg'] ?? self::PRIMARY),
+            'secondary' => self::SECONDARY,
+            'muted' => self::MUTED,
+            'border' => self::BORDER,
+            'accent' => self::BLUE,
+            'link' => self::BLUE,
+            default => self::PRIMARY,
+        };
+    }
+
+    private function brandAccent(string $classicAccent): string
+    {
+        return $this->classicAppearance ? $classicAccent : $this->colour('accent');
     }
 
     // -------------------------------------------------------------------------
@@ -1078,13 +1109,14 @@ class OgImageService
                     // Nighttime: crescent moon suggestion near the arc peak
                     $moonX = $cx + (int)($rx * 0.15);
                     $moonY = $cy - $ry;
+                    $background = $this->colour('bg');
                     $this->img->drawEllipse($moonX, $moonY, static function ($d) {
                         $d->size(18, 18);
                         $d->background('#e2e8f080');
                     });
-                    $this->img->drawEllipse($moonX + 6, $moonY - 4, static function ($d) {
+                    $this->img->drawEllipse($moonX + 6, $moonY - 4, static function ($d) use ($background) {
                         $d->size(14, 14);
-                        $d->background(self::BG);
+                        $d->background($background);
                     });
                 }
             }
@@ -1208,7 +1240,12 @@ class OgImageService
     {
         $fp = $fontPath;
         $sz = $size;
-        $c  = $color;
+        // Sample the rendered surface, including badge fills and the top tint.
+        $background = $this->classicAppearance ? null : $this->img->pickColor(
+            max(0, min(self::W - 1, $x + ($align === 'right' ? -1 : 1))),
+            max(0, min(self::H - 1, $y))
+        )->toHex('#');
+        $c  = $this->readableTextColour($color, $background);
         $a  = $align;
         $va = $valign;
 
@@ -1219,6 +1256,57 @@ class OgImageService
             $font->align($a);
             $font->valign($va);
         });
+    }
+
+    /** Keep semantic hues where possible, darkening/lightening only when text would fail contrast. */
+    private function readableTextColour(string $colour, ?string $surface = null): string
+    {
+        if ($this->classicAppearance || ! preg_match('/^#([0-9a-f]{6})$/i', $colour, $match)) {
+            return $colour;
+        }
+
+        $rgb = array_map('hexdec', str_split($match[1], 2));
+        $background = array_map('hexdec', str_split(substr($surface ?? $this->colour('bg'), 1), 2));
+        if ($this->contrastRatio($rgb, $background) >= 4.5) {
+            return $colour;
+        }
+
+        $black = [0, 0, 0];
+        $white = [255, 255, 255];
+        $target = $this->contrastRatio($black, $background) >= $this->contrastRatio($white, $background)
+            ? $black
+            : $white;
+        for ($amount = 0.1; $amount <= 1; $amount += 0.1) {
+            $candidate = array_map(
+                static fn (int $channel, int $toward): int => (int) round($channel + ($toward - $channel) * $amount),
+                $rgb,
+                $target
+            );
+            if ($this->contrastRatio($candidate, $background) >= 4.5) {
+                return sprintf('#%02x%02x%02x', ...$candidate);
+            }
+        }
+
+        return $target === [0, 0, 0] ? '#000000' : '#ffffff';
+    }
+
+    private function contrastRatio(array $a, array $b): float
+    {
+        $lighter = max($this->luminance($a), $this->luminance($b));
+        $darker = min($this->luminance($a), $this->luminance($b));
+
+        return ($lighter + 0.05) / ($darker + 0.05);
+    }
+
+    private function luminance(array $rgb): float
+    {
+        $channels = array_map(static function (int $channel): float {
+            $value = $channel / 255;
+
+            return $value <= 0.04045 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
+        }, $rgb);
+
+        return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
     }
 
     /** Draw a filled rectangle. */
@@ -1272,7 +1360,7 @@ class OgImageService
     /** Return a hex colour appropriate for the given AQI value. */
     private function aqiColor(?float $aqi): string
     {
-        if ($aqi === null) return self::SECONDARY;
+        if ($aqi === null) return $this->colour('secondary');
         if ($aqi <= 50)  return '#22c55e';
         if ($aqi <= 100) return self::AMBER;
         if ($aqi <= 150) return '#f97316';
