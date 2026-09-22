@@ -51,13 +51,61 @@ function aircraft(ctx, x, y, scale, rotation, colors = ['#dce5ea', '#e05a3f']) {
     ctx.restore();
 }
 
-function windsock(ctx, x, y, wind, elapsed, motion) {
-    ctx.strokeStyle = 'rgba(225,230,230,.65)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-18); ctx.stroke();
-    const extension = Math.min(Math.max(wind, 0) / 15, 1);
-    const flutter = motion ? Math.sin(elapsed * 7) * extension : 0;
-    polygon(ctx, [[x,y-18],[x+12*extension,y-17+flutter],[x+11*extension,y-13+flutter],[x,y-14]], 'rgba(225,75,42,.8)');
-    ctx.fillStyle = 'rgba(245,245,235,.85)'; ctx.fillRect(x+3*extension,y-17+flutter*.3,3*extension,3);
+export function drawWindsock(ctx, x, groundY, wind, elapsed = 0, motion = true) {
+    const poleHeight = 22;
+    const sockLength = 14;
+    const windKts = Math.max(Number(wind) || 0, 0);
+    const extension = Math.min(windKts / 15, 1);
+    const angle = (Math.PI / 2) * (1 - extension);
+    const topY = groundY - poleHeight;
+    const endX = x + Math.cos(angle) * sockLength;
+    const endY = topY + Math.sin(angle) * sockLength;
+    const segments = [];
+
+    ctx.strokeStyle = 'rgba(180, 180, 180, 0.5)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x, topY); ctx.stroke();
+    ctx.strokeStyle = 'rgba(200, 200, 200, 0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(x, topY, 1.5, 0, Math.PI * 2); ctx.stroke();
+
+    for (let segment = 0; segment < 5; segment++) {
+        const t0 = segment / 5;
+        const t1 = (segment + 1) / 5;
+        const flutter0 = motion && windKts > 5 && segment >= 2
+            ? Math.sin(elapsed * 9 + segment * 1.5) * windKts * 0.03
+            : 0;
+        const flutter1 = motion && windKts > 5 && segment >= 2
+            ? Math.sin(elapsed * 9 + (segment + 1) * 1.5) * windKts * 0.03
+            : 0;
+        const x0 = x + (endX - x) * t0;
+        const y0 = topY + (endY - topY) * t0 + flutter0;
+        const x1 = x + (endX - x) * t1;
+        const y1 = topY + (endY - topY) * t1 + flutter1;
+        const radius0 = 3 * (1 - t0 * 0.7);
+        const radius1 = 3 * (1 - t1 * 0.7);
+        const dx = x1 - x0;
+        const dy = y1 - y0;
+        const length = Math.sqrt(dx * dx + dy * dy) || 1;
+        const normalX = -dy / length;
+        const normalY = dx / length;
+        const points = [
+            [x0 + normalX * radius0, y0 + normalY * radius0],
+            [x1 + normalX * radius1, y1 + normalY * radius1],
+            [x1 - normalX * radius1, y1 - normalY * radius1],
+            [x0 - normalX * radius0, y0 - normalY * radius0],
+        ];
+        polygon(ctx, points, segment % 2 === 0
+            ? 'rgba(200, 60, 30, 0.7)'
+            : 'rgba(220, 220, 220, 0.7)');
+        segments.push({ points, flutter0, flutter1 });
+    }
+
+    return { extension, angle, topY, endX, endY, segments };
+}
+
+function windsockX(w, desktopRatio) {
+    return (w <= 768 ? Math.min(desktopRatio, .55) : desktopRatio) * w;
 }
 
 function drawSchiphol(ctx, w, h, options) {
@@ -76,11 +124,14 @@ function drawSchiphol(ctx, w, h, options) {
         ctx.fillStyle='#20282d'; ctx.fillRect(px*w+33,y-5,3,5);
     }
     // Control tower kept inside the lower band.
-    ctx.fillStyle='#263038'; ctx.fillRect(.71*w,y-34,8,34);
-    polygon(ctx, [[.695*w,y-37],[.742*w,y-37],[.735*w,y-30],[.703*w,y-30]], '#50616b');
-    ctx.fillStyle='rgba(155,215,235,.45)'; ctx.fillRect(.705*w,y-35,.027*w,3);
-    ctx.strokeStyle='rgba(205,220,225,.65)'; ctx.beginPath(); ctx.moveTo(.719*w,y-37); ctx.lineTo(.719*w,y-47); ctx.stroke();
-    ctx.beginPath(); ctx.arc(.719*w,y-48,1.5,0,Math.PI*2); ctx.stroke();
+    const towerX = .72*w;
+    const stemWidth = 8;
+    const cabWidth = Math.min(36, Math.max(26, .047*w));
+    ctx.fillStyle='#263038'; ctx.fillRect(towerX-stemWidth/2,y-34,stemWidth,34);
+    polygon(ctx, [[towerX-cabWidth/2,y-37],[towerX+cabWidth/2,y-37],[towerX+cabWidth*.34,y-30],[towerX-cabWidth*.34,y-30]], '#50616b');
+    ctx.fillStyle='rgba(155,215,235,.45)'; ctx.fillRect(towerX-cabWidth*.34,y-35,cabWidth*.68,3);
+    ctx.strokeStyle='rgba(205,220,225,.65)'; ctx.beginPath(); ctx.moveTo(towerX,y-37); ctx.lineTo(towerX,y-47); ctx.stroke();
+    ctx.beginPath(); ctx.arc(towerX,y-48,1.5,0,Math.PI*2); ctx.stroke();
     runway(ctx,w,y+5);
     // Deterministic edge lights and apron markings.
     for (let x=.1*w; x<.91*w; x+=22) {
@@ -98,7 +149,7 @@ function drawSchiphol(ctx, w, h, options) {
     const vanX=.66*w+(options.motion ? (t*9)%(w*.11) : 0);
     ctx.fillStyle='#e3b53e'; ctx.fillRect(vanX,y+3,11,5); ctx.fillStyle='#1d2830'; ctx.fillRect(vanX+7,y+1,4,3);
     ctx.beginPath(); ctx.arc(vanX+2,y+9,1.5,0,Math.PI*2); ctx.arc(vanX+9,y+9,1.5,0,Math.PI*2); ctx.fill();
-    windsock(ctx,.12*w,y,options.wind,t,options.motion);
+    drawWindsock(ctx,windsockX(w,.12),y,options.wind,t,options.motion);
 }
 
 function drawArctic(ctx, w, h, options) {
@@ -127,7 +178,7 @@ function drawArctic(ctx, w, h, options) {
     ctx.fillRect(crawlerX-1,y+8,17,3); ctx.strokeStyle='#b9d2da'; ctx.beginPath(); ctx.moveTo(crawlerX+14,y-2); ctx.lineTo(crawlerX+18,y-7); ctx.stroke();
     // Dark plaque lets the shared translucent Ground label remain readable on snow.
     ctx.fillStyle='rgba(25,45,55,.62)'; ctx.fillRect(0,y+2,54,18);
-    windsock(ctx,.88*w,y,options.wind,options.elapsed,options.motion);
+    drawWindsock(ctx,windsockX(w,.88),y,options.wind,options.elapsed,options.motion);
 }
 
 function drawVolcanic(ctx, w, h, options) {
@@ -158,7 +209,7 @@ function drawVolcanic(ctx, w, h, options) {
     ctx.strokeStyle='rgba(255,190,80,.8)'; ctx.beginPath(); ctx.moveTo(.87*w,y); ctx.lineTo(.87*w,y-24); ctx.stroke();
     ctx.fillStyle=options.motion && Math.sin(options.elapsed*4)>0 ? '#ffd275' : '#e66a42'; ctx.beginPath(); ctx.arc(.87*w,y-25,2,0,Math.PI*2); ctx.fill();
     aircraft(ctx,.34*w,y+15,.66,0,['#dad5cf','#d27b3f']);
-    windsock(ctx,.91*w,y,options.wind,options.elapsed,options.motion);
+    drawWindsock(ctx,windsockX(w,.91),y,options.wind,options.elapsed,options.motion);
 }
 
 const renderers = { schiphol: drawSchiphol, arctic: drawArctic, volcanic: drawVolcanic };

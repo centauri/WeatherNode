@@ -67,7 +67,7 @@
                        @keydown.enter="searchIcao()"
                        @input="searchInput = searchInput.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4)"
                        placeholder="{{ __('Search ICAO code') }}"
-                       class="bg-ui-overlay/10 border border-ui-line/20 rounded-lg px-4 py-2 text-sm text-ui-fg placeholder-ui-muted focus:outline-none focus:border-blue-500 w-40">
+                       class="bg-ui-overlay/10 border border-ui-line/20 rounded-lg px-4 py-2 text-base sm:text-sm text-ui-fg placeholder-ui-muted focus:outline-none focus:border-blue-500 w-40">
                 <!-- Recent searches dropdown -->
                 <div x-show="recentSearches.length > 0 && searchFocused" x-cloak
                      @click.outside="searchFocused = false"

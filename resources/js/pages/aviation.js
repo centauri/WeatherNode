@@ -1,6 +1,7 @@
 import {
     AVIATION_SCENE_IDS,
     drawAviationScene,
+    drawWindsock,
     loadAviationScene,
     normalizeAviationScene,
     saveAviationScene,
@@ -1731,64 +1732,18 @@ document.addEventListener('alpine:init', () => {
             drawPoplar(0.88 * w, 14);
 
             // ── Windsock ──
-            // On mobile, move left to avoid the cloud layers legend overlay (bottom-right)
-            const wsX = isMobile ? 0.55 * w : 0.79 * w;
-            const poleH = 22;
-            const wsWind = this._windSpeed || 0;
-            // Pole
-            ctx.strokeStyle = 'rgba(180, 180, 180, 0.5)';
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(wsX, gy);
-            ctx.lineTo(wsX, gy - poleH);
-            ctx.stroke();
-            // Hoop at top
-            ctx.strokeStyle = 'rgba(200, 200, 200, 0.4)';
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            ctx.arc(wsX, gy - poleH, 1.5, 0, Math.PI * 2);
-            ctx.stroke();
-            // Sock — extends right, droop depends on wind
-            // Standard windsock: fully extended at 15kts, limp at 0
-            // 0 kts: hangs straight down
-            // 3 kts: ~one stripe lifts (15°)
-            // 7 kts: ~45 degrees
-            // 15+ kts: fully horizontal
-            const sockLen = 14;
-            const extension = Math.min(wsWind / 15, 1); // 0=limp, 1=fully extended
-            const sockAngle = (Math.PI / 2) * (1 - extension); // PI/2=down, 0=horizontal
-            const sockTopY = gy - poleH;
-            const sockEndX = wsX + Math.cos(sockAngle) * sockLen;
-            const sockEndY = sockTopY + Math.sin(sockAngle) * sockLen;
-            // Tapered cone shape with 5 red/white stripes
-            const segments = 5;
-            for (let s = 0; s < segments; s++) {
-                const t0 = s / segments;
-                const t1 = (s + 1) / segments;
-                // Flutter: slight wave on outer segments in wind
-                const flutter0 = wsWind > 5 && s >= 2 ? Math.sin(t * 0.15 + s * 1.5) * wsWind * 0.03 : 0;
-                const flutter1 = wsWind > 5 && s >= 2 ? Math.sin(t * 0.15 + (s + 1) * 1.5) * wsWind * 0.03 : 0;
-                const x0 = wsX + (sockEndX - wsX) * t0;
-                const y0 = sockTopY + (sockEndY - sockTopY) * t0 + flutter0;
-                const x1 = wsX + (sockEndX - wsX) * t1;
-                const y1 = sockTopY + (sockEndY - sockTopY) * t1 + flutter1;
-                // Taper: wide at hoop, narrow at tip
-                const r0 = 3 * (1 - t0 * 0.7);
-                const r1 = 3 * (1 - t1 * 0.7);
-                // Perpendicular direction for width
-                const dx = x1 - x0, dy = y1 - y0;
-                const segLen = Math.sqrt(dx * dx + dy * dy) || 1;
-                const nx = -dy / segLen, ny = dx / segLen;
-                // Alternating orange-red / white
-                ctx.fillStyle = s % 2 === 0 ? 'rgba(200, 60, 30, 0.7)' : 'rgba(220, 220, 220, 0.7)';
-                ctx.beginPath();
-                ctx.moveTo(x0 + nx * r0, y0 + ny * r0);
-                ctx.lineTo(x1 + nx * r1, y1 + ny * r1);
-                ctx.lineTo(x1 - nx * r1, y1 - ny * r1);
-                ctx.lineTo(x0 - nx * r0, y0 - ny * r0);
-                ctx.closePath();
-                ctx.fill();
-            }
+            // On mobile, move left to avoid the cloud layers legend overlay (bottom-right).
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const effectsDisabled = document.body?.classList.contains('effects-disabled')
+                || document.body?.classList.contains('theme-flat');
+            drawWindsock(
+                ctx,
+                (isMobile ? .55 : .79) * w,
+                gy,
+                this._windSpeed,
+                this._sceneElapsed,
+                !reducedMotion && !effectsDisabled,
+            );
 
             ctx.restore();
 
