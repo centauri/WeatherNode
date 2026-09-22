@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.09.7] - 2026-09-22
+
+- Add station colour theming with WeatherNode, Ocean, Forest and Solar Flare palettes, each with light and dark modes while preserving the original WeatherNode Dark appearance for existing installations (#109)
+- Let visitors choose light, dark or system colour mode, and let owners optionally offer selected preset or published custom themes; each visitor preference is stored separately in their browser (#109)
+- Add the theme creator with isolated preview, colour validation, contrast guidance, and versioned JSON export and import (#109)
+- Move public header controls into a compact Menu drawer and repair light-mode contrast across public, legal, authentication and error pages (#109)
+- Generate Open Graph weather cards using the station's published theme so shared cards match the site (#109)
+- Add animated METAR scenes, including Schiphol as the default, a visitor scene selector and an admin-configurable station default
+
 ## [2026.09.4] - 2026-09-09
 
 - Fix DWD going quiet for a week after one failed lookup. If the nearest station could not be found once, the empty result was remembered for seven days and every later update returned without even trying. Nothing cleared it (#99)
