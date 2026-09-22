@@ -291,6 +291,10 @@
                     $isApi = $setting->type === 'encrypted';
                     $displayLabel = __(ucwords(str_replace(['_', '.'], ' ', basename($setting->key))));
                     $displayDescription = $setting->description ? __($setting->description) : '';
+                    if ($setting->key === 'metar.default_scene') {
+                        $displayLabel = __('Default atmospheric scene');
+                        $displayDescription = __('Used when a visitor has not chosen a scene.');
+                    }
 
                     // Keep storage keys unchanged (contact.twitter) while showing modern naming in UI.
                     if (str_contains(strtolower($setting->key), 'twitter')) {

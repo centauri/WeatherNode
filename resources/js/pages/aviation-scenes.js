@@ -1,18 +1,38 @@
 export const AVIATION_SCENE_IDS = Object.freeze(['village', 'schiphol', 'arctic', 'volcanic', 'spaceport']);
 export const AVIATION_SCENE_STORAGE_KEY = 'weathernode.public.aviation-scene';
 
-export function normalizeAviationScene(value) {
-    return AVIATION_SCENE_IDS.includes(value) ? value : 'schiphol';
+export function normalizeAviationScene(value, fallback = 'schiphol') {
+    return AVIATION_SCENE_IDS.includes(value)
+        ? value
+        : (AVIATION_SCENE_IDS.includes(fallback) ? fallback : 'schiphol');
 }
 
-export function loadAviationScene(storage) {
-    try { return normalizeAviationScene(storage?.getItem(AVIATION_SCENE_STORAGE_KEY)); }
-    catch { return 'schiphol'; }
+export function loadAviationScene(storage, defaultScene = 'schiphol') {
+    const fallback = normalizeAviationScene(defaultScene);
+    try { return normalizeAviationScene(storage?.getItem(AVIATION_SCENE_STORAGE_KEY), fallback); }
+    catch { return fallback; }
 }
 
-export function saveAviationScene(storage, value) {
-    const scene = normalizeAviationScene(value);
-    try { storage?.setItem(AVIATION_SCENE_STORAGE_KEY, scene); } catch { /* Session-only preference. */ }
+export function loadAviationScenePreference(storage) {
+    try {
+        const value = storage?.getItem(AVIATION_SCENE_STORAGE_KEY);
+        return AVIATION_SCENE_IDS.includes(value) ? value : 'default';
+    } catch { return 'default'; }
+}
+
+export function resolveAviationScene(preference, defaultScene = 'schiphol') {
+    return preference === 'default'
+        ? normalizeAviationScene(defaultScene)
+        : normalizeAviationScene(preference, defaultScene);
+}
+
+export function saveAviationScene(storage, value, defaultScene = 'schiphol') {
+    const fallback = normalizeAviationScene(defaultScene);
+    const scene = normalizeAviationScene(value, fallback);
+    try {
+        if (value === 'default' || value == null) storage?.removeItem?.(AVIATION_SCENE_STORAGE_KEY);
+        else storage?.setItem(AVIATION_SCENE_STORAGE_KEY, scene);
+    } catch { /* Session-only preference. */ }
     return scene;
 }
 

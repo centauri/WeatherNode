@@ -2,8 +2,9 @@ import {
     AVIATION_SCENE_IDS,
     drawAviationScene,
     drawWindsock,
-    loadAviationScene,
+    loadAviationScenePreference,
     normalizeAviationScene,
+    resolveAviationScene,
     saveAviationScene,
 } from './aviation-scenes.js';
 
@@ -37,7 +38,8 @@ document.addEventListener('alpine:init', () => {
         searchFocused: false,
         recentSearches: [],
         observedAgo: '',
-        scene: loadAviationScene(sceneStorage()),
+        scenePreference: loadAviationScenePreference(sceneStorage()),
+        scene: resolveAviationScene(loadAviationScenePreference(sceneStorage()), config.defaultScene),
         sceneIds: AVIATION_SCENE_IDS,
 
         // Canvas internals
@@ -165,7 +167,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         selectScene(scene) {
-            this.scene = saveAviationScene(sceneStorage(), normalizeAviationScene(scene));
+            this.scenePreference = scene === 'default' ? 'default' : normalizeAviationScene(scene, config.defaultScene);
+            this.scene = saveAviationScene(sceneStorage(), scene, config.defaultScene);
             this._render();
         },
 

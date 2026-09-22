@@ -2929,5 +2929,7 @@
     "Schiphol-inspired airport": "Schiphol-inspirert flyplass",
     "Arctic research airstrip": "Arktisk forskingsstripe",
     "Volcanic island airport": "Flyplass på vulkanøy",
-    "Desert spaceport": "Romhamn i ørkenen"
+    "Desert spaceport": "Romhamn i ørkenen",
+    "Default atmospheric scene": "Standardscene for atmosfæren",
+    "Used when a visitor has not chosen a scene.": "Vert brukt når ein besøkjande ikkje har valt ei scene."
 }

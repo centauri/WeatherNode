@@ -3431,5 +3431,7 @@
     "Schiphol-inspired airport": "Schiphol-inspired airport",
     "Arctic research airstrip": "Arctic research airstrip",
     "Volcanic island airport": "Volcanic island airport",
-    "Desert spaceport": "Desert spaceport"
+    "Desert spaceport": "Desert spaceport",
+    "Default atmospheric scene": "Default atmospheric scene",
+    "Used when a visitor has not chosen a scene.": "Used when a visitor has not chosen a scene."
 }

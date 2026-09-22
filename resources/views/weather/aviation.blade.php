@@ -36,6 +36,7 @@
         defaultIcao: @js($activeIcao),
         primaryIcao: @js($primaryIcao),
         metarEnabled: @js($metarEnabled),
+        defaultScene: @js($defaultScene),
         baseUrl: @js(route('aviation')),
     };
 </script>
@@ -98,15 +99,16 @@
                 <div class="flex items-center gap-2">
                     <label for="aviation-scene" class="text-xs font-medium text-ui-secondary whitespace-nowrap">{{ __('Atmospheric scene') }}</label>
                     <select id="aviation-scene"
-                            :value="scene"
+                            :value="scenePreference"
                             @change="selectScene($event.target.value)"
                             aria-describedby="atmospheric-scene-help"
                             class="bg-ui-overlay/10 border border-ui-line/20 rounded-lg px-2.5 py-1.5 text-sm text-ui-fg focus:outline-none focus:border-blue-500 max-w-full">
-                        <option value="schiphol">{{ __('Schiphol-inspired airport') }}</option>
-                        <option value="village">{{ __('Original village') }}</option>
-                        <option value="arctic">{{ __('Arctic research airstrip') }}</option>
-                        <option value="volcanic">{{ __('Volcanic island airport') }}</option>
-                        <option value="spaceport">{{ __('Desert spaceport') }}</option>
+                        <option value="default">{{ __('Station default') }}</option>
+                        <option value="schiphol" @selected($defaultScene === 'schiphol')>{{ __('Schiphol-inspired airport') }}</option>
+                        <option value="village" @selected($defaultScene === 'village')>{{ __('Original village') }}</option>
+                        <option value="arctic" @selected($defaultScene === 'arctic')>{{ __('Arctic research airstrip') }}</option>
+                        <option value="volcanic" @selected($defaultScene === 'volcanic')>{{ __('Volcanic island airport') }}</option>
+                        <option value="spaceport" @selected($defaultScene === 'spaceport')>{{ __('Desert spaceport') }}</option>
                     </select>
                 </div>
             </div>

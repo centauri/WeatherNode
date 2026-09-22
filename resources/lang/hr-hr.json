@@ -2929,5 +2929,7 @@
     "Schiphol-inspired airport": "Zračna luka nadahnuta Schipholom",
     "Arctic research airstrip": "Arktička istraživačka uzletno-sletna staza",
     "Volcanic island airport": "Zračna luka na vulkanskom otoku",
-    "Desert spaceport": "Svemirska luka u pustinji"
+    "Desert spaceport": "Svemirska luka u pustinji",
+    "Default atmospheric scene": "Zadani atmosferski prizor",
+    "Used when a visitor has not chosen a scene.": "Koristi se kada posjetitelj nije odabrao prizor."
 }

@@ -5,7 +5,9 @@ import {
     AVIATION_SCENE_IDS,
     AVIATION_SCENE_STORAGE_KEY,
     loadAviationScene,
+    loadAviationScenePreference,
     normalizeAviationScene,
+    resolveAviationScene,
     saveAviationScene,
 } from '../../resources/js/pages/aviation-scenes.js';
 
@@ -36,6 +38,25 @@ test('blocked, corrupt, or missing storage safely falls back to Schiphol', () =>
     assert.equal(loadAviationScene(blocked), 'schiphol');
     assert.equal(saveAviationScene(blocked, 'volcanic'), 'volcanic');
     assert.equal(loadAviationScene({ getItem: () => 'obsolete-scene' }), 'schiphol');
+});
+
+test('visitor storage falls back to the saved station default and reset follows it', () => {
+    const values = new Map();
+    const storage = {
+        getItem: key => values.get(key) ?? null,
+        setItem: (key, value) => values.set(key, value),
+        removeItem: key => values.delete(key),
+    };
+    assert.equal(loadAviationScene(storage, 'arctic'), 'arctic');
+    values.set(AVIATION_SCENE_STORAGE_KEY, 'volcanic');
+    assert.equal(loadAviationScene(storage, 'arctic'), 'volcanic');
+    values.set(AVIATION_SCENE_STORAGE_KEY, 'obsolete-scene');
+    assert.equal(loadAviationScene(storage, 'arctic'), 'arctic');
+    assert.equal(saveAviationScene(storage, 'default', 'arctic'), 'arctic');
+    assert.equal(values.has(AVIATION_SCENE_STORAGE_KEY), false);
+    assert.equal(loadAviationScenePreference(storage), 'default');
+    assert.equal(resolveAviationScene('default', 'arctic'), 'arctic');
+    assert.equal(resolveAviationScene('volcanic', 'arctic'), 'volcanic');
 });
 
 test('spaceport is a drawable scene and saved scene choices remain intact', async () => {

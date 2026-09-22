@@ -2929,5 +2929,7 @@
     "Schiphol-inspired airport": "Αεροδρόμιο εμπνευσμένο από το Schiphol",
     "Arctic research airstrip": "Αρκτικός ερευνητικός αεροδιάδρομος",
     "Volcanic island airport": "Αεροδρόμιο σε ηφαιστειογενές νησί",
-    "Desert spaceport": "Διαστημοδρόμιο στην έρημο"
+    "Desert spaceport": "Διαστημοδρόμιο στην έρημο",
+    "Default atmospheric scene": "Προεπιλεγμένη ατμοσφαιρική σκηνή",
+    "Used when a visitor has not chosen a scene.": "Χρησιμοποιείται όταν ο επισκέπτης δεν έχει επιλέξει σκηνή."
 }

@@ -4028,5 +4028,7 @@
     "Schiphol-inspired airport": "Aeroporto ispirato a Schiphol",
     "Arctic research airstrip": "Pista di ricerca artica",
     "Volcanic island airport": "Aeroporto su un’isola vulcanica",
-    "Desert spaceport": "Spazioporto nel deserto"
+    "Desert spaceport": "Spazioporto nel deserto",
+    "Default atmospheric scene": "Scena atmosferica predefinita",
+    "Used when a visitor has not chosen a scene.": "Usata quando un visitatore non ha scelto una scena."
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Services\Aviation\MetarService;
+use App\Support\AviationScene;
 use Illuminate\Support\Facades\Cache;
 
 class AviationController extends Controller
@@ -12,6 +13,7 @@ class AviationController extends Controller
     {
         $primaryIcao = Setting::getValue('metar.primary_icao', '');
         $metarEnabled = (bool) Setting::getValue('metar.enabled', false);
+        $defaultScene = AviationScene::normalize(Setting::getValue('metar.default_scene', AviationScene::DEFAULT));
 
         // Validate and normalize ICAO from URL
         if ($icao) {
@@ -35,7 +37,7 @@ class AviationController extends Controller
         }
 
         return view('weather.aviation', compact(
-            'primaryIcao', 'metarEnabled', 'activeIcao', 'ssrMetar'
+            'primaryIcao', 'metarEnabled', 'activeIcao', 'ssrMetar', 'defaultScene'
         ));
     }
 }

@@ -3377,5 +3377,7 @@
     "Schiphol-inspired airport": "Op Schiphol geïnspireerde luchthaven",
     "Arctic research airstrip": "Arctische onderzoeksbaan",
     "Volcanic island airport": "Luchthaven op vulkanisch eiland",
-    "Desert spaceport": "Ruimtehaven in de woestijn"
+    "Desert spaceport": "Ruimtehaven in de woestijn",
+    "Default atmospheric scene": "Standaard atmosferisch decor",
+    "Used when a visitor has not chosen a scene.": "Wordt gebruikt wanneer een bezoeker geen decor heeft gekozen."
 }

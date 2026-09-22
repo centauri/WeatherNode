@@ -16,6 +16,7 @@ use App\Services\Nlg\NlgProviderModelDiscovery;
 use App\Services\OpenData\OpenDataProviderRegistry;
 use App\Services\Radar\RadarFutureFramesService;
 use App\Services\Tide\TideServiceFactory;
+use App\Support\AviationScene;
 use App\Support\CustomTheme;
 use App\Support\MenuFeatureMap;
 use App\Support\PublicAppearance;
@@ -460,6 +461,12 @@ class SettingsController extends Controller
             abort(404);
         }
 
+        // Add settings introduced after installation without requiring a new
+        // seeder run. This keeps upgrades editable immediately.
+        if ($group === 'aviation') {
+            $this->ensureMetarDefaultSceneSetting();
+        }
+
         // Order settings - provider/type fields first, then others
         $settings = $this->settingsQueryForGroup($group)->get();
         if ($group === 'satellite') {
@@ -633,6 +640,15 @@ class SettingsController extends Controller
      */
     public function update(Request $request, string $group)
     {
+        if ($group === 'aviation') {
+            $this->ensureMetarDefaultSceneSetting();
+            if ($request->has('metar_default_scene')) {
+                $request->validate([
+                    'metar_default_scene' => ['required', Rule::in(AviationScene::IDS)],
+                ]);
+            }
+        }
+
         // Special handling for footer group
         if ($group === 'footer') {
             $this->updateFooterSettings($request);
@@ -898,6 +914,21 @@ class SettingsController extends Controller
         }
 
         return $query;
+    }
+
+    private function ensureMetarDefaultSceneSetting(): void
+    {
+        Setting::firstOrCreate(
+            ['key' => 'metar.default_scene'],
+            [
+                'value' => AviationScene::DEFAULT,
+                'type' => 'select',
+                'group' => 'aviation',
+                'description' => 'Used when a visitor has not chosen a scene.',
+                'options' => 'schiphol:Schiphol-inspired airport,village:Original village,arctic:Arctic research airstrip,volcanic:Volcanic island airport,spaceport:Desert spaceport',
+            ]
+        );
+        Setting::forgetCached('metar.default_scene');
     }
 
     /**

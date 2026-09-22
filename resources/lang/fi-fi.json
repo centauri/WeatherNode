@@ -2929,5 +2929,7 @@
     "Schiphol-inspired airport": "Schipholin innoittama lentoasema",
     "Arctic research airstrip": "Arktinen tutkimuskiitotie",
     "Volcanic island airport": "Tulivuorisaaren lentoasema",
-    "Desert spaceport": "Aavikon avaruussatama"
+    "Desert spaceport": "Aavikon avaruussatama",
+    "Default atmospheric scene": "Ilmakehän oletusmaisema",
+    "Used when a visitor has not chosen a scene.": "Käytetään, kun kävijä ei ole valinnut maisemaa."
 }
