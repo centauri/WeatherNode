@@ -1,3 +1,16 @@
+import {
+    AVIATION_SCENE_IDS,
+    drawAviationScene,
+    loadAviationScene,
+    normalizeAviationScene,
+    saveAviationScene,
+} from './aviation-scenes.js';
+
+function sceneStorage() {
+    try { return window.localStorage; }
+    catch { return null; }
+}
+
 /**
  * Aviation Weather — Atmospheric Profile Visualization
  *
@@ -23,6 +36,8 @@ document.addEventListener('alpine:init', () => {
         searchFocused: false,
         recentSearches: [],
         observedAgo: '',
+        scene: loadAviationScene(sceneStorage()),
+        sceneIds: AVIATION_SCENE_IDS,
 
         // Canvas internals
         _canvas: null,
@@ -34,6 +49,8 @@ document.addEventListener('alpine:init', () => {
         _fogState: null,
         _cloudBlobs: [],
         _time: 0,
+        _sceneElapsed: 0,
+        _lastFrameTime: null,
         _resizeTimer: null,
         _refreshTimer: null,
 
@@ -144,6 +161,11 @@ document.addEventListener('alpine:init', () => {
         addRecentSearch(icao) {
             this.recentSearches = [icao, ...this.recentSearches.filter(s => s !== icao)].slice(0, 5);
             localStorage.setItem('aviation_recent', JSON.stringify(this.recentSearches));
+        },
+
+        selectScene(scene) {
+            this.scene = saveAviationScene(sceneStorage(), normalizeAviationScene(scene));
+            this._render();
         },
 
         // ─── Display Helpers ─────────────────────────────────
@@ -429,7 +451,15 @@ document.addEventListener('alpine:init', () => {
         // ─── Animation Loop ─────────────────────────────────
 
         _startAnimation() {
-            const animate = () => {
+            const animate = (timestamp = 0) => {
+                const deltaSeconds = this._lastFrameTime == null
+                    ? 0
+                    : Math.min(Math.max((timestamp - this._lastFrameTime) / 1000, 0), 0.05);
+                this._lastFrameTime = timestamp;
+                const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const effectsDisabled = document.body?.classList.contains('effects-disabled')
+                    || document.body?.classList.contains('theme-flat');
+                if (!reducedMotion && !effectsDisabled) this._sceneElapsed += deltaSeconds;
                 this._time++;
                 this._render();
                 this._animFrame = requestAnimationFrame(animate);
@@ -1249,6 +1279,22 @@ document.addEventListener('alpine:init', () => {
             ctx.moveTo(0, groundY);
             ctx.lineTo(w, groundY);
             ctx.stroke();
+
+            if (this.scene !== 'village') {
+                const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const effectsDisabled = document.body?.classList.contains('effects-disabled')
+                    || document.body?.classList.contains('theme-flat');
+                drawAviationScene(ctx, this.scene, { width: w, height: h }, {
+                    groundHeight: this._groundHeight,
+                    elapsed: this._sceneElapsed,
+                    wind: this._windSpeed,
+                    motion: !reducedMotion && !effectsDisabled,
+                });
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = '10px system-ui, sans-serif';
+                ctx.fillText(translations.ground || 'Ground', 4, groundY + 14);
+                return;
+            }
 
             // ─── Dutch Village Scene ────────────────────────────
             ctx.save();

@@ -2940,5 +2940,11 @@
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Eigene Themen verwenden die zuletzt angewendete Version. Wende ein Thema einmal an, um es hier anzubieten; gespeicherte Entwürfe bleiben unveröffentlicht.",
     "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Besucher speichern ihre Auswahl auf ihrem Gerät. Entfernte Optionen werden beim nächsten Laden durch den Stationsstandard ersetzt.",
     "Language": "Sprache",
-    "Units": "Einheiten"
+    "Units": "Einheiten",
+    "Atmospheric scene": "Atmosphärische Szene",
+    "Scenery and aircraft are illustrative; weather follows the selected airport’s METAR. This does not track live flights.": "Landschaft und Flugzeuge sind illustrativ; das Wetter folgt dem METAR des ausgewählten Flughafens. Es werden keine Live-Flüge verfolgt.",
+    "Original village": "Ursprüngliches Dorf",
+    "Schiphol-inspired airport": "Vom Flughafen Schiphol inspiriert",
+    "Arctic research airstrip": "Arktische Forschungslandebahn",
+    "Volcanic island airport": "Flughafen auf einer Vulkaninsel"
 }

@@ -3424,5 +3424,11 @@
     "Visitor theme choices": "Visitor theme choices",
     "Select themes visitors may choose. Leave all unchecked to use only the station palette.": "Select themes visitors may choose. Leave all unchecked to use only the station palette.",
     "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.": "Custom themes use the last applied version. Apply a custom theme once to offer it here; saved drafts stay unpublished.",
-    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Visitors keep their choice on their device. Removed choices return to the station default on their next page load."
+    "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.": "Visitors keep their choice on their device. Removed choices return to the station default on their next page load.",
+    "Atmospheric scene": "Atmospheric scene",
+    "Scenery and aircraft are illustrative; weather follows the selected airport’s METAR. This does not track live flights.": "Scenery and aircraft are illustrative; weather follows the selected airport’s METAR. This does not track live flights.",
+    "Original village": "Original village",
+    "Schiphol-inspired airport": "Schiphol-inspired airport",
+    "Arctic research airstrip": "Arctic research airstrip",
+    "Volcanic island airport": "Volcanic island airport"
 }

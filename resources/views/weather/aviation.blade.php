@@ -52,7 +52,7 @@
     </a>
 </div>
 
-<div class="space-y-6" x-data="aviationWeather()" x-init="init()">
+<div class="space-y-6" x-data="aviationWeather()">
     <!-- Header + Search -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -92,9 +92,24 @@
     <!-- Atmospheric Profile — the showpiece -->
     <div class="bg-weather-card rounded-2xl p-4 md:p-5 border border-ui-line/10 relative overflow-hidden"
          :class="flightCategoryBorderClass()">
-        <div class="flex items-center justify-between mb-3">
-            <h2 class="font-semibold text-lg">{{ __('Live Atmospheric Profile') }} <span class="text-ui-muted" x-text="currentIcao">{{ $activeIcao }}</span></h2>
-            <div class="flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3 flex-wrap min-w-0">
+                <h2 class="font-semibold text-lg">{{ __('Live Atmospheric Profile') }} <span class="text-ui-muted" x-text="currentIcao">{{ $activeIcao }}</span></h2>
+                <div class="flex items-center gap-2">
+                    <label for="aviation-scene" class="text-xs font-medium text-ui-secondary whitespace-nowrap">{{ __('Atmospheric scene') }}</label>
+                    <select id="aviation-scene"
+                            :value="scene"
+                            @change="selectScene($event.target.value)"
+                            aria-describedby="atmospheric-scene-help"
+                            class="bg-ui-overlay/10 border border-ui-line/20 rounded-lg px-2.5 py-1.5 text-sm text-ui-fg focus:outline-none focus:border-blue-500 max-w-full">
+                        <option value="village">{{ __('Original village') }}</option>
+                        <option value="schiphol">{{ __('Schiphol-inspired airport') }}</option>
+                        <option value="arctic">{{ __('Arctic research airstrip') }}</option>
+                        <option value="volcanic">{{ __('Volcanic island airport') }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-xs px-2 py-1 rounded-full font-medium"
                       :class="flightCategoryBadgeClass()"
                       x-text="metar?.flight_category || '--'"
@@ -102,6 +117,7 @@
                 <span class="text-xs text-ui-muted" x-text="observedAgo" x-show="metar"></span>
             </div>
         </div>
+        <p id="atmospheric-scene-help" class="text-xs text-ui-muted mb-3">{{ __('Scenery and aircraft are illustrative; weather follows the selected airport’s METAR. This does not track live flights.') }}</p>
         <div class="relative">
             <canvas id="atmosphere-canvas" class="w-full rounded-xl" style="height: 500px;"
                     role="img"
