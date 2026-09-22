@@ -10,10 +10,10 @@ import {
 } from '../../resources/js/pages/aviation-scenes.js';
 
 test('scene ids and fallback stay stable for the Alpine selector', () => {
-    assert.deepEqual([...AVIATION_SCENE_IDS], ['village', 'schiphol', 'arctic', 'volcanic']);
+    assert.deepEqual([...AVIATION_SCENE_IDS], ['village', 'schiphol', 'arctic', 'volcanic', 'spaceport']);
     for (const id of AVIATION_SCENE_IDS) assert.equal(normalizeAviationScene(id), id);
-    assert.equal(normalizeAviationScene('cloud-city'), 'village');
-    assert.equal(normalizeAviationScene(null), 'village');
+    assert.equal(normalizeAviationScene('cloud-city'), 'schiphol');
+    assert.equal(normalizeAviationScene(null), 'schiphol');
 });
 
 test('scene persistence uses the public namespaced key', () => {
@@ -22,20 +22,29 @@ test('scene persistence uses the public namespaced key', () => {
         getItem: key => values.get(key) ?? null,
         setItem: (key, value) => values.set(key, value),
     };
-    assert.equal(loadAviationScene(storage), 'village');
+    assert.equal(loadAviationScene(storage), 'schiphol');
     assert.equal(saveAviationScene(storage, 'arctic'), 'arctic');
     assert.equal(values.get(AVIATION_SCENE_STORAGE_KEY), 'arctic');
     assert.equal(loadAviationScene(storage), 'arctic');
 });
 
-test('blocked or corrupt storage safely falls back to village', () => {
+test('blocked, corrupt, or missing storage safely falls back to Schiphol', () => {
     const blocked = {
         getItem() { throw new Error('denied'); },
         setItem() { throw new Error('denied'); },
     };
-    assert.equal(loadAviationScene(blocked), 'village');
+    assert.equal(loadAviationScene(blocked), 'schiphol');
     assert.equal(saveAviationScene(blocked, 'volcanic'), 'volcanic');
-    assert.equal(loadAviationScene({ getItem: () => 'obsolete-scene' }), 'village');
+    assert.equal(loadAviationScene({ getItem: () => 'obsolete-scene' }), 'schiphol');
+});
+
+test('spaceport is a drawable scene and saved scene choices remain intact', async () => {
+    const { drawAviationScene } = await import('../../resources/js/pages/aviation-scenes.js');
+    const ctx = new Proxy({}, { get: (target, key) => target[key] ?? (() => {}) });
+    assert.equal(drawAviationScene(ctx, 'spaceport', { width: 640, height: 180 }), true);
+    assert.equal(normalizeAviationScene('village'), 'village');
+    assert.equal(normalizeAviationScene('arctic'), 'arctic');
+    assert.equal(normalizeAviationScene('volcanic'), 'volcanic');
 });
 
 // Exercise the drawing geometry rather than just checking named scene options.

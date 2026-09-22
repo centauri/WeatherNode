@@ -102,10 +102,11 @@
                             @change="selectScene($event.target.value)"
                             aria-describedby="atmospheric-scene-help"
                             class="bg-ui-overlay/10 border border-ui-line/20 rounded-lg px-2.5 py-1.5 text-sm text-ui-fg focus:outline-none focus:border-blue-500 max-w-full">
-                        <option value="village">{{ __('Original village') }}</option>
                         <option value="schiphol">{{ __('Schiphol-inspired airport') }}</option>
+                        <option value="village">{{ __('Original village') }}</option>
                         <option value="arctic">{{ __('Arctic research airstrip') }}</option>
                         <option value="volcanic">{{ __('Volcanic island airport') }}</option>
+                        <option value="spaceport">{{ __('Desert spaceport') }}</option>
                     </select>
                 </div>
             </div>

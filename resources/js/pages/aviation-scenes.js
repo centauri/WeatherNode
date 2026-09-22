@@ -1,13 +1,13 @@
-export const AVIATION_SCENE_IDS = Object.freeze(['village', 'schiphol', 'arctic', 'volcanic']);
+export const AVIATION_SCENE_IDS = Object.freeze(['village', 'schiphol', 'arctic', 'volcanic', 'spaceport']);
 export const AVIATION_SCENE_STORAGE_KEY = 'weathernode.public.aviation-scene';
 
 export function normalizeAviationScene(value) {
-    return AVIATION_SCENE_IDS.includes(value) ? value : 'village';
+    return AVIATION_SCENE_IDS.includes(value) ? value : 'schiphol';
 }
 
 export function loadAviationScene(storage) {
     try { return normalizeAviationScene(storage?.getItem(AVIATION_SCENE_STORAGE_KEY)); }
-    catch { return 'village'; }
+    catch { return 'schiphol'; }
 }
 
 export function saveAviationScene(storage, value) {
@@ -212,7 +212,54 @@ function drawVolcanic(ctx, w, h, options) {
     drawWindsock(ctx,windsockX(w,.91),y,options.wind,options.elapsed,options.motion);
 }
 
-const renderers = { schiphol: drawSchiphol, arctic: drawArctic, volcanic: drawVolcanic };
+function drawSpaceport(ctx, w, h, options) {
+    const y = h - options.groundHeight;
+    // A warm, compact ground band keeps the scene legible over the live sky.
+    ctx.fillStyle = '#a9653f'; ctx.fillRect(0, y, w, options.groundHeight);
+    ctx.fillStyle = '#d18a4d'; ctx.fillRect(0, y, w, 5);
+    polygon(ctx, [[0,y+4],[.08*w,y-25],[.17*w,y-7],[.26*w,y-35],[.35*w,y-9],[.44*w,y-23],[.55*w,y-3],[.67*w,y-29],[.76*w,y-8],[.88*w,y-37],[w,y-9],[w,h],[0,h]], '#704334');
+    polygon(ctx, [[.08*w,y-25],[.14*w,y-13],[.17*w,y-7],[.12*w,y-19]], '#bd7445');
+    polygon(ctx, [[.26*w,y-35],[.3*w,y-18],[.35*w,y-9],[.31*w,y-29]], '#c47a47');
+    polygon(ctx, [[.67*w,y-29],[.72*w,y-14],[.76*w,y-8],[.72*w,y-24]], '#c27a48');
+    polygon(ctx, [[.88*w,y-37],[.93*w,y-18],[w,y-9],[.94*w,y-31]], '#b86e43');
+
+    // Landing pad and the gantry's stationary rocket.
+    ctx.fillStyle = '#c5a56c'; ctx.beginPath(); ctx.ellipse(.52*w,y+10,.2*w,10,0,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(80,45,35,.75)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(.38*w,y+10); ctx.lineTo(.66*w,y+10); ctx.stroke();
+    const rocketX = .52*w;
+    ctx.fillStyle = '#e4d5b7'; ctx.beginPath(); ctx.ellipse(rocketX,y-18,5,15,0,0,Math.PI*2); ctx.fill();
+    polygon(ctx, [[rocketX-5,y-28],[rocketX,y-35],[rocketX+5,y-28]], '#d48b4d');
+    polygon(ctx, [[rocketX-4,y-12],[rocketX-10,y-6],[rocketX-4,y-8]], '#b95f43');
+    polygon(ctx, [[rocketX+4,y-12],[rocketX+10,y-6],[rocketX+4,y-8]], '#b95f43');
+    ctx.fillStyle = '#5f8290'; ctx.fillRect(rocketX-2,y-22,4,3);
+    ctx.strokeStyle = '#59656a'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(rocketX-14,y+1); ctx.lineTo(rocketX-14,y-31); ctx.lineTo(rocketX+14,y-31); ctx.lineTo(rocketX+14,y+1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(rocketX-14,y-17); ctx.lineTo(rocketX+14,y-17); ctx.stroke();
+
+    // Observatory dome, panel arrays, and a restrained status beacon.
+    const domeX = .2*w;
+    ctx.fillStyle = '#687783'; ctx.beginPath(); ctx.arc(domeX,y-10,13,Math.PI,0); ctx.fill();
+    ctx.fillStyle = '#a8c6c8'; ctx.beginPath(); ctx.arc(domeX,y-11,8,Math.PI,0); ctx.fill();
+    ctx.strokeStyle = '#45555e'; ctx.beginPath(); ctx.moveTo(domeX,y-24); ctx.lineTo(domeX,y-30); ctx.stroke();
+    ctx.fillStyle = '#334a57'; ctx.fillRect(.74*w,y-16,.11*w,11);
+    ctx.strokeStyle = '#86a9ae'; ctx.lineWidth = .7;
+    for (let x=.75*w; x<.84*w; x+=7) { ctx.beginPath(); ctx.moveTo(x,y-16); ctx.lineTo(x,y-5); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(.74*w,y-11); ctx.lineTo(.85*w,y-11); ctx.stroke();
+    ctx.strokeStyle = '#e2b765'; ctx.beginPath(); ctx.moveTo(.91*w,y); ctx.lineTo(.91*w,y-23); ctx.stroke();
+    ctx.fillStyle = options.motion && Math.sin(options.elapsed * 3) > 0 ? '#f4d477' : '#d67c4b';
+    ctx.beginPath(); ctx.arc(.91*w,y-24,1.8,0,Math.PI*2); ctx.fill();
+
+    // Small rover motion is disabled with reduced motion/effects settings.
+    const roverX = .29*w + (options.motion ? (options.elapsed * 8) % (w * .16) : 0);
+    ctx.fillStyle = '#d6a047'; ctx.fillRect(roverX,y+1,13,6);
+    ctx.fillStyle = '#384a4d'; ctx.fillRect(roverX+7,y-3,6,4);
+    ctx.beginPath(); ctx.arc(roverX+3,y+8,2,0,Math.PI*2); ctx.arc(roverX+11,y+8,2,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#c3d0bd'; ctx.beginPath(); ctx.moveTo(roverX+12,y-3); ctx.lineTo(roverX+17,y-8); ctx.stroke();
+    drawWindsock(ctx,windsockX(w,.1),y,options.wind,options.elapsed,options.motion);
+}
+
+const renderers = { schiphol: drawSchiphol, arctic: drawArctic, volcanic: drawVolcanic, spaceport: drawSpaceport };
 
 export function drawAviationScene(ctx, scene, dimensions, options = {}) {
     const renderer = renderers[normalizeAviationScene(scene)];
