@@ -9,6 +9,7 @@
         return match ($format) {
             'temperature' => $unit->temperature($value, $activeUnits),
             'rain' => $unit->rain($value, $activeUnits),
+            'rain_rate' => $unit->rainRate($value, $activeUnits),
             'wind' => $unit->wind($value, $activeUnits),
             'pressure' => $unit->pressure($value, $activeUnits),
             'percent' => round($value) . '%',

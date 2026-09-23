@@ -292,7 +292,7 @@
         <div x-show="activeRecordTab === 'precipitation'" x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @include('weather.partials.statistics-record', ['label' => __('Most precipitation (day)'), 'record' => $records['precipitation']['wettest_day'], 'format' => 'rain', 'color' => 'text-data-indigo-500', 'id' => 'rec-rain-total'])
-                @include('weather.partials.statistics-record', ['label' => __('Highest rain rate'), 'record' => $records['precipitation']['highest_rate'], 'format' => 'rain', 'color' => 'text-data-indigo-500', 'id' => 'rec-rain-rate'])
+                @include('weather.partials.statistics-record', ['label' => __('Highest rain rate'), 'record' => $records['precipitation']['highest_rate'], 'format' => 'rain_rate', 'color' => 'text-data-indigo-500', 'id' => 'rec-rain-rate'])
             </div>
         </div>
 
