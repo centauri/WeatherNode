@@ -119,7 +119,22 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => env('APP_KEY'),
+    // Falls back to the key the Docker entrypoint generates and saves when
+    // APP_KEY is unset or still the compose placeholder. The compose
+    // scheduler container skips the entrypoint, so it needs to read the file
+    // itself. No such file exists outside Docker, so this changes nothing
+    // there.
+    'key' => (static function () {
+        $key = (string) env('APP_KEY', '');
+        if ($key !== '' && ! str_contains($key, 'REPLACE_WITH_YOUR')) {
+            return $key;
+        }
+
+        $file = storage_path('app/.app-key');
+        $saved = is_readable($file) ? trim((string) file_get_contents($file)) : '';
+
+        return $saved !== '' ? $saved : ($key !== '' ? $key : null);
+    })(),
 
     'previous_keys' => [
         ...array_filter(

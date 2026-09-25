@@ -8,7 +8,7 @@ help:
 	@echo "  make release       Auto-suggest next vYYYY.MM.patch + plain-text/Markdown changelog note"
 	@echo "  make release-note  Alias for make release"
 	@echo "  make e2e-dashboard-hybrid  Run Playwright hybrid dashboard regression against localhost (set PLAYWRIGHT_PYTHON if needed)"
-	@echo "  make docker-up     Validate APP_KEY in docker-compose.yml, then start docker compose"
+	@echo "  make docker-up     Start docker compose (notes when APP_KEY will be generated)"
 	@echo "  make docker-rebuild  Rebuild image and start docker compose"
 
 clean:
@@ -34,9 +34,8 @@ e2e-dashboard-hybrid:
 
 docker-up:
 	@if grep -q 'APP_KEY: "base64:REPLACE_WITH_YOUR_GENERATED_KEY"' docker-compose.yml; then \
-		echo "APP_KEY placeholder still set in docker-compose.yml."; \
-		echo "Generate one with: php artisan key:generate --show"; \
-		exit 1; \
+		echo "No APP_KEY set in docker-compose.yml. The container generates one on first start"; \
+		echo "and saves it in the storage volume (storage/app/.app-key)."; \
 	fi
 	@echo "Starting docker compose stack..."
 	@docker compose up -d
@@ -44,9 +43,8 @@ docker-up:
 
 docker-rebuild:
 	@if grep -q 'APP_KEY: "base64:REPLACE_WITH_YOUR_GENERATED_KEY"' docker-compose.yml; then \
-		echo "APP_KEY placeholder still set in docker-compose.yml."; \
-		echo "Generate one with: php artisan key:generate --show"; \
-		exit 1; \
+		echo "No APP_KEY set in docker-compose.yml. The container generates one on first start"; \
+		echo "and saves it in the storage volume (storage/app/.app-key)."; \
 	fi
 	@echo "Rebuilding image and starting docker compose stack..."
 	@docker compose build --no-cache

@@ -36,6 +36,7 @@ bootstrap/cache
 
 # Optional / large
 storage/app/radar-tiles
+storage/app/.app-key
 ecowitt
 telemetry-aggregator
 

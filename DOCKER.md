@@ -27,7 +27,7 @@ Run commands from the repository root (the folder containing `docker-compose.yml
 
 1. **Edit `docker-compose.yml`**
    - Update `APP_URL` for your host/domain.
-   - Replace `APP_KEY` with a real key.
+   - Optional: replace `APP_KEY` with your own key. If you leave the placeholder, the container generates one on first start and saves it in the storage volume as `storage/app/.app-key`. It encrypts saved API keys and passwords, so keep that volume in your backups.
    - Optional: set `ADMIN_EMAIL` and `ADMIN_PASSWORD` for first-run admin creation.
      - If you prefer the normal web flow, leave them empty and create the first admin from `/setup/admin` in the browser after startup.
      - `/setup/admin` is only available on a fresh install and disables itself after the first user is created.
@@ -112,14 +112,16 @@ Run migrations (and optionally seed/create admin) as above.
 - **Deploy script**: `deploy.sh` excludes `Dockerfile` and `docker-compose*.yml`, so they are not overwritten when deploying to a non-Docker server.
 - **Bootstrap toggles**: set `DOCKER_AUTO_MIGRATE` or `DOCKER_AUTO_SEED` to `"false"` in `docker-compose.yml` to disable automatic startup actions.
 - **Makefile helpers**:
-  - `make docker-up` checks that the `APP_KEY` placeholder was replaced, then runs `docker compose up -d`.
-  - `make docker-rebuild` does the same check, then runs `docker compose build --no-cache && docker compose up -d`.
+  - `make docker-up` runs `docker compose up -d`, and notes when `APP_KEY` will be generated.
+  - `make docker-rebuild` runs `docker compose build --no-cache && docker compose up -d`, with the same note.
 
 ## Lessons learned (first-boot reliability)
 
-### 1) APP_KEY must be valid for Laravel
+### 1) APP_KEY must be valid for Laravel, and must never change
 
-Use a 32-byte key encoded as `base64:...`:
+If `APP_KEY` is empty or still the placeholder, the entrypoint generates a key on first start and saves it to `storage/app/.app-key` in the storage volume. Every later start reuses it, and `config/app.php` reads the same file, so the separate scheduler container uses the same key. A key set in the environment always wins. If it differs from the saved one, the log warns that settings encrypted with the saved key cannot be read.
+
+To set your own key instead, use a 32-byte key encoded as `base64:...`:
 
 ```bash
 echo "base64:$(openssl rand -base64 32)"

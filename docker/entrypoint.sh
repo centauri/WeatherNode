@@ -186,14 +186,52 @@ echo "[entrypoint] Preparing filesystem (database driver: ${DB_CONNECTION:-sqlit
 ensure_writable_paths
 configure_php_fpm_pool
 
-case "${APP_KEY:-}" in
-    ""|"base64:REPLACE_WITH_YOUR_GENERATED_KEY"|"REPLACE_WITH_YOUR_APP_KEY")
-    echo "ERROR: APP_KEY is not set."
-    echo "Set APP_KEY in docker-compose.yml before starting Docker."
-    echo "Tip: run 'php artisan key:generate --show' and paste the value."
-    exit 1
-    ;;
-esac
+# APP_KEY encrypts saved API keys and passwords, so it has to stay the same
+# for the life of the install.
+#
+# When none is set (or the compose placeholder is still there), generate one
+# on first start and keep it on the storage volume. Every later start reuses
+# it. Platforms like Unraid expect an app to start with its defaults, and a
+# key that is not saved anywhere is lost on the next container recreate,
+# taking every encrypted setting with it.
+#
+# config/app.php reads the same file when APP_KEY is unset, which covers the
+# compose scheduler container: it overrides this entrypoint and never gets
+# the export below.
+#
+# A key set in the environment always wins, so existing installs are
+# unaffected.
+APP_KEY_FILE="$APP_DIR/storage/app/.app-key"
+
+app_key_is_unset() {
+    case "$1" in
+        ""|*REPLACE_WITH_YOUR*) return 0 ;;
+    esac
+    return 1
+}
+
+if app_key_is_unset "${APP_KEY:-}"; then
+    if [ -s "$APP_KEY_FILE" ]; then
+        APP_KEY="$(tr -d '\r\n' < "$APP_KEY_FILE")"
+        echo "[entrypoint] Using the APP_KEY saved in storage/app/.app-key."
+    else
+        APP_KEY="base64:$(head -c 32 /dev/urandom | base64 | tr -d '\n')"
+        if ! ( umask 077 && printf '%s\n' "$APP_KEY" > "$APP_KEY_FILE.tmp" && mv "$APP_KEY_FILE.tmp" "$APP_KEY_FILE" ); then
+            echo "ERROR: APP_KEY is not set, and a new one could not be saved to $APP_KEY_FILE."
+            echo "Set APP_KEY in the container settings. Generate one with:"
+            echo "  echo \"base64:\$(openssl rand -base64 32)\""
+            exit 1
+        fi
+        echo "[entrypoint] No APP_KEY was set, so one was generated and saved to storage/app/.app-key."
+        echo "[entrypoint] It encrypts saved API keys and passwords. Keep the storage folder in your backups."
+    fi
+    [ "$(id -u)" -eq 0 ] && chown www-data:www-data "$APP_KEY_FILE" 2>/dev/null || true
+    export APP_KEY
+elif [ -s "$APP_KEY_FILE" ] && [ "$(tr -d '\r\n' < "$APP_KEY_FILE")" != "$APP_KEY" ]; then
+    echo "[entrypoint] WARNING: APP_KEY differs from the key saved in storage/app/.app-key. Using APP_KEY."
+    echo "[entrypoint] Settings encrypted with the saved key (API keys, passwords) cannot be read with this one."
+    echo "[entrypoint] To go back to the saved key, remove APP_KEY from the container settings."
+fi
 
 if [ "${DOCKER_AUTO_MIGRATE:-true}" = "true" ]; then
     echo "[entrypoint] Running database migrations..."

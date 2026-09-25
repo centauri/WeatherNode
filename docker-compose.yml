@@ -2,14 +2,11 @@ x-weathernode-env: &weathernode-env
   APP_ENV: "production"
   APP_DEBUG: "false"
   APP_URL: "http://localhost:8080"
-  # Replace with your real app key before first start.
-  # Laravel requires a base64 key that decodes to exactly 32 bytes.
-  # Generate one:
+  # Encrypts saved API keys and passwords, so it must never change.
+  # Leave the placeholder to have one generated on first start and saved in
+  # the storage volume (storage/app/.app-key). Or set your own:
   #   echo "base64:$(openssl rand -base64 32)"
-  # Verify decoded byte length (must be 32):
-  #   php -r '$k="base64:..."; echo strlen(base64_decode(substr($k,7), true)).PHP_EOL;'
-  # Optional online decode/length check:
-  #   https://www.base64decode.org/
+  # A key set here always wins over the saved one.
   APP_KEY: "base64:REPLACE_WITH_YOUR_GENERATED_KEY"
   # SQLite by default (stored in the db_data volume).
   # The volume is mounted outside the app directory on purpose: mounting it over
