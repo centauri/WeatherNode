@@ -820,8 +820,11 @@ class SettingsController extends Controller
             if ($request->has($formKey)) {
                 $value = $request->input($formKey);
                 
-                // Don't update encrypted fields if they're empty (keeps existing value)
-                if ($setting->type === 'encrypted' && empty($value)) {
+                // Don't update encrypted fields if they're empty (keeps existing value),
+                // or if they hold only a display mask like ******** that a page
+                // prefilled. The mask is not the secret, and saving it replaces the
+                // real key (#97).
+                if ($setting->type === 'encrypted' && (empty($value) || preg_match('/^\*+$/', (string) $value))) {
                     continue;
                 }
                 

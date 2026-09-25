@@ -82,12 +82,19 @@
 
                         <div class="sm:w-80">
                             @if($setting->type === 'encrypted' || str_contains($setting->key, 'api_key'))
+                                {{-- Left empty on purpose: a masked value such as ******** is
+                                     posted back like any other and was saved as the key. An
+                                     empty field keeps the stored key. --}}
                                 <input type="password"
                                        id="{{ $formKey }}"
                                        name="{{ $formKey }}"
-                                       value="{{ $setting->value ? '********' : '' }}"
-                                       placeholder="{{ __('Enter your AEMET API Key') }}"
+                                       value=""
+                                       autocomplete="new-password"
+                                       placeholder="{{ $setting->value ? __('(configured - enter new value to change)') : __('Enter your AEMET API Key') }}"
                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-amber-500 focus:border-amber-500 dark:bg-gray-700 dark:text-white">
+                                @if($setting->value)
+                                    <p class="mt-1 text-xs text-green-600 dark:text-green-400">{{ __('Configured (leave empty to keep current value)') }}</p>
+                                @endif
                             @else
                                 <input type="text"
                                        id="{{ $formKey }}"
