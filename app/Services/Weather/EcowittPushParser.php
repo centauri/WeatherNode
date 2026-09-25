@@ -202,6 +202,11 @@ class EcowittPushParser
                 $batteries[$field] = (int) $raw[$field];
             }
         }
+        foreach (EcowittService::WS90_VOLTAGE_FIELDS as $field => $key) {
+            if (isset($raw[$field]) && is_numeric($raw[$field])) {
+                $batteries[$key] = round((float) $raw[$field], 2);
+            }
+        }
         if (!empty($batteries)) {
             $data['battery_status'] = $batteries;
         }

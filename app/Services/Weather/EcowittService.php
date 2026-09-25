@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Log;
 
 class EcowittService
 {
+    /**
+     * WS90 fields that carry a voltage rather than a 0/1 low-battery flag,
+     * mapped to the names the Ecowitt cloud API uses for the same readings.
+     * The dashboard only knows the cloud names, and judges them in volts.
+     * The push and local-file paths send the left-hand names.
+     */
+    public const WS90_VOLTAGE_FIELDS = [
+        'wh90batt' => 'haptic_array_battery',
+        'ws90cap_volt' => 'haptic_array_capacitor',
+    ];
+
     private string $applicationKey;
     private string $apiKey;
     private string $macAddress;
@@ -132,6 +143,22 @@ class EcowittService
     /**
      * Convert local file format to API-like structure
      */
+    /**
+     * WS90 battery and capacitor voltages, under their cloud API names.
+     * Only the ones present, so other stations do not get empty WS90 rows.
+     */
+    private function ws90Voltages(array $raw): array
+    {
+        $voltages = [];
+        foreach (self::WS90_VOLTAGE_FIELDS as $field => $key) {
+            if (isset($raw[$field]) && is_numeric($raw[$field])) {
+                $voltages[$key] = round((float) $raw[$field], 2);
+            }
+        }
+
+        return $voltages;
+    }
+
     private function convertLocalToApiFormat(array $raw): array
     {
         // Convert Fahrenheit to Celsius
@@ -207,7 +234,7 @@ class EcowittService
                 'wh65batt' => isset($raw['wh65batt']) ? (int) $raw['wh65batt'] : null,
                 'batt1' => isset($raw['batt1']) ? (int) $raw['batt1'] : null,
                 'batt2' => isset($raw['batt2']) ? (int) $raw['batt2'] : null,
-            ],
+            ] + $this->ws90Voltages($raw),
             'station' => [
                 'model' => $raw['model'] ?? null,
                 'type' => $raw['stationtype'] ?? null,
