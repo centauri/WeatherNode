@@ -44,7 +44,7 @@ class LegalPagesTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('License', false);
-        $response->assertSee('GNU GENERAL PUBLIC LICENSE', false);
+        $response->assertSee('GNU AFFERO GENERAL PUBLIC LICENSE', false);
     }
 
     public function test_disclaimer_page_is_public_and_renders_content(): void

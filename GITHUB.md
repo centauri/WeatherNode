@@ -21,7 +21,7 @@ This document regroups how WeatherNode uses GitHub for source control, releases,
 | [SECURITY.md](SECURITY.md) | How to report vulnerabilities |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Production deployment |
 | [CHANGELOG.md](CHANGELOG.md) | Notable changes per version |
-| [LICENSE.txt](LICENSE.txt) | GPL-3 |
+| [LICENSE.txt](LICENSE.txt) | AGPL-3.0 |
 
 ### Makefile and scripts
 
