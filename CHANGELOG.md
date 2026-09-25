@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.09.8] - 2026-09-26
+
+- Docker can now run everything in one container. Set `DOCKER_RUN_SCHEDULER=true` and the app container runs the scheduled tasks itself, so platforms that install one container per app, such as Unraid, work without a separate scheduler. It is off by default, so existing compose setups keep working unchanged
+- Every scheduled task now runs at most once per slot, even if two schedulers are running
+- Docker no longer needs an `APP_KEY` to start. If none is set, one is generated on first start and saved in the storage volume as `storage/app/.app-key`, so saved API keys and passwords survive a container recreate. A key you set yourself always wins
+- Fix every page returning a 500 error when the storage volume is an empty host folder instead of a Docker volume
+- Fix the WeatherLink settings page, which could not save a new station ID or v1 device ID, could not switch off demo mode or the other toggles, and put the saved API key and secret in the page source
+- "Fetch Available Stations" on the WeatherLink page now lists the stations your API key can read and fills in the one you pick
+- Fix the AEMET settings page replacing the API key with `********` when saved a second time. If AEMET stopped working for you, enter the key again (#97)
+- WS90 battery and solar capacitor voltages now reach the dashboard on the local push and local file paths, not just the Ecowitt cloud API (#129)
+- The highest rain rate record is now shown as a rate, such as 36.6 mm/h, instead of an amount (#130)
+- WeatherNode is now licensed under AGPL-3.0
+
 ## [2026.09.7] - 2026-09-22
 
 - Add station colour theming with WeatherNode, Ocean, Forest and Solar Flare palettes, each with light and dark modes while preserving the original WeatherNode Dark appearance for existing installations (#109)
