@@ -1725,6 +1725,26 @@ class SettingsController extends Controller
     }
 
     /**
+     * List the WeatherLink v2 stations the API key can read, for the station
+     * picker on the WeatherLink page. Uses the key and secret typed on the page
+     * when given, so it works before anything is saved.
+     */
+    public function weatherLinkStations(Request $request)
+    {
+        $request->validate([
+            'api_key' => ['nullable', 'string', 'max:255'],
+            'api_secret' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        return response()->json(
+            app(\App\Services\Weather\WeatherLinkService::class)->listStations(
+                $request->input('api_key'),
+                $request->input('api_secret'),
+            )
+        );
+    }
+
+    /**
      * Test API connection.
      */
     public function testApi(Request $request)
@@ -3006,7 +3026,7 @@ class SettingsController extends Controller
         Setting::setValue('weatherlink.type', $type, 'select', 'weatherlink');
         
         // Handle enabled toggle
-        Setting::setValue('weatherlink.enabled', $request->has('weatherlink_enabled'), 'boolean', 'weatherlink');
+        Setting::setValue('weatherlink.enabled', $request->boolean('weatherlink_enabled'), 'boolean', 'weatherlink');
         
         // Type-specific settings
         if ($type === 'v1') {
@@ -3055,7 +3075,7 @@ class SettingsController extends Controller
             if ($request->has('weatherlink_station_id')) {
                 Setting::setValue('weatherlink.station_id', $request->input('weatherlink_station_id'), 'string', 'weatherlink');
             }
-            Setting::setValue('weatherlink.demo_mode', $request->has('weatherlink_demo_mode'), 'boolean', 'weatherlink');
+            Setting::setValue('weatherlink.demo_mode', $request->boolean('weatherlink_demo_mode'), 'boolean', 'weatherlink');
         } elseif ($type === 'airlink_local') {
             // AirLink Local settings
             if ($request->has('weatherlink_airlink_ip')) {
@@ -3072,7 +3092,7 @@ class SettingsController extends Controller
             if ($request->has('weatherlink_wll_port')) {
                 Setting::setValue('weatherlink.wll_port', $request->input('weatherlink_wll_port'), 'integer', 'weatherlink');
             }
-            Setting::setValue('weatherlink.wll_udp_enabled', $request->has('weatherlink_wll_udp_enabled'), 'boolean', 'weatherlink');
+            Setting::setValue('weatherlink.wll_udp_enabled', $request->boolean('weatherlink_wll_udp_enabled'), 'boolean', 'weatherlink');
             if ($request->has('weatherlink_wll_udp_port')) {
                 Setting::setValue('weatherlink.wll_udp_port', $request->input('weatherlink_wll_udp_port'), 'integer', 'weatherlink');
             }

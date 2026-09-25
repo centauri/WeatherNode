@@ -197,6 +197,7 @@
                         <button type="button" id="fetch-stations-btn" class="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition">
                             {{ __('Fetch Available Stations') }}
                         </button>
+                        <div id="stations-result" class="mt-3 hidden"></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">{{ __('Demo Mode') }}</label>
@@ -312,22 +313,6 @@
             </div>
         </div>
 
-        {{-- Hidden fields to store values for each type --}}
-        @foreach(['v1', 'v2', 'airlink_local', 'wll_local'] as $t)
-            @foreach($all[$t] as $key => $value)
-                @php
-                    $formKey = 'weatherlink_' . str_replace('_', '_', $key);
-                    if ($t === 'v1' && in_array($key, ['device_id', 'password', 'api_key'])) {
-                        $formKey = 'weatherlink_' . ($key === 'api_key' ? 'v1_api_key' : $key);
-                    }
-                @endphp
-                <input type="hidden"
-                       id="hidden_{{ $t }}_{{ $key }}"
-                       name="{{ $formKey }}"
-                       value="{{ is_bool($value) ? ($value ? '1' : '0') : $value }}" />
-            @endforeach
-        @endforeach
-
         <div class="flex items-center justify-between">
             <a href="{{ route('admin.settings.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 ← {{ __('Back to Settings') }}
@@ -413,6 +398,92 @@
         } finally {
             testBtn.disabled = false;
             testBtn.textContent = '{{ __('Test Connection') }}';
+        }
+    });
+
+    // Station picker: list the stations this API key can read and fill in the
+    // chosen one. Station names come from WeatherLink, so they are inserted as
+    // text, never as HTML.
+    const stationsBtn = document.getElementById('fetch-stations-btn');
+    const stationsResult = document.getElementById('stations-result');
+    const stationIdInput = document.getElementById('weatherlink_station_id');
+
+    function showStationsMessage(message, ok) {
+        stationsResult.replaceChildren();
+        stationsResult.classList.remove('hidden');
+        const p = document.createElement('p');
+        p.className = 'text-sm ' + (ok ? 'text-gray-700 dark:text-gray-300' : 'text-red-700 dark:text-red-300');
+        p.textContent = message;
+        stationsResult.appendChild(p);
+    }
+
+    stationsBtn?.addEventListener('click', async function () {
+        stationsBtn.disabled = true;
+        stationsBtn.textContent = '{{ __('Fetching...') }}';
+
+        try {
+            const response = await fetch('{{ route('admin.settings.weatherlink.stations') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    api_key: document.getElementById('wl_v2_key')?.value || '',
+                    api_secret: document.getElementById('wl_v2_secret')?.value || ''
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            const data = await response.json();
+            showStationsMessage(data.message || '', data.success);
+
+            const list = document.createElement('ul');
+            list.className = 'mt-2 divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg';
+
+            (data.stations || []).forEach(function (station) {
+                const id = station.station_id_uuid || station.station_id;
+
+                const item = document.createElement('li');
+                item.className = 'flex items-center justify-between gap-3 p-3';
+
+                const info = document.createElement('div');
+                info.className = 'min-w-0';
+                const name = document.createElement('p');
+                name.className = 'font-medium text-gray-900 dark:text-white truncate';
+                name.textContent = station.name || ('{{ __('Station') }} ' + station.station_id);
+                const meta = document.createElement('p');
+                meta.className = 'text-xs text-gray-500 dark:text-gray-400 break-all';
+                meta.textContent = [station.location, 'ID ' + station.station_id, station.active ? null : '{{ __('inactive') }}']
+                    .filter(Boolean).join(' · ');
+                info.append(name, meta);
+
+                const use = document.createElement('button');
+                use.type = 'button';
+                use.className = 'shrink-0 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition';
+                use.textContent = '{{ __('Use') }}';
+                use.addEventListener('click', function () {
+                    stationIdInput.value = id;
+                    stationIdInput.focus();
+                    showStationsMessage('{{ __('Station ID filled in. Click Save Changes to keep it.') }}', true);
+                });
+
+                item.append(info, use);
+                list.appendChild(item);
+            });
+
+            if (list.children.length) {
+                stationsResult.appendChild(list);
+            }
+        } catch (error) {
+            showStationsMessage('{{ __('Could not fetch stations:') }} ' + (error.message || 'unknown error'), false);
+        } finally {
+            stationsBtn.disabled = false;
+            stationsBtn.textContent = '{{ __('Fetch Available Stations') }}';
         }
     });
 

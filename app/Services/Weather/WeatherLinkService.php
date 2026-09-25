@@ -118,6 +118,83 @@ class WeatherLinkService
     }
 
     /**
+     * List the stations this API key can read.
+     *
+     * Not routed through makeRequest(): that refuses to run without a station
+     * ID, and finding one is the point of this call. WeatherLink only returns
+     * stations the account owns or has been given access to.
+     *
+     * Credentials typed on the settings page but not yet saved can be passed
+     * in; anything left empty falls back to the saved value.
+     *
+     * @return array{success: bool, message: string, stations: array<int, array<string, mixed>>}
+     */
+    public function listStations(?string $apiKey = null, ?string $apiSecret = null): array
+    {
+        $apiKey = trim((string) $apiKey) !== '' ? trim((string) $apiKey) : $this->apiKey;
+        $apiSecret = trim((string) $apiSecret) !== '' ? trim((string) $apiSecret) : $this->apiSecret;
+
+        if (empty($apiKey) || empty($apiSecret)) {
+            return ['success' => false, 'message' => 'Enter your API key and API secret first.', 'stations' => []];
+        }
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['X-Api-Secret' => $apiSecret])
+                ->get($this->apiUrl . 'stations', ['api-key' => $apiKey]);
+        } catch (\Exception $e) {
+            Log::warning('WeatherLink station list request failed', ['error' => $e->getMessage()]);
+
+            return ['success' => false, 'message' => 'Could not reach WeatherLink. Try again in a moment.', 'stations' => []];
+        }
+
+        if (in_array($response->status(), [401, 403], true)) {
+            return ['success' => false, 'message' => 'WeatherLink rejected this API key and secret.', 'stations' => []];
+        }
+
+        if (!$response->successful()) {
+            Log::warning('WeatherLink station list returned an error', ['status' => $response->status()]);
+
+            return ['success' => false, 'message' => 'WeatherLink returned an error (HTTP ' . $response->status() . ').', 'stations' => []];
+        }
+
+        // Only what the picker shows. The response also carries the account's
+        // e-mail, IMEI and subscription details, which the page has no use for.
+        $stations = [];
+        foreach ((array) ($response->json('stations') ?? []) as $station) {
+            if (!is_array($station) || !isset($station['station_id'])) {
+                continue;
+            }
+            $stations[] = [
+                'station_id' => (string) $station['station_id'],
+                'station_id_uuid' => isset($station['station_id_uuid']) ? (string) $station['station_id_uuid'] : null,
+                'name' => (string) ($station['station_name'] ?? ''),
+                'location' => implode(', ', array_filter([
+                    $station['city'] ?? null,
+                    $station['region'] ?? null,
+                    $station['country'] ?? null,
+                ], fn ($part) => is_string($part) && trim($part) !== '')),
+                'active' => (bool) ($station['active'] ?? true),
+                'relationship' => isset($station['relationship_type']) ? (string) $station['relationship_type'] : null,
+            ];
+        }
+
+        if ($stations === []) {
+            return [
+                'success' => true,
+                'message' => 'This account has no stations. WeatherLink only lists stations you own or that were shared with you.',
+                'stations' => [],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => count($stations) === 1 ? 'Found 1 station.' : 'Found ' . count($stations) . ' stations.',
+            'stations' => $stations,
+        ];
+    }
+
+    /**
      * Make API request to WeatherLink v2
      * 
      * Uses header-based authentication with X-Api-Secret header (current standard).
