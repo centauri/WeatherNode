@@ -28,6 +28,10 @@ x-weathernode-env: &weathernode-env
   CONTAINERIZED: "true"
   DOCKER_AUTO_MIGRATE: "true"
   DOCKER_AUTO_SEED: "true"
+  # The scheduler service below runs the scheduled tasks. Set this to "true" to
+  # run them inside the app container instead, then remove the scheduler
+  # service. Leaving both on is safe (each task still runs once), just wasteful.
+  DOCKER_RUN_SCHEDULER: "false"
   # Optional first-run admin bootstrap (Docker only).
   # Option A: set ADMIN_* below to auto-create the first admin on initial startup.
   # Option B: leave ADMIN_EMAIL/ADMIN_PASSWORD empty and create the first admin in-browser at /setup/admin.

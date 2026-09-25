@@ -116,7 +116,13 @@ CONF
 }
 
 ensure_writable_paths() {
-    mkdir -p "$APP_DIR/storage/logs" "$APP_DIR/storage/app" "$APP_DIR/bootstrap/cache"
+    # The full tree, not just the top: a named volume is seeded from the image,
+    # but a bind-mounted host folder (Unraid appdata, for one) starts empty, and
+    # without framework/views every page 500s with "Please provide a valid
+    # cache path".
+    mkdir -p "$APP_DIR/storage/logs" "$APP_DIR/storage/app/public" \
+        "$APP_DIR/storage/framework/cache/data" "$APP_DIR/storage/framework/sessions" \
+        "$APP_DIR/storage/framework/views" "$APP_DIR/bootstrap/cache"
 
     # Only for SQLite: a MySQL/Postgres install has no file to create, and
     # DB_DATABASE holds a schema name rather than a path.
@@ -239,6 +245,41 @@ fi
 if [ "$(id -u)" -eq 0 ]; then
     fix_ownership "$APP_DIR/storage"
     fix_ownership "$APP_DIR/bootstrap/cache"
+fi
+
+# Optionally run the Laravel scheduler inside this container.
+#
+# docker-compose.yml runs it in a second container, which is why this is off
+# unless DOCKER_RUN_SCHEDULER=true. Platforms that install one container per
+# app, such as Unraid, turn it on. If both run anyway, every task still runs
+# once per slot: routes/console.php marks them all onOneServer().
+#
+# Written or removed on every start rather than baked into the image, so
+# flipping the variable and restarting is enough. schedule:work starts
+# schedule:run at the top of each minute, so tasks do not drift the way a
+# `sleep 60` loop does.
+SCHEDULER_CONF="/etc/supervisor/weathernode.d/scheduler.conf"
+if [ "${DOCKER_RUN_SCHEDULER:-false}" = "true" ]; then
+    if [ -w "$(dirname "$SCHEDULER_CONF")" ]; then
+        echo "[entrypoint] DOCKER_RUN_SCHEDULER=true: running the scheduler in this container."
+        cat > "$SCHEDULER_CONF" <<CONF
+[program:scheduler]
+command=php $APP_DIR/artisan schedule:work --whisper --no-interaction
+user=www-data
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+CONF
+    else
+        echo "[entrypoint] WARNING: DOCKER_RUN_SCHEDULER=true, but $(dirname "$SCHEDULER_CONF") is not writable, so the scheduler will not run in this container."
+    fi
+else
+    rm -f "$SCHEDULER_CONF" 2>/dev/null || true
 fi
 
 # Run whatever the container was asked to run. The default comes from CMD in

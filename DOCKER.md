@@ -18,7 +18,7 @@ This document describes running WeatherNode in Docker and how to use it.
 | Node/npm (frontend build) | Multi-stage build: run `npm ci && npm run build` in a Node stage and copy `public/build` into the PHP image. No Node in the final image. |
 | SQLite or MySQL | SQLite: named volume at `/var/lib/weathernode`, outside the app directory. MySQL: use a `mysql` service in `docker-compose` and set `DB_*` in `.env`. |
 | Web server (document root = `public/`) | Nginx runs in the same image via supervisord. |
-| Laravel scheduler (cron) | A second container from the same image runs `php artisan schedule:run` every minute. |
+| Laravel scheduler (cron) | A second container from the same image runs `php artisan schedule:run` every minute. Or set `DOCKER_RUN_SCHEDULER=true` to run it inside the app container instead (see below). |
 | Writable storage | Named volumes for `storage/` and `bootstrap/cache`. |
 
 ## Quick start
@@ -108,6 +108,7 @@ Run migrations (and optionally seed/create admin) as above.
 
 - **Laravel Sail**: The project has `laravel/sail` in `require-dev` for local development. This Docker setup is a self-contained production-style alternative.
 - **Cron on the host**: Not required; the `scheduler` container replaces it.
+- **One container instead of two**: set `DOCKER_RUN_SCHEDULER: "true"` and the app container runs the scheduler itself, next to nginx and php-fpm. This is for platforms that install one container per app, such as Unraid. It is off by default, so existing compose setups keep working unchanged. If you turn it on, remove the `scheduler` service from `docker-compose.yml`. If you forget, nothing runs twice: every task takes a lock in the shared cache first, so each one still runs once per slot.
 - **Deploy script**: `deploy.sh` excludes `Dockerfile` and `docker-compose*.yml`, so they are not overwritten when deploying to a non-Docker server.
 - **Bootstrap toggles**: set `DOCKER_AUTO_MIGRATE` or `DOCKER_AUTO_SEED` to `"false"` in `docker-compose.yml` to disable automatic startup actions.
 - **Makefile helpers**:

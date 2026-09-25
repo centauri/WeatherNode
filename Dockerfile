@@ -118,9 +118,16 @@ RUN echo 'server { \
     location ~ /\.(?!well-known).* { deny all; } \
 }' > /etc/nginx/sites-available/default
 
-# Supervisord: nginx + php-fpm
-RUN echo '[supervisord]\n\
+# Supervisord: nginx + php-fpm, plus whatever the entrypoint drops into
+# /etc/supervisor/weathernode.d. That folder ships empty. With
+# DOCKER_RUN_SCHEDULER=true the entrypoint adds the Laravel scheduler there, so
+# one container can run everything (the Unraid template needs that). Off by
+# default because docker-compose.yml already runs a separate scheduler container.
+RUN mkdir -p /etc/supervisor/weathernode.d && echo '[supervisord]\n\
 nodaemon=true\n\
+\n\
+[include]\n\
+files = /etc/supervisor/weathernode.d/*.conf\n\
 \n\
 [program:php-fpm]\n\
 command=php-fpm\n\
