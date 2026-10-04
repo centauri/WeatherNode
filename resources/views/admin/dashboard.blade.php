@@ -193,23 +193,27 @@
                     <div class="flex items-center justify-between p-3 rounded-lg 
                         @if($battery['state'] === 'good') bg-green-50 dark:bg-green-900/20
                         @elseif($battery['state'] === 'medium') bg-yellow-50 dark:bg-yellow-900/20
+                        @elseif($battery['state'] === 'unknown') bg-gray-50 dark:bg-gray-700/30
                         @else bg-red-50 dark:bg-red-900/20
                         @endif">
                         <div class="flex items-center">
                             <div class="w-8 h-4 rounded border-2 relative
                                 @if($battery['state'] === 'good') border-green-500
                                 @elseif($battery['state'] === 'medium') border-yellow-500
+                                @elseif($battery['state'] === 'unknown') border-gray-400
                                 @else border-red-500
                                 @endif">
                                 <div class="absolute inset-0.5 rounded-sm 
                                     @if($battery['state'] === 'good') bg-green-500
                                     @elseif($battery['state'] === 'medium') bg-yellow-500
+                                    @elseif($battery['state'] === 'unknown') bg-gray-400
                                     @else bg-red-500
                                     @endif" 
                                     style="width: {{ max(10, $battery['percentage'] - 10) }}%"></div>
                                 <div class="absolute -right-1 top-1/2 -translate-y-1/2 w-0.5 h-2 rounded-r
                                     @if($battery['state'] === 'good') bg-green-500
                                     @elseif($battery['state'] === 'medium') bg-yellow-500
+                                    @elseif($battery['state'] === 'unknown') bg-gray-400
                                     @else bg-red-500
                                     @endif"></div>
                             </div>
@@ -218,6 +222,7 @@
                         <span class="text-sm font-semibold 
                             @if($battery['state'] === 'good') text-green-600 dark:text-green-400
                             @elseif($battery['state'] === 'medium') text-yellow-600 dark:text-yellow-400
+                            @elseif($battery['state'] === 'unknown') text-gray-500 dark:text-gray-400
                             @else text-red-600 dark:text-red-400
                             @endif">
                             {{ $battery['display'] }}

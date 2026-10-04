@@ -66,6 +66,7 @@ class SettingsSeeder extends Seeder
             ['key' => 'ecowitt.application_key', 'value' => '', 'type' => 'encrypted', 'group' => 'ecowitt', 'description' => 'Ecowitt Application Key (for cloud API - from api.ecowitt.net)'],
             ['key' => 'ecowitt.api_key', 'value' => '', 'type' => 'encrypted', 'group' => 'ecowitt', 'description' => 'Ecowitt API Key (for cloud API)'],
             ['key' => 'ecowitt.mac_address', 'value' => '', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Ecowitt device MAC address (e.g., AA:BB:CC:DD:EE:FF)'],
+            ['key' => 'ecowitt.rain_gauge', 'value' => 'auto', 'type' => 'select', 'group' => 'ecowitt', 'description' => 'Which rain gauge to read. Auto uses a WS90 or WS85 piezo gauge unless a tipping bucket has recorded rain this year', 'options' => 'auto:Auto,tipping:Tipping bucket (WH40 / WS69),piezo:Piezo (WS90 / WS85)'],
             ['key' => 'ecowitt.api_base_url', 'value' => 'https://api.ecowitt.net/api/v3/', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Ecowitt API base URL (cloud or local gateway)'],
             ['key' => 'ecowitt.local_file', 'value' => './ecowitt/ecco_lcl.arr', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Path to local Ecowitt data file'],
             ['key' => 'ecowitt.lightning_sensor', 'value' => '1', 'type' => 'boolean', 'group' => 'ecowitt', 'description' => 'Station has lightning sensor'],

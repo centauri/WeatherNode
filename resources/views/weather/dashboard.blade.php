@@ -372,7 +372,11 @@
         if ($ssrWidgetFlags['battery']) {
             $lines = [];
             foreach (array_slice($ssrBatteryStatus, 0, 5, true) as $key => $val) {
-                $lines[] = (string) $key . ': ' . ((string) $val);
+                // Already judged by BatteryStatus: name it and give its status.
+                $name = is_array($val) && ($val['label'] ?? '') !== ''
+                    ? __($val['label']) . (($val['channel'] ?? null) !== null ? ' ' . $val['channel'] : '')
+                    : (string) $key;
+                $lines[] = $name . ': ' . (is_array($val) ? __($val['status'] ?? 'Unknown') : (string) $val);
             }
             $ssrHybridCards[] = ['id' => 'battery', 'title' => __('Battery Status'), 'lines' => $lines ?: [__('No battery data')]];
         }
@@ -964,6 +968,33 @@
                     // Wind compass points (English keys; locale files may remap e.g. NNE→NNO)
                     'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
                     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+                    // Battery labels and statuses from App\Support\BatteryStatus (#131).
+                    'Indoor Sensor (WH25)',
+                    'Temperature/Humidity Sensor (WH26)',
+                    'CO2 Sensor (WH45)',
+                    'Console',
+                    'Rain Sensor (WH40)',
+                    'Solar/Wind Sensor (WH68)',
+                    'Ultrasonic Wind Sensor (WH80)',
+                    'WS85 Sensor Array',
+                    'WS85 Solar Capacitor',
+                    'Black Globe Thermometer (WN38)',
+                    'Sensor (WN20)',
+                    'Indoor Sensor',
+                    'Outdoor Sensor Array',
+                    'Lightning Sensor',
+                    'Air Quality Combo Sensor',
+                    'Ultrasonic Wind Sensor',
+                    'Rain Sensor',
+                    'Black Globe Thermometer',
+                    'WS90 Batteries (AA)',
+                    'WS90 Solar Capacitor',
+                    'Soil EC Sensor',
+                    'Temperature Probe',
+                    'Leaf Wetness Sensor',
+                    'Water Level Sensor',
+                    'OK',
+                    'Mains',
                 ];
 
         $dashboardI18n = [];
@@ -3791,7 +3822,7 @@
                             <div class="flex justify-between items-center py-1 border-b border-ui-line/5 last:border-0">
                                 <span class="text-ui-muted flex items-center gap-2">
                                     <span x-text="getBatteryIcon(key, value)"></span>
-                                    <span x-text="getBatteryLabel(key)"></span>
+                                    <span x-text="getBatteryLabel(key, value)"></span>
                                 </span>
                                 <span class="font-medium" 
                                       :class="getBatteryStatus(key, value).class"

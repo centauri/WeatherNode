@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Support\BatteryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\WeatherReading;
 use App\Models\Setting;
@@ -379,11 +380,11 @@ class EcowittController extends Controller
                 'has_pm25' => $reading->hasPm25Sensors(),
                 'has_co2' => $reading->co2 !== null,
                 // Lightning sensor is present if we have distance, count, or time data
-                // Also check battery status - if wh57batt exists, sensor is present
+                // Also check battery status: push calls it wh57batt, the cloud lightning_sensor
                 'has_lightning' => $reading->lightning_distance !== null 
                     || $reading->lightning_count !== null 
                     || $reading->lightning_time !== null
-                    || (isset($current['battery_status']['wh57batt']) && $current['battery_status']['wh57batt'] !== null),
+                    || BatteryStatus::has($current['battery_status'] ?? null, ['wh57batt', 'lightning_sensor']),
                 'has_leak' => $reading->hasLeakAlert(),
             ] : null,
             'battery_status' => $current['battery_status'] ?? null,
