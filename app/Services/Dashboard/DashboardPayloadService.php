@@ -3,6 +3,7 @@
 namespace App\Services\Dashboard;
 
 use App\Support\BatteryStatus;
+use App\Support\ExtraSensors;
 use App\Models\DailySummary;
 use App\Models\Setting;
 use App\Models\WeatherReading;
@@ -140,6 +141,7 @@ class DashboardPayloadService
             'lightning_count_daily',
             'lightning_time',
             'battery_status',
+            'extra_sensors',
             'station_type',
             'station_model',
         ];
@@ -244,6 +246,14 @@ class DashboardPayloadService
             if ($reading->co2) {
                 $extraSensors = $extraSensors ?? [];
                 $extraSensors['co2'] = $reading->co2;
+            }
+
+            // Newer Ecowitt sensors kept as JSON (black globe, soil EC, water
+            // level, wetness, water quality), as lines for the More sensors card.
+            $moreSensors = ExtraSensors::lines($reading->extra_sensors);
+            if ($moreSensors !== []) {
+                $extraSensors = $extraSensors ?? [];
+                $extraSensors['more'] = $moreSensors;
             }
 
             // Lightning data

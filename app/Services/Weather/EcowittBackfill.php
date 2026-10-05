@@ -35,19 +35,25 @@ class EcowittBackfill
 
     /**
      * The history endpoint refuses call_back=all ("all is invalid"), so the
-     * groups are named. Groups a station does not have are left out of the answer.
+     * groups are named. Groups a station does not have are left out of the
+     * answer, but a name it does not know fails the whole request, so only
+     * names from the API doc go in.
      */
     public static function historyGroups(): string
     {
         $groups = [
             'outdoor', 'indoor', 'solar_and_uvi', 'rainfall', 'rainfall_piezo', 'wind', 'pressure', 'lightning',
             'indoor_co2', 'co2_aqi_combo', 'pm25_aqi_combo', 'pm10_aqi_combo', 't_rh_aqi_combo', 'water_leak',
+            'black_globe_temperature', 'wetness_status', 'wqt01',
         ];
         for ($i = 1; $i <= 8; $i++) {
             array_push($groups, "temp_and_humidity_ch{$i}", "soil_ch{$i}", "leaf_ch{$i}");
         }
         for ($i = 1; $i <= 4; $i++) {
-            $groups[] = "pm25_ch{$i}";
+            array_push($groups, "pm25_ch{$i}", "ch_lds{$i}");
+        }
+        for ($i = 1; $i <= 16; $i++) {
+            $groups[] = "soil_moisture_ec_ch{$i}";
         }
 
         return implode(',', $groups);

@@ -978,6 +978,7 @@ class SettingsController extends Controller
             'pm25' => ['label' => 'PM2.5 Air Quality', 'icon' => 'cloud', 'description' => 'Particulate matter sensors'],
             'co2' => ['label' => 'CO2 Monitor', 'icon' => 'gauge', 'description' => 'Carbon dioxide levels'],
             'leak' => ['label' => 'Leak Detection', 'icon' => 'droplet', 'description' => 'Water leak sensor alerts'],
+            'more_sensors' => ['label' => 'More Sensors', 'icon' => 'gauge', 'description' => 'Black globe, soil EC, water level, wetness and water quality sensors'],
             'battery' => ['label' => 'Battery Status', 'icon' => 'battery', 'description' => 'Sensor battery levels'],
             
             // Advertising widget

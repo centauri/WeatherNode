@@ -3,6 +3,7 @@
 namespace App\Services\Weather;
 
 use App\Support\BatteryStatus;
+use App\Support\ExtraSensors;
 use App\Support\RainGauge;
 use App\Services\Weather\Normalization\UnitConverter;
 use Carbon\Carbon;
@@ -176,6 +177,11 @@ class EcowittPushParser
         $batteries = BatteryStatus::fromPush($raw);
         if (!empty($batteries)) {
             $data['battery_status'] = $batteries;
+        }
+
+        $extra = ExtraSensors::fromPush($raw);
+        if ($extra !== []) {
+            $data['extra_sensors'] = $extra;
         }
 
         if (isset($raw['stationtype'])) {

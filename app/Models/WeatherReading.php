@@ -104,6 +104,7 @@ class WeatherReading extends Model
         
         // Battery / sensor status
         'battery_status',
+        'extra_sensors',
         
         // Station info
         'station_type',
@@ -116,6 +117,7 @@ class WeatherReading extends Model
         'recorded_at' => 'datetime',
         'lightning_time' => 'datetime',
         'battery_status' => 'array',
+        'extra_sensors' => 'array',
         
         // Floats
         'temperature' => 'float',
@@ -522,6 +524,7 @@ class WeatherReading extends Model
                 'humidity' => $this->co2_humidity,
             ] : null,
             'leak_alert' => $this->hasLeakAlert(),
+            'extra_sensors' => $this->extra_sensors ?: null,
             'station' => [
                 'type' => $this->station_type,
                 'model' => $this->station_model,
