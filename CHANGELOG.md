@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.10.0] - 2026-10-05
+
+- WS90 and WS85 rain is now recorded from the piezo gauge. Auto picks the right gauge, and the Ecowitt page lets you choose one (#132)
+- Ecowitt batteries now read the same on the admin and public dashboards for push, local file and cloud. The lightning sensor no longer shows Low when it is fine (#131)
+- The Ecowitt cloud now stores every sensor: extra temperature and humidity channels, last lightning strike, air quality, CO2, soil, leaf and leak. The local file stores everything a push does
+- New Ecowitt settings page: pick push, cloud or local file and see only what that needs. Find my stations fills in the MAC address, and a status line shows whether Ecowitt hears from your station. Every sensor channel can be named
+- Gaps in your readings are filled from the Ecowitt cloud history every hour, for any source once cloud keys are set
+- Newer sensors are stored and shown on a new More sensors card: WN38 black globe, WH52 soil EC, water level, wetness, water quality, WN34 probes and the WS90 wet state
+- The community stations page no longer shows 0 stations when GitHub's limit runs out. A new site address replaces the old entry, switching sharing off removes it, and local addresses show as Local only
+
 ## [2026.09.8] - 2026-09-26
 
 - Docker can now run everything in one container. Set `DOCKER_RUN_SCHEDULER=true` and the app container runs the scheduled tasks itself, so platforms that install one container per app, such as Unraid, work without a separate scheduler. It is off by default, so existing compose setups keep working unchanged
