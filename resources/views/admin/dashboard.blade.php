@@ -9,7 +9,7 @@
 @section('content')
 <!-- Telemetry Status Card (Prominent) -->
 <div class="mb-6">
-    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 md:p-6 text-white">
+    <div class="bg-gradient-to-r from-slate-800 to-sky-700 rounded-xl shadow-lg p-4 md:p-6 text-white">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center space-x-4">
                 <div class="p-3 rounded-full bg-white/20 flex-shrink-0">
@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <h3 class="text-base md:text-lg font-semibold">{{ __('Community Telemetry') }}</h3>
-                    <p class="text-xs md:text-sm text-indigo-100">
+                    <p class="text-xs md:text-sm text-sky-100">
                         @if($telemetryEnabled)
                             {{ __('Your station is shared on the community map') }}
                         @else
@@ -37,7 +37,7 @@
                         <input type="hidden" name="github_file" value="{{ \App\Models\Setting::getValue('telemetry.github_file', 'stations.json') }}">
                         <button type="submit"
                                 @click="telemetryEnabled = !telemetryEnabled"
-                                :class="telemetryEnabled ? 'bg-white text-indigo-600' : 'bg-white/20 text-white border-2 border-white'"
+                                :class="telemetryEnabled ? 'bg-white text-sky-700' : 'bg-white/20 text-white border-2 border-white'"
                                 class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition-colors text-sm md:text-base">
                             <span x-text="telemetryEnabled ? labelDisable : labelEnable"></span>
                         </button>
@@ -56,7 +56,7 @@
         </div>
         @if($telemetryEnabled && $telemetryLastUpdated)
         <div class="mt-4 pt-4 border-t border-white/20">
-            <p class="text-xs md:text-sm text-indigo-100">
+            <p class="text-xs md:text-sm text-sky-100">
                 {{ __('Last updated') }}: {{ \Carbon\Carbon::parse($telemetryLastUpdated)->format('Y-m-d H:i:s') }}
             </p>
         </div>
