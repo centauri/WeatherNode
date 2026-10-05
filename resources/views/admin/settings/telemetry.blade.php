@@ -116,6 +116,13 @@
                         <span class="ml-2 font-medium text-gray-900 dark:text-white break-all">{{ $stationData['url'] }}</span>
                     </div>
                 </div>
+                @php($localWarning = \App\Services\Telemetry\TelemetryService::localAddressWarning((string) $stationData['url']))
+                @if($localWarning)
+                    <div class="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-200">
+                        {{ __('Your station is shared with a local address. Visitors cannot open it, so the community map shows it as local only. You can still share it.') }}
+                        <a href="{{ route('admin.settings.group', 'station') }}" class="font-medium underline">{{ __('Set a public Server URL in Station settings') }}</a>
+                    </div>
+                @endif
             </div>
         </div>
         @endif

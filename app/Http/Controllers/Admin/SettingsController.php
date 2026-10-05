@@ -887,16 +887,9 @@ class SettingsController extends Controller
 
         try {
             $telemetryService = app(\App\Services\Telemetry\TelemetryService::class);
-            $aggregatorService = app(\App\Services\Telemetry\TelemetryAggregatorService::class);
-            
+
             if ($telemetryService->shouldUpdate()) {
-                $stationData = $telemetryService->collectStationData();
-                if ($stationData) {
-                    $success = $aggregatorService->sendStationData($stationData);
-                    if ($success) {
-                        $telemetryService->markAsUpdated($stationData);
-                    }
-                }
+                $telemetryService->publish();
             }
         } catch (\Exception $e) {
             \Log::error('Failed to auto-update telemetry', [
@@ -1650,15 +1643,11 @@ class SettingsController extends Controller
         if ($enabled) {
             try {
                 $telemetryService = app(\App\Services\Telemetry\TelemetryService::class);
-                $aggregatorService = app(\App\Services\Telemetry\TelemetryAggregatorService::class);
-                
+
                 if ($telemetryService->shouldUpdate()) {
-                    $stationData = $telemetryService->collectStationData();
-                    if ($stationData) {
-                        $success = $aggregatorService->sendStationData($stationData);
-                        if ($success) {
-                            $telemetryService->markAsUpdated($stationData);
-                        }
+                    $result = $telemetryService->publish();
+                    if (!$result['success']) {
+                        session()->flash('error', $result['message']);
                     }
                 }
             } catch (\Exception $e) {
@@ -1669,12 +1658,7 @@ class SettingsController extends Controller
         } else {
             // If disabled, remove station from aggregator
             try {
-                $telemetryService = app(\App\Services\Telemetry\TelemetryService::class);
-                $aggregatorService = app(\App\Services\Telemetry\TelemetryAggregatorService::class);
-                $stationId = $telemetryService->getStationId();
-                if ($stationId) {
-                    $aggregatorService->removeStation($stationId);
-                }
+                app(\App\Services\Telemetry\TelemetryService::class)->unpublish();
             } catch (\Exception $e) {
                 \Log::error('Failed to remove station from aggregator', [
                     'error' => $e->getMessage(),
@@ -1693,38 +1677,7 @@ class SettingsController extends Controller
     public function updateTelemetryNow()
     {
         try {
-            $telemetryService = app(\App\Services\Telemetry\TelemetryService::class);
-            $aggregatorService = app(\App\Services\Telemetry\TelemetryAggregatorService::class);
-            
-            $enabled = Setting::getValue('telemetry.enabled', false);
-            if (!$enabled) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Telemetry is disabled. Enable it first.',
-                ]);
-            }
-            
-            $stationData = $telemetryService->collectStationData();
-            if (!$stationData) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to collect station data.',
-                ]);
-            }
-            
-            $result = $aggregatorService->sendStationData($stationData);
-            if ($result) {
-                $telemetryService->markAsUpdated($stationData);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Station data sent to aggregator successfully!',
-                ]);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send data to aggregator. Check aggregator URL and API key.',
-            ]);
+            return response()->json(app(\App\Services\Telemetry\TelemetryService::class)->publish());
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

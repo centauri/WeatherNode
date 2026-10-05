@@ -171,6 +171,7 @@
                                     <p x-show="station.url">
                                         <a :href="station.url" target="_blank" class="text-data-blue-400 hover:underline">{{ __('Visit station') }} &rarr;</a>
                                     </p>
+                                    <p x-show="station.local_only" class="text-ui-subtle">{{ __('Local only') }}</p>
                                 </div>
                             </div>
                         </template>
@@ -189,6 +190,7 @@ const communityI18n = {
     hardware: @json(__('Hardware')),
     manufacturer: @json(__('Manufacturer')),
     visitStation: @json(__('Visit station')),
+    localOnly: @json(__('Local only')),
     updated: @json(__('Updated')),
     unknownCountry: @json(__('Unknown country')),
 };
@@ -304,6 +306,7 @@ function communityStations() {
                                 ${station.hardware ? `<p><strong>${communityI18n.hardware}:</strong> ${self.escapeHtml(station.hardware)}</p>` : ''}
                                 ${station.manufacturer ? `<p><strong>${communityI18n.manufacturer}:</strong> ${self.escapeHtml(station.manufacturer)}</p>` : ''}
                                 ${station.url ? `<p><a href="${self.escapeHtml(station.url)}" target="_blank">${communityI18n.visitStation} &rarr;</a></p>` : ''}
+                                ${station.local_only ? `<p class="text-xs text-ui-subtle">${communityI18n.localOnly}</p>` : ''}
                                 ${station.updated_at ? `<p class="text-xs text-ui-subtle">${communityI18n.updated}: ${new Date(station.updated_at).toLocaleDateString(window.Meteo?.jsLocale || 'en-US')}</p>` : ''}
                             </div>
                         `;
