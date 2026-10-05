@@ -14,10 +14,8 @@ namespace App\Support;
  *   volts  a real voltage, low below a threshold for that battery
  *
  * The cloud API names the same sensors differently from the push protocol,
- * wraps every value as time/unit/value, and reports some sensors as a
- * different kind (the lightning sensor is a level in push and a flag in the
- * cloud). So the kind travels with the name it arrived under, and nothing is
- * renamed across the two.
+ * and wraps every value as time/unit/value. The kind travels with the name it
+ * arrived under, and nothing is renamed across the two.
  *
  * Push kinds are from aioecowitt, the parser Home Assistant uses. Cloud names,
  * kinds and the voltage thresholds are from CumulusMX's Ecowitt cloud station.
@@ -64,7 +62,9 @@ final class BatteryStatus
         't_rh_p_sensor' => ['Indoor Sensor', 'flag'],
         'outdoor_t_rh_sensor' => ['Temperature/Humidity Sensor', 'flag'],
         'sensor_array' => ['Outdoor Sensor Array', 'flag'],
-        'lightning_sensor' => ['Lightning Sensor', 'flag'],
+        // A level, as in push. CumulusMX treats it as a flag, but a captured
+        // cloud response from a healthy WH57 reads 4.
+        'lightning_sensor' => ['Lightning Sensor', 'level'],
         'aqi_combo_sensor' => ['Air Quality Combo Sensor', 'flag'],
         'console' => ['Console', 'volts', self::TWO_CELL],
         'ws1900_console' => ['Console', 'volts', self::SINGLE_CELL],

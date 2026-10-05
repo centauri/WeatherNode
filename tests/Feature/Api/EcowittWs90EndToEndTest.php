@@ -77,7 +77,7 @@ class EcowittWs90EndToEndTest extends TestCase
         app(EcowittService::class)->saveReading($this->payload('cloud_ws90_lightning_raining'));
 
         $this->assertSame(
-            ['haptic_array_battery' => 3.12, 'haptic_array_capacitor' => 5.3, 'lightning_sensor' => 0],
+            ['haptic_array_battery' => 3.12, 'haptic_array_capacitor' => 5.3, 'lightning_sensor' => 5],
             $this->latest()->battery_status
         );
     }

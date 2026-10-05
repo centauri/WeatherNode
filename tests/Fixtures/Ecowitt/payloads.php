@@ -120,7 +120,29 @@ return [
         'battery' => [
             'haptic_array_battery' => ['time' => '1759400000', 'unit' => 'V', 'value' => '3.12'],
             'haptic_array_capacitor' => ['time' => '1759400000', 'unit' => 'V', 'value' => '5.3'],
-            'lightning_sensor' => ['time' => '1759400000', 'unit' => '', 'value' => '0'],
+            'lightning_sensor' => ['time' => '1759400000', 'unit' => '', 'value' => '5'],
+        ],
+    ],
+
+    // Captured from the Ecowitt cloud API on 5 October 2026 (rain and battery
+    // groups only): a WH65 array with a tipping bucket, a WH57 lightning
+    // sensor and two WH31s. The lightning sensor comes back as 4, a level.
+    'cloud_wh65_captured' => [
+        'rainfall' => [
+            'rain_rate' => ['time' => '1791209779', 'unit' => 'mm/hr', 'value' => '0.0'],
+            'daily' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '0.0'],
+            'event' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '0.0'],
+            '1_hour' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '0.0'],
+            'weekly' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '0.0'],
+            'monthly' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '7.4'],
+            'yearly' => ['time' => '1791209779', 'unit' => 'mm', 'value' => '354.5'],
+        ],
+        'battery' => [
+            'outdoor_t_rh_sensor' => ['time' => '1791209779', 'unit' => '', 'value' => '0'],
+            'sensor_array' => ['time' => '1791209779', 'unit' => '', 'value' => '0'],
+            'lightning_sensor' => ['time' => '1791209779', 'unit' => '', 'value' => '4'],
+            'temp_humidity_sensor_ch1' => ['time' => '1791209779', 'unit' => '', 'value' => '0'],
+            'temp_humidity_sensor_ch2' => ['time' => '1791209779', 'unit' => '', 'value' => '0'],
         ],
     ],
 ];
