@@ -24,7 +24,7 @@ use Tests\TestCase;
  *
  * Writing: the entry's id is a hash of the site address. A new address made a
  * new entry and left the old one listed; switching sharing off never removed
- * the entry; LAN and localhost addresses were published; and coordinates got a
+ * the entry; a LAN address was published as is; and coordinates got a
  * new random offset on every send, so the aggregator saw a change every day.
  */
 class CommunityStationsTest extends TestCase
@@ -154,7 +154,8 @@ class CommunityStationsTest extends TestCase
         $this->assertSame($sent[1]['station']['id'], Setting::getValue('telemetry.station_id'));
     }
 
-    public function test_a_lan_or_localhost_address_is_not_shared(): void
+    /** A local address is shared, but the admin is told visitors cannot open it. */
+    public function test_a_lan_or_localhost_address_is_shared_with_a_warning(): void
     {
         foreach (['http://192.168.1.10:10130', 'http://localhost:8086', 'http://127.0.0.1:8000', 'http://10.0.0.5', 'http://weatherpi.local'] as $url) {
             $this->share($url);
@@ -162,10 +163,44 @@ class CommunityStationsTest extends TestCase
 
             $result = app(TelemetryService::class)->publish();
 
-            $this->assertFalse($result['success'], $url);
-            $this->assertStringContainsString('public address', $result['message']);
+            $this->assertTrue($result['success'], $url);
+            $this->assertStringContainsString('local address', $result['warning'], $url);
+            $this->assertSame($url, collect($this->sent())->whereNotNull('station')->last()['station']['url']);
         }
-        $this->assertSame([], $this->sent());
+    }
+
+    public function test_a_public_address_gets_no_warning(): void
+    {
+        $this->share('https://weather.example.org');
+        Http::fake([self::AGGREGATOR => Http::response(['success' => true])]);
+
+        $this->assertNull(app(TelemetryService::class)->publish()['warning']);
+    }
+
+    public function test_the_telemetry_page_points_out_a_local_address(): void
+    {
+        $this->share('http://192.168.1.15:10130');
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get(route('admin.settings.telemetry'))
+            ->assertOk()
+            ->assertSee('local address')
+            ->assertSee(route('admin.settings.group', 'station'), false);
+    }
+
+    /** The public list never shows a LAN address, only that the station is local. */
+    public function test_the_community_page_shows_local_stations_as_local_only(): void
+    {
+        $file = $this->file(1);
+        $file['stations'][] = ['id' => 'lan', 'name' => 'LAN Station', 'url' => 'http://192.168.1.10:10130', 'latitude' => 51.0, 'longitude' => 11.0];
+        $file['stations'][] = ['id' => 'flagged', 'name' => 'Flagged Station', 'url' => null, 'local_only' => true, 'latitude' => 51.0, 'longitude' => 11.0];
+        Http::fake([self::RAW => Http::response($file)]);
+
+        $content = (string) $this->get('/community-stations')->assertOk()->getContent();
+
+        $this->assertStringNotContainsString('192.168.1.10', $content);
+        $this->assertStringContainsString('Local only', $content);
+        $this->assertSame(2, substr_count($content, '"local_only":true'));
     }
 
     public function test_switching_sharing_off_removes_the_entry(): void

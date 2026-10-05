@@ -114,9 +114,25 @@ class GitHubTelemetryService
             return null;
         }
 
-        return isset($data['stations']) && is_array($data['stations'])
-            ? $data
-            : ['stations' => [], 'last_updated' => null];
+        if (!isset($data['stations']) || !is_array($data['stations'])) {
+            return ['stations' => [], 'last_updated' => null];
+        }
+
+        // A LAN or localhost address is never shown, only that the station is local.
+        // The aggregator does this when it publishes; this covers older lists.
+        foreach ($data['stations'] as &$station) {
+            if (!is_array($station)) {
+                continue;
+            }
+            $url = (string) ($station['url'] ?? '');
+            if (!empty($station['local_only']) || ($url !== '' && !TelemetryService::isPublicAddress($url))) {
+                $station['url'] = null;
+                $station['local_only'] = true;
+            }
+        }
+        unset($station);
+
+        return $data;
     }
 
     /**

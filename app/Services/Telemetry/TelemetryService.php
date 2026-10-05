@@ -226,7 +226,10 @@ class TelemetryService
      * The entry's id is a hash of the site address, so a new address makes a
      * new entry. The old one is then removed, or it stayed listed for good.
      *
-     * @return array{success: bool, message: string}
+     * A LAN or localhost address is shared too, with a warning: the map shows
+     * the station as local only, since visitors cannot open the address.
+     *
+     * @return array{success: bool, message: string, warning?: ?string}
      */
     public function publish(?TelemetryAggregatorService $aggregator = null): array
     {
@@ -237,10 +240,6 @@ class TelemetryService
         $data = $this->previewStationData();
         if (!$data) {
             return ['success' => false, 'message' => 'Failed to collect station data.'];
-        }
-
-        if ($problem = self::publicUrlProblem($data['url'])) {
-            return ['success' => false, 'message' => $problem];
         }
 
         $aggregator ??= app(TelemetryAggregatorService::class);
@@ -255,7 +254,13 @@ class TelemetryService
 
         $this->markAsUpdated($data);
 
-        return ['success' => true, 'message' => 'Station data sent to aggregator successfully!'];
+        $warning = self::localAddressWarning($data['url']);
+
+        return [
+            'success' => true,
+            'message' => 'Station data sent to aggregator successfully!' . ($warning ? ' ' . $warning : ''),
+            'warning' => $warning,
+        ];
     }
 
     /** Take this station off the list, when sharing is switched off. */
@@ -276,25 +281,40 @@ class TelemetryService
     }
 
     /**
-     * Why an address cannot be shared, or null when it can. Visitors of the
-     * community map cannot open a LAN or localhost address.
+     * A pointer for the admin when the shared address only works inside their
+     * own network, or null for a public address.
      */
-    public static function publicUrlProblem(string $url): ?string
+    public static function localAddressWarning(string $url): ?string
+    {
+        if (self::isPublicAddress($url)) {
+            return null;
+        }
+
+        $host = (string) parse_url($url, PHP_URL_HOST) ?: $url;
+
+        return "Your station is shared with a local address ({$host}). Visitors cannot open it, so the community map shows it as local only. Set a public Server URL in Station settings to link to it.";
+    }
+
+    /** Whether visitors of the community map could open this address. */
+    public static function isPublicAddress(string $url): bool
     {
         $host = strtolower((string) parse_url($url, PHP_URL_HOST));
-        $message = 'Set a public address in Station settings (Server URL) before sharing. ' . ($host ?: $url) . ' cannot be opened by visitors.';
 
-        if ($host === '' || $host === 'localhost' || str_ends_with($host, '.local') || str_ends_with($host, '.lan')
-            || str_ends_with($host, '.internal') || str_ends_with($host, '.home.arpa')) {
-            return $message;
+        if ($host === '' || $host === 'localhost') {
+            return false;
+        }
+        foreach (['.local', '.lan', '.internal', '.home.arpa', '.localhost'] as $suffix) {
+            if (str_ends_with($host, $suffix)) {
+                return false;
+            }
         }
 
         $ip = trim($host, '[]');
         if (filter_var($ip, FILTER_VALIDATE_IP)) {
-            return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ? null : $message;
+            return (bool) filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
         }
 
-        return str_contains($host, '.') ? null : $message;
+        return str_contains($host, '.');
     }
 
     /**
