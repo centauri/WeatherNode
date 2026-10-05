@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\BatteryStatus;
 use App\Models\DailySummary;
 use App\Models\Setting;
 use App\Models\WeatherReading;
@@ -289,7 +290,9 @@ class DashboardPayloadService
         $gridCols = (int) ($layout['grid_cols'] ?? 3);
 
         // Get battery status if available
-        $batteryStatus = $reading?->battery_status ?? [];
+        // Judged once, by the same rules as the admin card (#131). The result is
+        // language-neutral, so the cached payload works for every locale.
+        $batteryStatus = BatteryStatus::classify($reading?->battery_status);
 
         // Get weather effect settings
         $effectSettings = [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Support\BatteryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\WeatherReading;
 use App\Models\DailySummary;
@@ -65,89 +66,35 @@ class DashboardController extends Controller
     }
 
     /**
-     * Parse battery status into human-readable format
+     * Batteries for the admin card, judged by BatteryStatus like the public
+     * dashboard is, so the two can no longer disagree (#131).
      */
     private function parseBatteryStatus(mixed $batteries): array
     {
-        if (!$batteries) {
-            return [];
-        }
-        
-        // Handle JSON string (from database)
-        if (is_string($batteries)) {
-            $batteries = json_decode($batteries, true);
-            if (!is_array($batteries)) {
-                return [];
-            }
-        }
-
         $status = [];
-        
-        // Battery name mappings for better display (English keys; translated below)
-        $names = [
-            'wh26batt' => ['name' => 'Temperature/Humidity Sensor (WH26)', 'type' => 'voltage'],
-            'wh40batt' => ['name' => 'Rain Sensor (WH40)', 'type' => 'voltage'],
-            'wh57batt' => ['name' => 'Lightning Sensor (WH57)', 'type' => 'level'],
-            'wh65batt' => ['name' => 'Outdoor Sensor (WH65)', 'type' => 'voltage'],
-            'wh68batt' => ['name' => 'Solar/Wind Sensor (WH68)', 'type' => 'voltage'],
-            'wh80batt' => ['name' => 'Ultrasonic Wind Sensor (WH80)', 'type' => 'voltage'],
-            'batt1' => ['name' => 'Sensor 1', 'type' => 'voltage'],
-            'batt2' => ['name' => 'Sensor 2', 'type' => 'voltage'],
-            'batt3' => ['name' => 'Sensor 3', 'type' => 'voltage'],
-            'batt4' => ['name' => 'Sensor 4', 'type' => 'voltage'],
-            'batt5' => ['name' => 'Sensor 5', 'type' => 'voltage'],
-            'batt6' => ['name' => 'Sensor 6', 'type' => 'voltage'],
-            'batt7' => ['name' => 'Sensor 7', 'type' => 'voltage'],
-            'batt8' => ['name' => 'Sensor 8', 'type' => 'voltage'],
-            'soilbatt1' => ['name' => 'Soil Sensor 1', 'type' => 'voltage'],
-            'soilbatt2' => ['name' => 'Soil Sensor 2', 'type' => 'voltage'],
-            'soilbatt3' => ['name' => 'Soil Sensor 3', 'type' => 'voltage'],
-            'soilbatt4' => ['name' => 'Soil Sensor 4', 'type' => 'voltage'],
-            'pm25batt1' => ['name' => 'PM2.5 Sensor 1', 'type' => 'level'],
-            'pm25batt2' => ['name' => 'PM2.5 Sensor 2', 'type' => 'level'],
-            'pm25batt3' => ['name' => 'PM2.5 Sensor 3', 'type' => 'level'],
-            'pm25batt4' => ['name' => 'PM2.5 Sensor 4', 'type' => 'level'],
-            'leakbatt1' => ['name' => 'Leak Sensor 1', 'type' => 'level'],
-            'leakbatt2' => ['name' => 'Leak Sensor 2', 'type' => 'level'],
-            'leakbatt3' => ['name' => 'Leak Sensor 3', 'type' => 'level'],
-            'leakbatt4' => ['name' => 'Leak Sensor 4', 'type' => 'level'],
-            'co2_batt' => ['name' => 'CO2 Sensor', 'type' => 'level'],
-            'leafbatt1' => ['name' => 'Leaf Wetness Sensor 1', 'type' => 'voltage'],
-            'leafbatt2' => ['name' => 'Leaf Wetness Sensor 2', 'type' => 'voltage'],
-        ];
 
-        foreach ($batteries as $key => $value) {
-            $info = $names[$key] ?? ['name' => $key, 'type' => 'voltage'];
-            
-            // Determine battery state
-            // For voltage type: 0 = OK, 1 = Low
-            // For level type (WH57, PM25): 0-5 scale where 5 is full
-            if ($info['type'] === 'voltage') {
-                $state = $value == 0 ? 'good' : 'low';
-                $percentage = $value == 0 ? 100 : 20;
-                $display = $value == 0 ? __('OK') : __('Low');
-            } else {
-                // Level type (0-5)
-                $percentage = min(100, ($value / 5) * 100);
-                if ($value >= 4) {
-                    $state = 'good';
-                    $display = __('Good');
-                } elseif ($value >= 2) {
-                    $state = 'medium';
-                    $display = __('Moderate');
-                } else {
-                    $state = 'low';
-                    $display = __('Low');
-                }
+        foreach (BatteryStatus::classify($batteries) as $key => $battery) {
+            $name = $battery['label'] !== '' ? __($battery['label']) : $key;
+            if ($battery['channel'] !== null) {
+                $name .= ' ' . $battery['channel'];
             }
+
+            $display = $battery['type'] === 'volts'
+                ? __($battery['status']) . ' (' . $battery['value'] . ' V)'
+                : __($battery['status']);
 
             $status[] = [
                 'key' => $key,
-                'name' => __($info['name']),
-                'type' => $info['type'],
-                'value' => $value,
-                'state' => $state,
-                'percentage' => round($percentage),
+                'name' => $name,
+                'type' => $battery['type'],
+                'value' => $battery['value'],
+                'state' => $battery['state'],
+                // Volts have no meaningful percentage; show a full or near-empty bar.
+                'percentage' => $battery['percentage'] ?? match ($battery['state']) {
+                    'good' => 100,
+                    'low' => 20,
+                    default => 50,
+                },
                 'display' => $display,
             ];
         }

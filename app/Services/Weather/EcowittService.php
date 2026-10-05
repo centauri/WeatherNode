@@ -2,6 +2,8 @@
 
 namespace App\Services\Weather;
 
+use App\Support\BatteryStatus;
+use App\Support\RainGauge;
 use App\Models\WeatherReading;
 use App\Models\Setting;
 use App\Services\Weather\Normalization\WeatherReadingWriter;
@@ -11,17 +13,6 @@ use Illuminate\Support\Facades\Log;
 
 class EcowittService
 {
-    /**
-     * WS90 fields that carry a voltage rather than a 0/1 low-battery flag,
-     * mapped to the names the Ecowitt cloud API uses for the same readings.
-     * The dashboard only knows the cloud names, and judges them in volts.
-     * The push and local-file paths send the left-hand names.
-     */
-    public const WS90_VOLTAGE_FIELDS = [
-        'wh90batt' => 'haptic_array_battery',
-        'ws90cap_volt' => 'haptic_array_capacitor',
-    ];
-
     private string $applicationKey;
     private string $apiKey;
     private string $macAddress;
@@ -144,19 +135,30 @@ class EcowittService
      * Convert local file format to API-like structure
      */
     /**
-     * WS90 battery and capacitor voltages, under their cloud API names.
-     * Only the ones present, so other stations do not get empty WS90 rows.
+     * A gauge's readings in the cloud group shape, keyed the way the cloud
+     * names them, so the local file goes through the same reader.
+     *
+     * @param  array<string, float>|null  $gauge
+     * @return array<string, array{value: float, unit: string}>|null
      */
-    private function ws90Voltages(array $raw): array
+    private static function asCloudGroup(?array $gauge): ?array
     {
-        $voltages = [];
-        foreach (self::WS90_VOLTAGE_FIELDS as $field => $key) {
-            if (isset($raw[$field]) && is_numeric($raw[$field])) {
-                $voltages[$key] = round((float) $raw[$field], 2);
-            }
+        if ($gauge === null) {
+            return null;
         }
 
-        return $voltages;
+        $names = [
+            'rain_rate' => 'rain_rate', 'rain_hourly' => 'hourly', 'rain_daily' => 'daily',
+            'rain_event' => 'event', 'rain_weekly' => 'weekly', 'rain_monthly' => 'monthly',
+            'rain_yearly' => 'yearly', 'rain_total' => 'total',
+        ];
+
+        $group = [];
+        foreach ($gauge as $column => $mm) {
+            $group[$names[$column]] = ['value' => $mm, 'unit' => 'mm'];
+        }
+
+        return $group;
     }
 
     private function convertLocalToApiFormat(array $raw): array
@@ -175,16 +177,8 @@ class EcowittService
         $windGustKmh = isset($raw['windgustmph']) ? round($raw['windgustmph'] * 1.60934, 1) : null;
         $maxDailyGustKmh = isset($raw['maxdailygust']) ? round($raw['maxdailygust'] * 1.60934, 1) : null;
         
-        // Convert inches to mm
-        $rainRateMm = isset($raw['rainratein']) ? round($raw['rainratein'] * 25.4, 2) : null;
-        $dailyRainMm = isset($raw['dailyrainin']) ? round($raw['dailyrainin'] * 25.4, 2) : null;
-        $hourlyRainMm = isset($raw['hourlyrainin']) ? round($raw['hourlyrainin'] * 25.4, 2) : null;
-        $eventRainMm = isset($raw['eventrainin']) ? round($raw['eventrainin'] * 25.4, 2) : null;
-        $weeklyRainMm = isset($raw['weeklyrainin']) ? round($raw['weeklyrainin'] * 25.4, 2) : null;
-        $monthlyRainMm = isset($raw['monthlyrainin']) ? round($raw['monthlyrainin'] * 25.4, 2) : null;
-        $yearlyRainMm = isset($raw['yearlyrainin']) ? round($raw['yearlyrainin'] * 25.4, 2) : null;
-        $totalRainMm = isset($raw['totalrainin']) ? round($raw['totalrainin'] * 25.4, 2) : null;
-        
+        $rain = RainGauge::fromPush($raw);
+
         return [
             'outdoor' => [
                 'temperature' => ['value' => $tempC, 'unit' => '℃'],
@@ -204,16 +198,10 @@ class EcowittService
                 'relative' => ['value' => $pressureHpa, 'unit' => 'hPa'],
                 'absolute' => ['value' => isset($raw['baromabsin']) ? round($raw['baromabsin'] * 33.8639, 1) : null, 'unit' => 'hPa'],
             ],
-            'rainfall' => [
-                'rain_rate' => ['value' => $rainRateMm, 'unit' => 'mm/h'],
-                'hourly' => ['value' => $hourlyRainMm, 'unit' => 'mm'],
-                'daily' => ['value' => $dailyRainMm, 'unit' => 'mm'],
-                'event' => ['value' => $eventRainMm, 'unit' => 'mm'],
-                'weekly' => ['value' => $weeklyRainMm, 'unit' => 'mm'],
-                'monthly' => ['value' => $monthlyRainMm, 'unit' => 'mm'],
-                'yearly' => ['value' => $yearlyRainMm, 'unit' => 'mm'],
-                'total' => ['value' => $totalRainMm, 'unit' => 'mm'],
-            ],
+            // Both gauges, shaped like the cloud groups, so saveReading reads the
+            // local file exactly as it reads the cloud (#132).
+            'rainfall' => self::asCloudGroup($rain['tipping']),
+            'rainfall_piezo' => self::asCloudGroup($rain['piezo']),
             'solar_and_uvi' => [
                 'solar' => ['value' => isset($raw['solarradiation']) ? (float) $raw['solarradiation'] : null, 'unit' => 'W/m²'],
                 'uvi' => ['value' => isset($raw['uv']) ? (int) $raw['uv'] : null],
@@ -228,13 +216,7 @@ class EcowittService
                 'temp2' => ['value' => $temp2C, 'unit' => '℃'],
                 'humidity1' => ['value' => isset($raw['humidity1']) ? (int) $raw['humidity1'] : null, 'unit' => '%'],
             ],
-            'battery' => [
-                'wh26batt' => isset($raw['wh26batt']) ? (int) $raw['wh26batt'] : null,
-                'wh57batt' => isset($raw['wh57batt']) ? (int) $raw['wh57batt'] : null,
-                'wh65batt' => isset($raw['wh65batt']) ? (int) $raw['wh65batt'] : null,
-                'batt1' => isset($raw['batt1']) ? (int) $raw['batt1'] : null,
-                'batt2' => isset($raw['batt2']) ? (int) $raw['batt2'] : null,
-            ] + $this->ws90Voltages($raw),
+            'battery' => BatteryStatus::fromPush($raw),
             'station' => [
                 'model' => $raw['model'] ?? null,
                 'type' => $raw['stationtype'] ?? null,
@@ -254,7 +236,8 @@ class EcowittService
         $indoor = $data['indoor'] ?? [];
         $wind = $data['wind'] ?? [];
         $pressure = $data['pressure'] ?? [];
-        $rainfall = $data['rainfall'] ?? [];
+        // Tipping bucket or piezo, whichever this station's rain is in (#132).
+        $rain = RainGauge::choose(RainGauge::fromCloud($data));
         $solar = $data['solar_and_uvi'] ?? [];
         $lightning = $data['lightning'] ?? [];
         $extraTemp = $data['extra_temp'] ?? [];
@@ -300,14 +283,14 @@ class EcowittService
             'wind_gust_max_daily' => $this->extractValue($wind, 'wind_gust_day_max'),
             
             // Rainfall
-            'rain_rate' => $this->extractValue($rainfall, 'rain_rate'),
-            'rain_hourly' => $this->extractValue($rainfall, 'hourly'),
-            'rain_daily' => $this->extractValue($rainfall, 'daily'),
-            'rain_event' => $this->extractValue($rainfall, 'event'),
-            'rain_weekly' => $this->extractValue($rainfall, 'weekly'),
-            'rain_monthly' => $this->extractValue($rainfall, 'monthly'),
-            'rain_yearly' => $this->extractValue($rainfall, 'yearly'),
-            'rain_total' => $this->extractValue($rainfall, 'total'),
+            'rain_rate' => $rain['rain_rate'] ?? null,
+            'rain_hourly' => $rain['rain_hourly'] ?? null,
+            'rain_daily' => $rain['rain_daily'] ?? null,
+            'rain_event' => $rain['rain_event'] ?? null,
+            'rain_weekly' => $rain['rain_weekly'] ?? null,
+            'rain_monthly' => $rain['rain_monthly'] ?? null,
+            'rain_yearly' => $rain['rain_yearly'] ?? null,
+            'rain_total' => $rain['rain_total'] ?? null,
             
             // Solar & UV
             'uv_index' => $this->extractValue($solar, 'uvi'),
@@ -326,7 +309,8 @@ class EcowittService
             'humidity_1' => $this->extractValue($extraTemp, 'humidity1'),
             
             // Battery status (array - Eloquent will handle JSON encoding)
-            'battery_status' => !empty($battery) ? $battery : null,
+            // The cloud wraps each battery as time/unit/value; store the numbers (#131).
+            'battery_status' => BatteryStatus::normalise($battery) ?: null,
             
             // Station info
             'station_type' => $station['type'] ?? null,
