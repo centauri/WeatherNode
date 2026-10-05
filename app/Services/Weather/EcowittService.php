@@ -5,29 +5,23 @@ namespace App\Services\Weather;
 use App\Models\WeatherReading;
 use App\Models\Setting;
 use App\Services\Weather\Normalization\WeatherReadingWriter;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class EcowittService
 {
-    private string $applicationKey;
-    private string $apiKey;
     private string $macAddress;
     private string $dataSource;
     private string $localFile;
-    private string $baseUrl;
     private WeatherReadingWriter $writer;
+    private ?string $lastError = null;
 
     public function __construct(WeatherReadingWriter $writer)
     {
         $this->writer = $writer;
-        $this->applicationKey = Setting::getValue('ecowitt.application_key', '') ?? '';
-        $this->apiKey = Setting::getValue('ecowitt.api_key', '') ?? '';
-        $this->macAddress = Setting::getValue('ecowitt.mac_address', '') ?? '';
+        $this->macAddress = trim((string) Setting::getValue('ecowitt.mac_address', ''));
         $this->dataSource = Setting::getValue('ecowitt.data_source', 'local_file') ?? 'local_file';
         $this->localFile = Setting::getValue('ecowitt.local_file', '') ?? '';
-        $this->baseUrl = rtrim(Setting::getValue('ecowitt.api_base_url', 'https://api.ecowitt.net/api/v3/'), '/') . '/';
     }
 
     /**
@@ -35,50 +29,37 @@ class EcowittService
      */
     public function fetchRealTimeData(): ?array
     {
+        $this->lastError = null;
+
         // Check if local file mode is enabled
         if (in_array($this->dataSource, ['local', 'local_file'], true)) {
             return $this->fetchFromLocalFile();
         }
 
-        // API mode
-        if (empty($this->applicationKey) || empty($this->apiKey) || empty($this->macAddress)) {
+        $api = EcowittCloudApi::fromSettings();
+        if (!$api->hasKeys() || $this->macAddress === '') {
+            $this->lastError = 'Enter the application key, API key and MAC address.';
             Log::warning('Ecowitt API credentials not configured');
             return null;
         }
 
         try {
-            $response = Http::get($this->baseUrl . 'device/real_time', [
-                'application_key' => $this->applicationKey,
-                'api_key' => $this->apiKey,
-                'mac' => $this->macAddress,
-                'call_back' => 'all',
-                // Readings are stored in metric. Ask for metric too, although
-                // EcowittCloudParser converts by unit if the API ignores this.
-                'temp_unitid' => 1,               // °C
-                'pressure_unitid' => 3,            // hPa
-                'wind_speed_unitid' => 7,          // km/h
-                'rainfall_unitid' => 12,           // mm
-                'solar_irradiance_unitid' => 16,   // W/m²
-            ]);
+            $data = $api->realTime($this->macAddress);
+            Cache::put('ecowitt_realtime', $data, now()->addMinutes(5));
 
-            if ($response->successful()) {
-                $data = $response->json();
-                if (isset($data['data'])) {
-                    Cache::put('ecowitt_realtime', $data['data'], now()->addMinutes(5));
-                    return $data['data'];
-                }
-            }
-
-            Log::error('Ecowitt API request failed', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Ecowitt API exception', ['error' => $e->getMessage()]);
+            return $data;
+        } catch (EcowittCloudApiException $e) {
+            $this->lastError = $e->getMessage();
+            Log::error('Ecowitt API request failed', ['code' => $e->apiCode, 'error' => $e->getMessage()]);
         }
 
         return Cache::get('ecowitt_realtime');
+    }
+
+    /** Why the last fetchRealTimeData() call came back without fresh data, if it did. */
+    public function lastError(): ?string
+    {
+        return $this->lastError;
     }
 
     /**
