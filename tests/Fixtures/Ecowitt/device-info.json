@@ -1,0 +1,18 @@
+{
+    "code": 0,
+    "msg": "success",
+    "time": "1791211749",
+    "data": {
+        "id": 12345,
+        "name": "Test station",
+        "mac": "AA:BB:CC:DD:EE:FF",
+        "type": 1,
+        "date_zone_id": "Europe/Berlin",
+        "createtime": 1607148961,
+        "longitude": -0.0015,
+        "latitude": 51.4779,
+        "stationtype": "GW1000A_V1.7.8",
+        "last_update_time": "1791211731",
+        "device_status": "Online"
+    }
+}

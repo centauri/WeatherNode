@@ -4,6 +4,7 @@ namespace App\Services\Weather;
 
 use App\Services\Weather\Normalization\UnitConverter;
 use App\Support\BatteryStatus;
+use App\Support\ExtraSensors;
 use App\Support\RainGauge;
 use Carbon\Carbon;
 
@@ -101,6 +102,11 @@ class EcowittCloudParser
         $this->put($out, 'pm10', self::number($data['pm10_aqi_combo']['pm10'] ?? null));
         if (!isset($out['pm25_ch1'])) {
             $this->put($out, 'pm25_ch1', self::number($data['pm25_aqi_combo']['pm25'] ?? null));
+        }
+
+        $extra = ExtraSensors::fromCloud($data);
+        if ($extra !== []) {
+            $out['extra_sensors'] = $extra;
         }
 
         $batteries = BatteryStatus::normalise($data['battery'] ?? []);

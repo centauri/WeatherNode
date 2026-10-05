@@ -3,6 +3,7 @@
 namespace App\Services\Weather;
 
 use App\Support\BatteryStatus;
+use App\Support\ExtraSensors;
 use App\Support\RainGauge;
 use App\Services\Weather\Normalization\UnitConverter;
 use Carbon\Carbon;
@@ -123,6 +124,10 @@ class EcowittPushParser
             if (isset($raw["leaf_wetness{$i}"])) {
                 $data["leaf_wetness_{$i}"] = (int) $raw["leaf_wetness{$i}"];
             }
+            // What a GW2000A sends (ecowitt2mqtt's payload_gw2000a_1, aioecowitt).
+            if (isset($raw["leafwetness_ch{$i}"])) {
+                $data["leaf_wetness_{$i}"] = (int) $raw["leafwetness_ch{$i}"];
+            }
         }
 
         for ($i = 1; $i <= 4; $i++) {
@@ -176,6 +181,11 @@ class EcowittPushParser
         $batteries = BatteryStatus::fromPush($raw);
         if (!empty($batteries)) {
             $data['battery_status'] = $batteries;
+        }
+
+        $extra = ExtraSensors::fromPush($raw);
+        if ($extra !== []) {
+            $data['extra_sensors'] = $extra;
         }
 
         if (isset($raw['stationtype'])) {
