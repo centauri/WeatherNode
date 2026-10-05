@@ -188,15 +188,18 @@ Route::get('/sitemap.xml', function () {
         ['loc' => '/community-stations', 'changefreq' => 'daily',   'priority' => '0.5'],
         ['loc' => '/aviation',           'changefreq' => 'hourly',  'priority' => '0.7', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER],
         ['loc' => '/alerts',             'changefreq' => 'hourly',  'priority' => '0.7', 'feature' => MenuFeatureMap::FEATURE_ALERTS],
-        ['loc' => '/water',              'changefreq' => 'hourly',  'priority' => '0.7', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER],
-        ['loc' => '/water/waves',        'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER],
-        ['loc' => '/water/temp',         'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER],
-        ['loc' => '/water/rivers',       'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER],
+        ['loc' => '/water',              'changefreq' => 'hourly',  'priority' => '0.7', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER, 'water' => 'tides'],
+        ['loc' => '/water/waves',        'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER, 'water' => 'waves'],
+        ['loc' => '/water/temp',         'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER, 'water' => 'temp'],
+        ['loc' => '/water/rivers',       'changefreq' => 'hourly',  'priority' => '0.6', 'feature' => MenuFeatureMap::FEATURE_SKY_WATER, 'water' => 'rivers'],
     ];
 
     $featureFlags = MenuFeatureMap::all();
     $pages = array_values(array_filter($pages, static function (array $page) use ($featureFlags): bool {
         $feature = $page['feature'] ?? null;
+        if (isset($page['water']) && !\App\Support\WaterSections::isEnabled($page['water'])) {
+            return false;
+        }
         if (!$feature) {
             return true;
         }

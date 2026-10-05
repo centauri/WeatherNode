@@ -140,33 +140,31 @@
        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20">
         ✈ {{ __('Aviation') }}
     </a>
-    <a href="{{ route('water') }}"
+    <a href="{{ route(\App\Support\WaterSections::firstRoute()) }}"
        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors weather-section-tab bg-cyan-600 text-on-accent shadow-lg shadow-cyan-600/30 text-ui-fg">
         🌊 {{ __('Water') }}
     </a>
 </div>
 
-{{-- ── Water sub-tab link row ──────────────────────────────────────────────── --}}
+{{-- ── Water sub-tab link row: only the sections that are switched on ────── --}}
+@php
+    $waterTabLabels = [
+        'tides' => '🌊 ' . __('Tides'),
+        'waves' => '〰 ' . __('Waves'),
+        'temp' => '🌡 ' . __('Sea Temperature'),
+        'rivers' => '🏞 ' . __('River Levels'),
+    ];
+@endphp
+@if(count($waterTabs) > 1)
 <div class="flex gap-2 flex-wrap mb-6">
-    <a href="{{ route('water') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $tabClass['tides'] }}">
-        🌊 {{ __('Tides') }}
+    @foreach($waterTabs as $tab => $routeName)
+    <a href="{{ route($routeName) }}"
+       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $tabClass[$tab] }}">
+        {{ $waterTabLabels[$tab] }}
     </a>
-    <a href="{{ route('water.waves') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $tabClass['waves'] }}">
-        〰 {{ __('Waves') }}
-    </a>
-    <a href="{{ route('water.temp') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $tabClass['temp'] }}">
-        🌡 {{ __('Sea Temperature') }}
-    </a>
-    @if($riversEnabled)
-    <a href="{{ route('water.rivers') }}"
-       class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $tabClass['rivers'] }}">
-        🏞 {{ __('River Levels') }}
-    </a>
-    @endif
+    @endforeach
 </div>
+@endif
 
 {{-- ══════════════════════════════════════════════════════════════════════════ --}}
 {{-- TAB: TIDES                                                                 --}}
@@ -195,17 +193,7 @@
         @endif
     </div>
 
-    @if(!$tideEnabled)
-        <div class="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-ui-fg mb-2">🔧 {{ __('Tides not enabled') }}</h2>
-            <p class="text-ui-secondary mb-4">{{ __('Enable tides in settings to show live tide times and water levels.') }}</p>
-            <a href="{{ route('admin.settings.group', 'tide') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-ui-accent-strong text-on-accent hover:bg-ui-action-deep rounded-lg text-sm font-medium transition-colors">
-                ⚙️ {{ __('Configure Tides') }}
-            </a>
-        </div>
-
-    @elseif(!$tideData)
+    @if(!$tideData)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
             <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No tide data yet') }}</h2>
             <p class="text-ui-secondary">{{ __('Tide data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>
@@ -667,13 +655,7 @@
         </div>
     </div>
 
-    @if(!$riversEnabled)
-        <div class="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-6">
-            <h2 class="text-lg font-semibold text-ui-fg mb-2">🔧 {{ __('River Levels not enabled') }}</h2>
-            <p class="text-ui-secondary">{{ __('Enable river levels in settings to show real-time gauge readings.') }}</p>
-        </div>
-
-    @elseif(!$riverData)
+    @if(!$riverData)
         <div class="bg-yellow-900/30 border border-yellow-700/50 rounded-2xl p-6">
             <h2 class="text-lg font-semibold text-ui-fg mb-2">⏳ {{ __('No river data yet') }}</h2>
             <p class="text-ui-secondary">{{ __('River data is being fetched. Check back in a few minutes, or run the poller manually.') }}</p>

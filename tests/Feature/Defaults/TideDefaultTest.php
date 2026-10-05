@@ -46,7 +46,9 @@ class TideDefaultTest extends TestCase
 
     public function test_the_water_page_names_no_dutch_port_before_setup(): void
     {
-        $response = $this->get('/water');
+        // Tides are off on a fresh install, so /water opens the next section.
+        Http::fake();
+        $response = $this->followingRedirects()->get('/water');
 
         $response->assertOk();
         $response->assertDontSee('IJmuiden');
@@ -67,6 +69,7 @@ class TideDefaultTest extends TestCase
     public function test_the_page_names_the_site_when_there_is_no_station(): void
     {
         Setting::setValue('station.name', 'Testfield Weather', 'string', 'station');
+        Setting::setValue('tide.enabled', true, 'boolean', 'tide');
 
         $this->get('/water')->assertSee('water levels for Testfield Weather', false);
     }

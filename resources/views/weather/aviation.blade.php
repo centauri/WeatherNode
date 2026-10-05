@@ -47,10 +47,12 @@
        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors weather-section-tab bg-sky-600 text-on-accent shadow-lg shadow-sky-600/30 text-ui-fg">
         ✈ {{ __('Aviation') }}
     </a>
-    <a href="{{ route('water') }}"
+    @if($waterRoute = \App\Support\WaterSections::firstRoute())
+    <a href="{{ route($waterRoute) }}"
        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-ui-overlay/10 text-ui-secondary hover:bg-ui-overlay/20">
         🌊 {{ __('Water') }}
     </a>
+    @endif
 </div>
 
 <div class="space-y-6" x-data="aviationWeather()">
