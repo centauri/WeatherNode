@@ -45,6 +45,14 @@
         </div>
     </div>
 
+    <div class="mb-6 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300">
+        <p class="font-medium text-gray-900 dark:text-white mb-1">{{ __('Not branded Ecowitt? This page is still for you.') }}</p>
+        <p>
+            {{ __('Ecowitt stations are made by Fine Offset, which also sells them under other names, such as Froggit, Sainlogic, Misol, Aercus, ELV, Pantech and Steinberg Systems. If your console or gateway works with the WS View Plus or Ecowitt app, or has a Customized upload, use these settings.') }}
+            {{ __('Ambient Weather stations are Fine Offset too, but have their own cloud: use the Ambient Weather source for that, or these settings for a Customized upload.') }}
+        </p>
+    </div>
+
     @if(session('success'))
         <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl text-green-800 dark:text-green-200">{{ session('success') }}</div>
     @endif
