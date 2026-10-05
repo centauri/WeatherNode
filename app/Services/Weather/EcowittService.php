@@ -3,6 +3,7 @@
 namespace App\Services\Weather;
 
 use App\Models\WeatherReading;
+use App\Support\EcowittSource;
 use App\Models\Setting;
 use App\Services\Weather\Normalization\WeatherReadingWriter;
 use Illuminate\Support\Facades\Cache;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 class EcowittService
 {
     private string $macAddress;
-    private string $dataSource;
     private string $localFile;
     private WeatherReadingWriter $writer;
     private ?string $lastError = null;
@@ -20,7 +20,6 @@ class EcowittService
     {
         $this->writer = $writer;
         $this->macAddress = trim((string) Setting::getValue('ecowitt.mac_address', ''));
-        $this->dataSource = Setting::getValue('ecowitt.data_source', 'local_file') ?? 'local_file';
         $this->localFile = Setting::getValue('ecowitt.local_file', '') ?? '';
     }
 
@@ -31,9 +30,15 @@ class EcowittService
     {
         $this->lastError = null;
 
-        // Check if local file mode is enabled
-        if (in_array($this->dataSource, ['local', 'local_file'], true)) {
+        $source = EcowittSource::reader();
+
+        if ($source === EcowittSource::FILE) {
             return $this->fetchFromLocalFile();
+        }
+
+        if ($source === EcowittSource::PUSH) {
+            // Pushed readings are stored as they arrive; there is nothing to fetch.
+            return null;
         }
 
         $api = EcowittCloudApi::fromSettings();

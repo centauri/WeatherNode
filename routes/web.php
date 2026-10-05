@@ -550,6 +550,8 @@ Route::prefix('admin')
         });
         Route::post('/settings/test-api', [SettingsController::class, 'testApi'])->name('settings.test-api');
         Route::post('/settings/weatherlink/stations', [SettingsController::class, 'weatherLinkStations'])->name('settings.weatherlink.stations');
+        Route::post('/settings/ecowitt/stations', [\App\Http\Controllers\Admin\EcowittSettingsController::class, 'stations'])->name('settings.ecowitt.stations');
+        Route::get('/settings/ecowitt/status', [\App\Http\Controllers\Admin\EcowittSettingsController::class, 'status'])->name('settings.ecowitt.status');
         Route::post('/settings/nlg/models', [SettingsController::class, 'fetchNlgModels'])->name('settings.nlg.models');
         Route::post('/settings/history/sync', [SettingsController::class, 'syncHistory'])->name('settings.history.sync');
         Route::post('/settings/history/wu-sync', [SettingsController::class, 'syncWundergroundHistory'])->name('settings.history.wu-sync');
