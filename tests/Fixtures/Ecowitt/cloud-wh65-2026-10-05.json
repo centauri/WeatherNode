@@ -1,0 +1,192 @@
+{
+    "outdoor": {
+        "temperature": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "19.2"
+        },
+        "feels_like": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "19.2"
+        },
+        "app_temp": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "19.9"
+        },
+        "dew_point": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "16.2"
+        },
+        "humidity": {
+            "time": "1791209779",
+            "unit": "%",
+            "value": "83"
+        }
+    },
+    "indoor": {
+        "temperature": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "23.5"
+        },
+        "humidity": {
+            "time": "1791209779",
+            "unit": "%",
+            "value": "61"
+        },
+        "dew_point": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "15.6"
+        },
+        "feels_like": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "23.5"
+        },
+        "app_tempin": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "25.3"
+        }
+    },
+    "solar_and_uvi": {
+        "solar": {
+            "time": "1791209779",
+            "unit": "W/m²",
+            "value": "322.2"
+        },
+        "uvi": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "3"
+        }
+    },
+    "rainfall": {
+        "rain_rate": {
+            "time": "1791209779",
+            "unit": "mm/hr",
+            "value": "0.0"
+        },
+        "daily": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "0.0"
+        },
+        "event": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "0.0"
+        },
+        "1_hour": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "0.0"
+        },
+        "weekly": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "0.0"
+        },
+        "monthly": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "7.4"
+        },
+        "yearly": {
+            "time": "1791209779",
+            "unit": "mm",
+            "value": "354.5"
+        }
+    },
+    "wind": {
+        "wind_speed": {
+            "time": "1791209779",
+            "unit": "km/h",
+            "value": "7.2"
+        },
+        "wind_gust": {
+            "time": "1791209779",
+            "unit": "km/h",
+            "value": "13.0"
+        },
+        "wind_direction": {
+            "time": "1791209779",
+            "unit": "º",
+            "value": "148"
+        }
+    },
+    "pressure": {
+        "relative": {
+            "time": "1791209779",
+            "unit": "hPa",
+            "value": "1018.9"
+        },
+        "absolute": {
+            "time": "1791209779",
+            "unit": "hPa",
+            "value": "1018.9"
+        }
+    },
+    "lightning": {
+        "distance": {
+            "time": "1790640271",
+            "unit": "km",
+            "value": "5"
+        },
+        "count": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "0"
+        }
+    },
+    "temp_and_humidity_ch1": {
+        "temperature": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "19.4"
+        },
+        "humidity": {
+            "time": "1791209779",
+            "unit": "%",
+            "value": "83"
+        }
+    },
+    "temp_and_humidity_ch2": {
+        "temperature": {
+            "time": "1791209779",
+            "unit": "℃",
+            "value": "15.7"
+        }
+    },
+    "battery": {
+        "outdoor_t_rh_sensor": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "0"
+        },
+        "sensor_array": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "0"
+        },
+        "lightning_sensor": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "4"
+        },
+        "temp_humidity_sensor_ch1": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "0"
+        },
+        "temp_humidity_sensor_ch2": {
+            "time": "1791209779",
+            "unit": "",
+            "value": "0"
+        }
+    }
+}

@@ -888,6 +888,8 @@ class WeatherController extends Controller
             'pm25' => [],
             'leak' => [],
             'co2' => $reading->co2 !== null,
+            // Newer Ecowitt sensors kept as JSON: bgt, wbgt, soil_ec, water_level, wetness, water_quality.
+            'extra_sensors' => array_keys($reading->extra_sensors ?? []),
         ];
 
         // Check extra temperature sensors

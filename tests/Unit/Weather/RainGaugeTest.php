@@ -124,6 +124,19 @@ class RainGaugeTest extends TestCase
         $this->assertSame(2.54, $rain['rain_daily']);
     }
 
+    /** The API doc calls it hourly, but a captured response sends 1_hour. */
+    public function test_cloud_hourly_rain_is_read_under_either_name(): void
+    {
+        $captured = RainGauge::choose(RainGauge::fromCloud($this->payload('cloud_wh65_captured')));
+        $documented = RainGauge::choose(RainGauge::fromCloud([
+            'rainfall' => ['hourly' => ['unit' => 'mm', 'value' => '0.6']],
+        ]));
+
+        $this->assertSame(0.0, $captured['rain_hourly'] ?? null);
+        $this->assertSame(354.5, $captured['rain_yearly']);
+        $this->assertSame(0.6, $documented['rain_hourly']);
+    }
+
     public function test_no_rain_data_gives_nothing(): void
     {
         $this->assertSame([], RainGauge::choose(RainGauge::fromPush(['tempf' => '68.0'])));

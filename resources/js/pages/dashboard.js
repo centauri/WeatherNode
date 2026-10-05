@@ -2880,6 +2880,20 @@ function weatherDashboard() {
                     return `${t('Sensor')} ${id}`;
                 },
 
+                // Lines for the More sensors card come from App\Support\ExtraSensors::lines():
+                // English labels, translated here; temperatures follow the visitor's unit.
+                moreSensorLabel(line) {
+                    if (!line || typeof line !== 'object') return '';
+                    return t(line.label) + (line.channel ? ` ${line.channel}` : '');
+                },
+
+                moreSensorValue(line) {
+                    if (!line || typeof line !== 'object' || line.value === null || line.value === undefined) return '--';
+                    if (line.kind === 'temp') return this.formatTemp(line.value);
+                    if (line.kind === 'state') return t(line.value);
+                    return line.unit ? `${line.value} ${line.unit}` : String(line.value);
+                },
+
                 getSoilLabel(key) {
                     const label = this.extraSensorLabels?.soil?.[key] || this.extraSensorLabels?.soil?.[`soil_${key}`];
                     if (label && String(label).trim()) return label;

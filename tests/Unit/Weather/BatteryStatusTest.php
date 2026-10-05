@@ -46,14 +46,54 @@ class BatteryStatusTest extends TestCase
         ], $this->states($classified));
     }
 
-    /** On the cloud the lightning sensor is a flag: 1 means low. */
-    public function test_a_cloud_lightning_sensor_flagging_low_reads_low(): void
+    /** A real cloud response: every sensor healthy, lightning at level 4. */
+    public function test_a_captured_cloud_station_reads_healthy(): void
+    {
+        $classified = BatteryStatus::classify($this->payload('cloud_wh65_captured')['battery']);
+
+        $this->assertSame([
+            'outdoor_t_rh_sensor' => 'good',
+            'sensor_array' => 'good',
+            'lightning_sensor' => 'good',
+            'temp_humidity_sensor_ch1' => 'good',
+            'temp_humidity_sensor_ch2' => 'good',
+        ], $this->states($classified));
+    }
+
+    /** On the cloud the lightning sensor is a level, as in push: 1 is low. */
+    public function test_a_cloud_lightning_sensor_at_level_one_reads_low(): void
     {
         $classified = BatteryStatus::classify([
             'lightning_sensor' => ['time' => '1', 'unit' => '', 'value' => '1'],
         ]);
 
+        $this->assertSame('level', $classified['lightning_sensor']['type']);
         $this->assertSame('low', $classified['lightning_sensor']['state']);
+    }
+
+    /**
+     * Ecowitt's API v3 doc lists these as 0 to 5 levels (6 is mains power),
+     * not OK/low flags: https://doc.ecowitt.net/web/#/apiv3en?page_id=17
+     */
+    public function test_cloud_air_quality_pm25_and_leak_batteries_are_levels(): void
+    {
+        $wrap = fn (string $v) => ['time' => '1', 'unit' => '', 'value' => $v];
+        $classified = BatteryStatus::classify([
+            'aqi_combo_sensor' => $wrap('6'),
+            'pm25_sensor_ch1' => $wrap('5'),
+            'pm25_sensor_ch2' => $wrap('1'),
+            'water_leak_sensor_ch1' => $wrap('4'),
+            'water_leak_sensor_ch2' => $wrap('0'),
+        ]);
+
+        $this->assertSame([
+            'aqi_combo_sensor' => 'good',
+            'pm25_sensor_ch1' => 'good',
+            'pm25_sensor_ch2' => 'low',
+            'water_leak_sensor_ch1' => 'good',
+            'water_leak_sensor_ch2' => 'low',
+        ], $this->states($classified));
+        $this->assertSame('Mains', $classified['aqi_combo_sensor']['status']);
     }
 
     /** It used to read Good whatever the voltage, because it compared an object. */
@@ -143,7 +183,7 @@ class BatteryStatusTest extends TestCase
         // A cloud row stored wrapped, and a push row stored flat, as they are in
         // existing databases. No migration: the reader copes with both.
         $classified = BatteryStatus::classify(json_encode([
-            'lightning_sensor' => ['time' => '1', 'unit' => '', 'value' => '0'],
+            'lightning_sensor' => ['time' => '1', 'unit' => '', 'value' => '5'],
             'wh65batt' => 0,
         ]));
 

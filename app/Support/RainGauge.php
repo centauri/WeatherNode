@@ -61,10 +61,11 @@ final class RainGauge
         'rain_yearly' => 'yrain_piezo',
     ];
 
-    /** Stored column => key inside a cloud rain group. */
+    /** Stored column => key (or keys, first found wins) inside a cloud rain group. */
     private const CLOUD = [
         'rain_rate' => 'rain_rate',
-        'rain_hourly' => 'hourly',
+        // The API doc says hourly; a captured response sends 1_hour.
+        'rain_hourly' => ['hourly', '1_hour'],
         'rain_daily' => 'daily',
         'rain_event' => 'event',
         'rain_weekly' => 'weekly',
@@ -195,7 +196,13 @@ final class RainGauge
 
         $out = [];
         foreach (self::CLOUD as $column => $key) {
-            $entry = $group[$key] ?? null;
+            $entry = null;
+            foreach ((array) $key as $name) {
+                if (isset($group[$name])) {
+                    $entry = $group[$name];
+                    break;
+                }
+            }
             $value = is_array($entry) ? ($entry['value'] ?? null) : $entry;
             if (!is_numeric($value)) {
                 continue;

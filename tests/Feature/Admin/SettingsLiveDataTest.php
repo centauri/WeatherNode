@@ -31,7 +31,8 @@ class SettingsLiveDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Live Data Source', false);
         $response->assertSee('livedata_format', false);
-        $response->assertSee('ecowitt_secure_mode', false);
+        // Push security moved to the Ecowitt page; this page links there.
+        $response->assertSee(route('admin.settings.group', 'ecowitt'), false);
     }
 
     public function test_weatherlink_settings_page_loads_for_admin(): void

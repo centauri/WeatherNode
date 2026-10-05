@@ -9,7 +9,6 @@ use App\Models\WeatherReading;
 use App\Services\Weather\EcowittPushParser;
 use App\Services\Weather\EcowittService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use ReflectionMethod;
 use Tests\TestCase;
 
 /**
@@ -60,24 +59,50 @@ class EcowittWs90BatteryTest extends TestCase
 
     public function test_the_local_file_path_keeps_ws90_voltages(): void
     {
-        $convert = new ReflectionMethod(EcowittService::class, 'convertLocalToApiFormat');
-
-        $data = $convert->invoke(app(EcowittService::class), [
+        $reading = app(EcowittService::class)->saveReading([
             'tempf' => '68.0',
             'wh90batt' => '3.14',
             'ws90cap_volt' => '5.3',
         ]);
 
-        $this->assertSame(3.14, $data['battery']['haptic_array_battery']);
-        $this->assertSame(5.3, $data['battery']['haptic_array_capacitor']);
+        $this->assertSame(3.14, $reading->battery_status['haptic_array_battery']);
+        $this->assertSame(5.3, $reading->battery_status['haptic_array_capacitor']);
     }
 
     public function test_the_local_file_path_adds_nothing_without_a_ws90(): void
     {
-        $convert = new ReflectionMethod(EcowittService::class, 'convertLocalToApiFormat');
+        $reading = app(EcowittService::class)->saveReading(['tempf' => '68.0', 'wh65batt' => '0']);
 
-        $data = $convert->invoke(app(EcowittService::class), ['tempf' => '68.0']);
+        $this->assertArrayNotHasKey('haptic_array_battery', $reading->battery_status);
+    }
 
-        $this->assertArrayNotHasKey('haptic_array_battery', $data['battery']);
+    /**
+     * The local file holds the same fields as a push, so it is stored the same
+     * way. Converting it to a cloud-like shape first dropped everything but two
+     * extra temperatures and one humidity.
+     */
+    public function test_the_local_file_stores_everything_a_push_does(): void
+    {
+        $raw = [
+            'dateutc' => '2026-10-05 12:00:00',
+            'tempf' => '68.0',
+            'temp3f' => '50.0',
+            'humidity2' => '71',
+            'soilmoisture1' => '34',
+            'pm25_ch1' => '12.5',
+            'co2' => '612',
+            'leak_ch1' => '1',
+            'windspdmph_avg10m' => '10',
+        ];
+
+        $local = app(EcowittService::class)->saveReading($raw)->fresh();
+
+        $this->assertSame(10.0, $local->temp_3);
+        $this->assertSame(71, $local->humidity_2);
+        $this->assertSame(34, $local->soil_moisture_1);
+        $this->assertSame(12.5, $local->pm25_ch1);
+        $this->assertSame(612, $local->co2);
+        $this->assertTrue((bool) $local->leak_ch1);
+        $this->assertSame(16.1, $local->wind_speed_avg_10m);
     }
 }

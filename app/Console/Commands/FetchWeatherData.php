@@ -97,7 +97,7 @@ class FetchWeatherData extends Command
             $duplicateWarning = false;
 
             if ($sourceStatus['stale']) {
-                $lastReading = WeatherReading::orderBy('id', 'desc')->first();
+                $lastReading = WeatherReading::mostRecent();
                 if ($lastReading) {
                     $timeDiff = $lastReading->recorded_at->diffInMinutes(now());
                     // Only skip if we have a very recent reading (within 2 minutes) 
@@ -293,6 +293,11 @@ class FetchWeatherData extends Command
     {
         $rows = [];
 
+        // The Ecowitt local file holds raw push fields (tempf, ...).
+        if (isset($data['tempf'])) {
+            $data = app(\App\Services\Weather\EcowittPushParser::class)->parse($data);
+        }
+
         if (isset($data['outdoor']) || isset($data['wind']) || isset($data['pressure'])) {
             $outdoor = $data['outdoor'] ?? [];
             $wind = $data['wind'] ?? [];
@@ -406,7 +411,7 @@ class FetchWeatherData extends Command
             if ($data !== null) {
                 return $data;
             }
-            $reading = WeatherReading::orderBy('id', 'desc')->first();
+            $reading = WeatherReading::mostRecent();
             if ($reading !== null) {
                 return ['__from_db' => true, '__reading' => $reading];
             }

@@ -177,6 +177,12 @@ $loggedSchedulerTask('weather-fetch', 'weather:fetch --save', 'weather-fetch.log
     ->everyMinute()
     ->withoutOverlapping();
 
+// Fill gaps in the readings from the Ecowitt cloud history. Does nothing until
+// cloud keys and a MAC address are set, whatever the live source is.
+$loggedSchedulerTask('ecowitt-backfill', 'ecowitt:backfill', 'ecowitt-backfill.log')
+    ->hourlyAt(17)
+    ->withoutOverlapping();
+
 // Refresh per-source health status (drives stale/offline overlays on dashboard cards)
 $loggedSchedulerTask('check-sensor-health', 'weather:check-sensor-health', 'check-sensor-health.log')
     ->everyFiveMinutes()

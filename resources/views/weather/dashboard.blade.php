@@ -137,6 +137,7 @@
         'indoor' => $ssrWidgetEnabled('indoor'),
         'extra_temps' => $ssrWidgetEnabled('extra_temps'),
         'soil' => $ssrWidgetEnabled('soil'),
+        'more_sensors' => $ssrWidgetEnabled('more_sensors'),
         'pm25' => $ssrWidgetEnabled('pm25'),
         'co2' => $ssrWidgetEnabled('co2'),
         'battery' => $ssrWidgetEnabled('battery'),
@@ -348,6 +349,14 @@
             }
             $ssrHybridCards[] = ['id' => 'soil', 'title' => __('Soil sensors'), 'lines' => $lines ?: [__('No soil sensor data')]];
         }
+        if ($ssrWidgetFlags['more_sensors']) {
+            $lines = [];
+            foreach (array_slice((array) ($ssrExtraSensors['more'] ?? []), 0, 6) as $line) {
+                $value = $line['kind'] === 'state' ? __($line['value']) : $line['value'] . ($line['unit'] !== '' ? ' ' . $line['unit'] : '');
+                $lines[] = __($line['label']) . ($line['channel'] ? ' ' . $line['channel'] : '') . ': ' . $value;
+            }
+            $ssrHybridCards[] = ['id' => 'more_sensors', 'title' => __('More sensors'), 'lines' => $lines ?: [__('No data')]];
+        }
         if ($ssrWidgetFlags['pm25']) {
             $lines = [];
             foreach (['ch1', 'ch2', 'ch3', 'ch4'] as $key) {
@@ -422,7 +431,7 @@
     $ssrFallbackDefaults = [
         'sortable-left-column' => ['current', 'wind', 'pressure', 'rain'],
         'sortable-middle-column' => ['forecast', 'hourly'],
-        'sortable-right-column' => ['sun_moon', 'uv_solar', 'airquality', 'pollen', 'tide', 'lightning', 'indoor', 'extra_temps', 'soil', 'pm25', 'co2', 'battery', 'aurora', 'astro_events'],
+        'sortable-right-column' => ['sun_moon', 'uv_solar', 'airquality', 'pollen', 'tide', 'lightning', 'indoor', 'extra_temps', 'soil', 'more_sensors', 'pm25', 'co2', 'battery', 'aurora', 'astro_events'],
         'sortable-media-row' => ['webcam', 'radar'],
         'sortable-widgets' => ['metar', 'earthquakes', 'alerts', 'ads'],
     ];
@@ -968,6 +977,29 @@
                     // Wind compass points (English keys; locale files may remap e.g. NNE→NNO)
                     'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
                     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+                    // More sensors card labels from App\Support\ExtraSensors::lines().
+                    'More sensors',
+                    'Black globe',
+                    'WBGT',
+                    'Soil EC',
+                    'Soil moisture',
+                    'Soil temperature',
+                    'Water depth',
+                    'Temperature probe',
+                    'Rain sensor',
+                    'Wetness',
+                    'Wet',
+                    'Dry',
+                    'Water EC',
+                    'TDS',
+                    'COD',
+                    'TOC',
+                    'Turbidity',
+                    'Water CO2',
+                    'Water quality alarm',
+                    'Leak',
+                    'Water shortage',
+                    'Dirty',
                     // Battery labels and statuses from App\Support\BatteryStatus (#131).
                     'Indoor Sensor (WH25)',
                     'Temperature/Humidity Sensor (WH26)',
@@ -3922,6 +3954,30 @@
                                     <span class="font-bold text-data-blue-400" x-text="data?.moisture !== undefined ? data.moisture + '%' : '--'"></span>
                                     <span class="font-bold" x-text="formatTemp(data?.temperature)"></span>
                                 </div>
+                            </div>
+                        </template>
+                    </div>
+	                </div>
+	                </template>
+
+	                <!-- More Sensors Widget: newer Ecowitt sensors (App\Support\ExtraSensors) -->
+	                <template x-if="isWidgetEnabled('more_sensors') && extraSensors?.more?.length > 0">
+		                <div class="sortable-widget bg-weather-card card-3d rounded-2xl p-5 border border-ui-line/10"
+		                     data-widget="more_sensors"
+		                     @mouseenter="!editMode && tiltCard($event)" @mouseleave="!editMode && resetCard($event)" @mousemove="!editMode && tiltCard($event)">
+                    <div class="drag-handle absolute top-2 right-2 p-2 cursor-grab hover:bg-ui-overlay/10 rounded-lg transition-colors z-20">
+                        <svg class="w-4 h-4 text-data-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">📟 {{ __('More sensors') }}</h3>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <template x-for="(line, idx) in extraSensors?.more || []" :key="idx">
+                            <div class="flex justify-between items-center py-2 border-b border-ui-line/5 last:border-0">
+                                <span class="text-ui-muted" x-text="moreSensorLabel(line)"></span>
+                                <span class="font-bold" x-text="moreSensorValue(line)"></span>
                             </div>
                         </template>
                     </div>

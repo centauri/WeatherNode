@@ -532,6 +532,7 @@ class SettingsController extends Controller
             'schedulerTasks' => $schedulerTasks,
             'timezones' => $timezones,
             'radarFutureFrameProviders' => $radarFutureFrameProviders,
+            'ecowitt' => $group === 'ecowitt' ? EcowittSettingsController::pageData() : null,
         ]);
     }
 
@@ -640,6 +641,10 @@ class SettingsController extends Controller
      */
     public function update(Request $request, string $group)
     {
+        if ($group === 'ecowitt') {
+            return app(EcowittSettingsController::class)->save($request);
+        }
+
         if ($group === 'aviation') {
             $this->ensureMetarDefaultSceneSetting();
             if ($request->has('metar_default_scene')) {
@@ -973,6 +978,7 @@ class SettingsController extends Controller
             'pm25' => ['label' => 'PM2.5 Air Quality', 'icon' => 'cloud', 'description' => 'Particulate matter sensors'],
             'co2' => ['label' => 'CO2 Monitor', 'icon' => 'gauge', 'description' => 'Carbon dioxide levels'],
             'leak' => ['label' => 'Leak Detection', 'icon' => 'droplet', 'description' => 'Water leak sensor alerts'],
+            'more_sensors' => ['label' => 'More Sensors', 'icon' => 'gauge', 'description' => 'Black globe, soil EC, water level, wetness and water quality sensors'],
             'battery' => ['label' => 'Battery Status', 'icon' => 'battery', 'description' => 'Sensor battery levels'],
             
             // Advertising widget
@@ -1785,19 +1791,9 @@ class SettingsController extends Controller
 
         switch ($service) {
                 case 'ecowitt':
-                    $format = Setting::getValue('livedata.format', '');
-                    $source = Setting::getValue('ecowitt.data_source', '');
-
-                    if ($format === 'ecoLcl' || $source === 'local_api') {
-                        $result = $cacheCheck();
-                        break;
-                    }
-
-                    $svc = app(\App\Services\Weather\EcowittService::class);
-                    $data = $svc->fetchRealTimeData();
-                    $result = $data ?
-                        ['success' => true, 'message' => 'Connection successful! Data received.'] :
-                        ['success' => false, 'message' => 'No data returned. Check your API keys or file path.'];
+                    $result = \App\Support\EcowittSource::reader() === \App\Support\EcowittSource::PUSH
+                        ? $cacheCheck()
+                        : EcowittSettingsController::testConnection();
                     break;
 
                 case 'yrno':
@@ -1879,11 +1875,7 @@ class SettingsController extends Controller
                     }
 
                     if ($format === 'ecowittAPI') {
-                        $svc = app(\App\Services\Weather\EcowittService::class);
-                        $data = $svc->fetchRealTimeData();
-                        $result = $data ?
-                            ['success' => true, 'message' => 'Ecowitt cloud API returned data.'] :
-                            ['success' => false, 'message' => 'No data returned. Check Ecowitt API credentials.'];
+                        $result = EcowittSettingsController::testConnection();
                         break;
                     }
 
@@ -3138,41 +3130,20 @@ class SettingsController extends Controller
             Setting::setValue('livedata.rain_yearly_source', $request->input('rain_yearly_source'), 'select', 'livedata');
         }
 
+        // Keep the Ecowitt reader in step with the live data source.
+        if ($format === 'ecowittAPI') {
+            Setting::setValue('ecowitt.data_source', 'cloud_api', 'select', 'ecowitt');
+        } elseif ($format === 'ecoLcl' && Setting::getValue('ecowitt.data_source') === 'cloud_api') {
+            Setting::setValue('ecowitt.data_source', 'push', 'select', 'ecowitt');
+        }
+
         // Source-specific settings (only livedata-specific, not API credentials)
         if ($format === 'ecoLcl') {
-            // Ecowitt Local (push) - only passkey (livedata-specific)
-            if ($request->has('ecowitt_passkey')) {
-                Setting::setValue('ecowitt.passkey', $request->input('ecowitt_passkey'), 'string', 'ecowitt');
+            // Push security lives on the Ecowitt page now; a form that still
+            // posts it is honoured, one that does not leaves it alone.
+            if ($request->hasAny(EcowittSettingsController::PUSH_SECURITY_FIELDS)) {
+                EcowittSettingsController::savePushSecurity($request);
             }
-
-            // Optional hardening for WS View push receiver.
-            $secureMode = $request->boolean('ecowitt_secure_mode');
-            Setting::setValue('ecowitt.secure_mode', $secureMode, 'boolean', 'ecowitt');
-
-            $secureToken = trim((string) $request->input('ecowitt_secure_token', ''));
-            if ($secureToken !== '') {
-                $secureToken = preg_replace('/[^A-Za-z0-9_-]/', '', $secureToken) ?? '';
-            }
-            Setting::setValue('ecowitt.secure_token', $secureToken, 'string', 'ecowitt');
-
-            // Optional source filters for shared hosting environments (app-level allowlists).
-            $ipFilterEnabled = $request->boolean('ecowitt_ip_filter_enabled');
-            Setting::setValue('ecowitt.ip_filter_enabled', $ipFilterEnabled, 'boolean', 'ecowitt');
-            Setting::setValue(
-                'ecowitt.ip_allowlist',
-                $this->normalizeEcowittAllowlist((string) $request->input('ecowitt_ip_allowlist', '')),
-                'text',
-                'ecowitt'
-            );
-
-            $nameFilterEnabled = $request->boolean('ecowitt_name_filter_enabled');
-            Setting::setValue('ecowitt.name_filter_enabled', $nameFilterEnabled, 'boolean', 'ecowitt');
-            Setting::setValue(
-                'ecowitt.name_allowlist',
-                $this->normalizeEcowittAllowlist((string) $request->input('ecowitt_name_allowlist', '')),
-                'text',
-                'ecowitt'
-            );
         } elseif ($format === 'DWL_v2api_demo') {
             // WeatherLink v2 Demo Mode - enable demo mode and save API key (only API credential allowed on livedata page)
             Setting::setValue('weatherlink.demo_mode', '1', 'boolean', 'weatherlink');
@@ -3184,22 +3155,6 @@ class SettingsController extends Controller
             Setting::setValue('weatherlink.demo_mode', '0', 'boolean', 'weatherlink');
         }
         // Note: API credentials (ecowittAPI, wu, DWL, wf, AWapi) are configured on their dedicated settings pages
-    }
-
-    private function normalizeEcowittAllowlist(string $raw): string
-    {
-        $parts = preg_split('/[\r\n,;]+/', $raw) ?: [];
-        $values = [];
-
-        foreach ($parts as $part) {
-            $candidate = trim($part);
-            if ($candidate === '' || in_array($candidate, $values, true)) {
-                continue;
-            }
-            $values[] = $candidate;
-        }
-
-        return implode("\n", $values);
     }
 
     /**
