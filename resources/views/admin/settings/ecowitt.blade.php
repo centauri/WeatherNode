@@ -283,11 +283,48 @@
             </div>
         </section>
 
+        {{-- 4. Gap filling --}}
+        @php($backfill = $ecowitt['backfill'])
+        <section class="{{ $card }} p-5 space-y-4">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">4. {{ __('Fill gaps from the Ecowitt cloud') }}</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ __('When this site was down or the push stopped, the missing readings are fetched from the Ecowitt cloud every hour. Works with any source once the cloud keys and MAC address above are set.') }}
+                    </p>
+                </div>
+                <x-toggle-switch :enabled="$backfill['enabled']" name="ecowitt_backfill_enabled" :showLabel="false" />
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <label for="ecowitt_backfill_days" class="text-sm text-gray-700 dark:text-gray-300">{{ __('Look back') }}</label>
+                <input type="number" name="ecowitt_backfill_days" id="ecowitt_backfill_days" min="1" max="{{ $backfill['maxDays'] }}"
+                       value="{{ old('ecowitt_backfill_days', $backfill['days']) }}" class="{{ $input }} w-24">
+                <span class="text-sm text-gray-700 dark:text-gray-300">{{ __('days (up to :max)', ['max' => $backfill['maxDays']]) }}</span>
+                <button type="submit" form="ecowitt-backfill-form" class="ml-auto px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    {{ __('Fill gaps now') }}
+                </button>
+            </div>
+            @if($backfill['lastRun'])
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ __('Last run :ago: :gaps gaps, :count readings added.', [
+                        'ago' => \Carbon\Carbon::parse($backfill['lastRun']['at'])->diffForHumans(),
+                        'gaps' => $backfill['lastRun']['gaps'],
+                        'count' => $backfill['lastRun']['inserted'],
+                    ]) }}
+                    @if($backfill['lastRun']['error'])
+                        <span class="text-red-600 dark:text-red-400">{{ $backfill['lastRun']['error'] }}</span>
+                    @endif
+                </p>
+            @endif
+        </section>
+
         <div class="flex items-center justify-between">
             <a href="{{ route('admin.settings.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">&larr; {{ __('Back to Settings') }}</a>
             <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg transition shadow-sm">{{ __('Save Changes') }}</button>
         </div>
     </form>
+
+    <form id="ecowitt-backfill-form" action="{{ route('admin.settings.ecowitt.backfill') }}" method="POST" class="hidden">@csrf</form>
 
     {{-- Import --}}
     <details class="mt-8 {{ $card }}">

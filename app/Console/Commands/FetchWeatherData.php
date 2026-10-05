@@ -97,7 +97,7 @@ class FetchWeatherData extends Command
             $duplicateWarning = false;
 
             if ($sourceStatus['stale']) {
-                $lastReading = WeatherReading::orderBy('id', 'desc')->first();
+                $lastReading = WeatherReading::mostRecent();
                 if ($lastReading) {
                     $timeDiff = $lastReading->recorded_at->diffInMinutes(now());
                     // Only skip if we have a very recent reading (within 2 minutes) 
@@ -411,7 +411,7 @@ class FetchWeatherData extends Command
             if ($data !== null) {
                 return $data;
             }
-            $reading = WeatherReading::orderBy('id', 'desc')->first();
+            $reading = WeatherReading::mostRecent();
             if ($reading !== null) {
                 return ['__from_db' => true, '__reading' => $reading];
             }

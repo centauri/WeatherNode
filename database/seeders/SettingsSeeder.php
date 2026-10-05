@@ -68,6 +68,8 @@ class SettingsSeeder extends Seeder
             ['key' => 'ecowitt.rain_gauge', 'value' => 'auto', 'type' => 'select', 'group' => 'ecowitt', 'description' => 'Which rain gauge to read. Auto uses a WS90 or WS85 piezo gauge unless a tipping bucket has recorded rain this year', 'options' => 'auto:Auto,tipping:Tipping bucket (WH40 / WS69),piezo:Piezo (WS90 / WS85)'],
             ['key' => 'ecowitt.api_base_url', 'value' => 'https://api.ecowitt.net/api/v3/', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Ecowitt API base URL (cloud or local gateway)'],
             ['key' => 'ecowitt.local_file', 'value' => './ecowitt/ecco_lcl.arr', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Path to local Ecowitt data file'],
+            ['key' => 'ecowitt.backfill_enabled', 'value' => '1', 'type' => 'boolean', 'group' => 'ecowitt', 'description' => 'Fill gaps in the readings from the Ecowitt cloud history'],
+            ['key' => 'ecowitt.backfill_days', 'value' => '7', 'type' => 'integer', 'group' => 'ecowitt', 'description' => 'How many days back to look for gaps (1 to 90)'],
             
             // Sensor labels for customization
             ['key' => 'ecowitt.temp1_label', 'value' => 'Extra Sensor 1', 'type' => 'string', 'group' => 'ecowitt', 'description' => 'Label for extra temperature sensor 1'],

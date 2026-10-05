@@ -293,6 +293,49 @@ class EcowittSettingsPageTest extends TestCase
             ->assertJsonPath('message', fn ($m) => str_contains($m, 'One of MAC and IMEI must exist'));
     }
 
+    // ── gap filling ─────────────────────────────────────────────────────────
+
+    public function test_gap_filling_is_on_by_default_and_can_be_set(): void
+    {
+        $this->assertTrue((bool) Setting::getValue('ecowitt.backfill_enabled'));
+        $this->assertSame('7', (string) Setting::getValue('ecowitt.backfill_days'));
+
+        $this->actingAs($this->admin())->get(route('admin.settings.group', 'ecowitt'))
+            ->assertSee('name="ecowitt_backfill_enabled"', false)
+            ->assertSee('name="ecowitt_backfill_days"', false);
+
+        $this->save(['ecowitt_backfill_enabled' => '0', 'ecowitt_backfill_days' => '30'])->assertSessionHasNoErrors();
+
+        $this->assertFalse((bool) Setting::getValue('ecowitt.backfill_enabled'));
+        $this->assertSame('30', (string) Setting::getValue('ecowitt.backfill_days'));
+    }
+
+    public function test_gap_filling_looks_back_at_most_90_days(): void
+    {
+        $this->save(['ecowitt_backfill_days' => '365'])->assertSessionHasErrors('ecowitt_backfill_days');
+    }
+
+    public function test_fill_gaps_now_runs_it_and_says_what_happened(): void
+    {
+        Setting::setValue('ecowitt.application_key', 'app', 'encrypted', 'ecowitt');
+        Setting::setValue('ecowitt.api_key', 'api', 'encrypted', 'ecowitt');
+        Setting::setValue('ecowitt.mac_address', 'AA:BB:CC:DD:EE:FF', 'string', 'ecowitt');
+        Http::fake();
+        WeatherReading::query()->create(['recorded_at' => now()->subMinutes(2), 'temperature' => 10]);
+
+        $this->actingAs($this->admin())
+            ->post(route('admin.settings.ecowitt.backfill'))
+            ->assertRedirect(route('admin.settings.group', 'ecowitt'))
+            ->assertSessionHas('success');
+    }
+
+    public function test_fill_gaps_now_explains_missing_keys(): void
+    {
+        $this->actingAs($this->admin())
+            ->post(route('admin.settings.ecowitt.backfill'))
+            ->assertSessionHas('error');
+    }
+
     // ── the Live Data page stays in step ────────────────────────────────────
 
     public function test_choosing_ecowitt_cloud_on_the_live_data_page_switches_the_service_too(): void

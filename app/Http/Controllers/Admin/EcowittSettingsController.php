@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\WeatherReading;
+use App\Services\Weather\EcowittBackfill;
 use App\Services\Weather\EcowittCloudApi;
 use App\Services\Weather\EcowittCloudApiException;
 use App\Services\Weather\EcowittService;
@@ -63,7 +64,7 @@ class EcowittSettingsController extends Controller
         $secureMode = (bool) Setting::getValue('ecowitt.secure_mode', false);
         $secureToken = (string) Setting::getValue('ecowitt.secure_token', '');
         $endpoint = '/api/ecowitt/receive' . ($secureMode && $secureToken !== '' ? '/' . $secureToken : '');
-        $latest = WeatherReading::query()->orderByDesc('id')->first();
+        $latest = WeatherReading::mostRecent();
 
         $channels = [];
         foreach (self::channels() as $key => [$family, $channel, $column, $unit]) {
@@ -107,6 +108,12 @@ class EcowittSettingsController extends Controller
             ],
             'localFile' => (string) Setting::getValue('ecowitt.local_file', './ecowitt/ecco_lcl.arr'),
             'rainGauge' => Setting::where('key', RainGauge::SETTING)->first(),
+            'backfill' => [
+                'enabled' => filter_var(Setting::getValue('ecowitt.backfill_enabled', '1'), FILTER_VALIDATE_BOOLEAN),
+                'days' => (int) Setting::getValue('ecowitt.backfill_days', 7),
+                'lastRun' => is_array($last = Setting::getValue('ecowitt.backfill_last_run')) ? $last : null,
+                'maxDays' => EcowittBackfill::MAX_DAYS,
+            ],
             'channels' => $channels,
             'latestAt' => $latest?->recorded_at,
         ];
@@ -122,6 +129,7 @@ class EcowittSettingsController extends Controller
             'ecowitt_api_base_url' => ['nullable', 'url', 'starts_with:https://', 'max:255'],
             'ecowitt_local_file' => ['nullable', 'string', 'max:255', 'not_regex:/\.\./'],
             'ecowitt_rain_gauge' => ['nullable', Rule::in([RainGauge::AUTO, RainGauge::TIPPING, RainGauge::PIEZO])],
+            'ecowitt_backfill_days' => ['nullable', 'integer', 'between:1,' . EcowittBackfill::MAX_DAYS],
             'ecowitt_station_latitude' => ['exclude_unless:ecowitt_apply_location,1', 'required', 'numeric', 'between:-90,90'],
             'ecowitt_station_longitude' => ['exclude_unless:ecowitt_apply_location,1', 'required', 'numeric', 'between:-180,180'],
             'ecowitt_station_timezone' => ['exclude_unless:ecowitt_apply_location,1', 'required', Rule::in(\DateTimeZone::listIdentifiers())],
@@ -182,6 +190,13 @@ class EcowittSettingsController extends Controller
             self::savePushSecurity($request);
         }
 
+        if ($request->has('ecowitt_backfill_enabled')) {
+            Setting::setValue('ecowitt.backfill_enabled', $request->boolean('ecowitt_backfill_enabled'), 'boolean', 'ecowitt');
+        }
+        if ($request->filled('ecowitt_backfill_days')) {
+            Setting::setValue('ecowitt.backfill_days', (int) $request->input('ecowitt_backfill_days'), 'integer', 'ecowitt');
+        }
+
         foreach (array_keys(self::channels()) as $key) {
             $field = str_replace('.', '_', $key);
             if ($request->has($field)) {
@@ -225,6 +240,27 @@ class EcowittSettingsController extends Controller
         Setting::setValue('ecowitt.ip_allowlist', self::allowlist((string) $request->input('ecowitt_ip_allowlist', '')), 'text', 'ecowitt');
         Setting::setValue('ecowitt.name_filter_enabled', $request->boolean('ecowitt_name_filter_enabled'), 'boolean', 'ecowitt');
         Setting::setValue('ecowitt.name_allowlist', self::allowlist((string) $request->input('ecowitt_name_allowlist', '')), 'text', 'ecowitt');
+    }
+
+    /** Fill gaps now, from the button on the page. */
+    public function backfill(EcowittBackfill $backfill): RedirectResponse
+    {
+        $report = $backfill->run((int) Setting::getValue('ecowitt.backfill_days', 7));
+        $back = redirect()->route('admin.settings.group', 'ecowitt');
+
+        if ($report['skipped']) {
+            return $back->with('error', __('Set the Ecowitt cloud keys and MAC address first.'));
+        }
+        if ($report['error']) {
+            return $back->with('error', __('Filling gaps stopped: :error. Readings added: :count.', [
+                'error' => $report['error'],
+                'count' => $report['inserted'],
+            ]));
+        }
+
+        return $back->with('success', $report['gaps'] === 0
+            ? __('No gaps found.')
+            : __('Gaps found: :gaps. Readings added: :count.', ['gaps' => $report['gaps'], 'count' => $report['inserted']]));
     }
 
     /** The stations on an Ecowitt account, with the keys typed on the page or else the saved ones. */
