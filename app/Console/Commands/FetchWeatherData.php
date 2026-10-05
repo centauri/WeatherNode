@@ -293,6 +293,11 @@ class FetchWeatherData extends Command
     {
         $rows = [];
 
+        // The Ecowitt local file holds raw push fields (tempf, ...).
+        if (isset($data['tempf'])) {
+            $data = app(\App\Services\Weather\EcowittPushParser::class)->parse($data);
+        }
+
         if (isset($data['outdoor']) || isset($data['wind']) || isset($data['pressure'])) {
             $outdoor = $data['outdoor'] ?? [];
             $wind = $data['wind'] ?? [];
