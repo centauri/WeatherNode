@@ -19,21 +19,13 @@ class SendTelemetry extends Command
             return 0;
         }
 
-        $stationData = $telemetryService->collectStationData();
-        if (!$stationData) {
-            $this->error('Failed to collect station data.');
-            return 1;
-        }
-
-        $this->info('Sending telemetry for: ' . $stationData['name']);
-
-        if ($aggregatorService->sendStationData($stationData)) {
-            $telemetryService->markAsUpdated($stationData);
+        $result = $telemetryService->publish($aggregatorService);
+        if ($result['success']) {
             $this->info('Telemetry sent successfully.');
             return 0;
         }
 
-        $this->error('Failed to send telemetry data.');
+        $this->error($result['message']);
         return 1;
     }
 }

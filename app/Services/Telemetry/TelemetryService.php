@@ -40,8 +40,8 @@ class TelemetryService
             // Resolve country from real coordinates (before anonymization)
             $countryCode = $this->resolveCountryCode((float) $latitude, (float) $longitude);
 
-            // Anonymize coordinates: random offset within ~100m radius
-            [$anonLat, $anonLon] = $this->anonymizeCoordinates((float) $latitude, (float) $longitude);
+            // Blur the location by up to ~100 m, the same way every time
+            [$anonLat, $anonLon] = $this->anonymizeCoordinates((float) $latitude, (float) $longitude, $stationId);
 
             return [
                 'id' => $stationId,
@@ -166,10 +166,12 @@ class TelemetryService
     }
 
     /**
-     * Anonymize coordinates by adding a random offset within ~100m radius.
-     * Each call produces a different offset so the exact location is never stored.
+     * Blur coordinates by up to ~100 m. The offset comes from the station id,
+     * so a station is always blurred to the same spot: a new random offset on
+     * every send looked like a change to the aggregator each day, and over
+     * many sends the offsets would average back to the real location.
      */
-    private function anonymizeCoordinates(float $lat, float $lon): array
+    private function anonymizeCoordinates(float $lat, float $lon, string $stationId): array
     {
         // ~100m in degrees latitude (1° lat ≈ 111 320 m)
         $maxOffsetLat = 100 / 111320;
@@ -177,9 +179,13 @@ class TelemetryService
         $cosLat = cos(deg2rad($lat));
         $maxOffsetLon = $cosLat > 0 ? 100 / (111320 * $cosLat) : $maxOffsetLat;
 
-        // Random angle + random distance (uniform distribution within circle)
-        $angle = mt_rand(0, 3600000) / 3600000 * 2 * M_PI;
-        $distance = sqrt(mt_rand(0, 1000000) / 1000000); // sqrt for uniform area distribution
+        $hash = hash('sha256', 'telemetry-blur|' . $stationId);
+        $u1 = hexdec(substr($hash, 0, 8)) / 0xFFFFFFFF;
+        $u2 = hexdec(substr($hash, 8, 8)) / 0xFFFFFFFF;
+
+        // Uniform point in a circle: angle in [0, 2π], distance sqrt(U), at least a third of the way out
+        $angle = $u1 * 2 * M_PI;
+        $distance = 0.33 + 0.67 * sqrt($u2);
 
         $offsetLat = $distance * $maxOffsetLat * cos($angle);
         $offsetLon = $distance * $maxOffsetLon * sin($angle);
@@ -205,13 +211,90 @@ class TelemetryService
      */
     private function hashStationData(array $data): string
     {
-        // Exclude updated_at and anonymized coordinates from hash
-        // (coordinates are randomized each call, so they'd always differ)
+        // Coordinates are blurred the same way every time, so a moved station counts as a change.
         $dataToHash = $data;
-        unset($dataToHash['updated_at'], $dataToHash['latitude'], $dataToHash['longitude']);
+        unset($dataToHash['updated_at']);
 
         ksort($dataToHash);
         return md5(json_encode($dataToHash));
+    }
+
+    /**
+     * Send this station to the aggregator. The one path every sender uses:
+     * the daily command, saving the station or telemetry page, and Update now.
+     *
+     * The entry's id is a hash of the site address, so a new address makes a
+     * new entry. The old one is then removed, or it stayed listed for good.
+     *
+     * @return array{success: bool, message: string}
+     */
+    public function publish(?TelemetryAggregatorService $aggregator = null): array
+    {
+        if (!Setting::getValue('telemetry.enabled', false)) {
+            return ['success' => false, 'message' => 'Telemetry is disabled. Enable it first.'];
+        }
+
+        $data = $this->previewStationData();
+        if (!$data) {
+            return ['success' => false, 'message' => 'Failed to collect station data.'];
+        }
+
+        if ($problem = self::publicUrlProblem($data['url'])) {
+            return ['success' => false, 'message' => $problem];
+        }
+
+        $aggregator ??= app(TelemetryAggregatorService::class);
+        if (!$aggregator->sendStationData($data)) {
+            return ['success' => false, 'message' => 'Failed to send data to aggregator. Check aggregator URL and API key.'];
+        }
+
+        $previous = (string) Setting::getValue('telemetry.station_id', '');
+        if ($previous !== '' && $previous !== $data['id']) {
+            $aggregator->removeStation($previous);
+        }
+
+        $this->markAsUpdated($data);
+
+        return ['success' => true, 'message' => 'Station data sent to aggregator successfully!'];
+    }
+
+    /** Take this station off the list, when sharing is switched off. */
+    public function unpublish(?TelemetryAggregatorService $aggregator = null): bool
+    {
+        $id = $this->getStationId();
+        if (!$id) {
+            return true;
+        }
+
+        $removed = ($aggregator ?? app(TelemetryAggregatorService::class))->removeStation($id);
+        if ($removed) {
+            Setting::setValue('telemetry.station_id', '', 'string', 'telemetry');
+            Setting::setValue('telemetry.last_data_hash', '', 'string', 'telemetry');
+        }
+
+        return $removed;
+    }
+
+    /**
+     * Why an address cannot be shared, or null when it can. Visitors of the
+     * community map cannot open a LAN or localhost address.
+     */
+    public static function publicUrlProblem(string $url): ?string
+    {
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $message = 'Set a public address in Station settings (Server URL) before sharing. ' . ($host ?: $url) . ' cannot be opened by visitors.';
+
+        if ($host === '' || $host === 'localhost' || str_ends_with($host, '.local') || str_ends_with($host, '.lan')
+            || str_ends_with($host, '.internal') || str_ends_with($host, '.home.arpa')) {
+            return $message;
+        }
+
+        $ip = trim($host, '[]');
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ? null : $message;
+        }
+
+        return str_contains($host, '.') ? null : $message;
     }
 
     /**
@@ -221,19 +304,21 @@ class TelemetryService
     {
         Setting::setValue('telemetry.last_updated', now()->toIso8601String(), 'string', 'telemetry');
         Setting::setValue('telemetry.last_data_hash', $this->hashStationData($stationData), 'string', 'telemetry');
+        Setting::setValue('telemetry.station_id', $stationData['id'], 'string', 'telemetry');
     }
 
     /**
-     * Get station ID for removal
+     * The id this station was last shared under. Read when sharing is being
+     * switched off, so it must not depend on sharing being on: it did, and the
+     * removal was never sent.
      */
     public function getStationId(): ?string
     {
-        $enabled = Setting::getValue('telemetry.enabled', false);
-        if (!$enabled) {
-            return null;
+        $stored = (string) Setting::getValue('telemetry.station_id', '');
+        if ($stored !== '') {
+            return $stored;
         }
 
-        $data = $this->collectStationData();
-        return $data['id'] ?? null;
+        return $this->previewStationData()['id'] ?? null;
     }
 }

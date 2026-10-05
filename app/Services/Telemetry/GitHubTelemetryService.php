@@ -23,60 +23,100 @@ class GitHubTelemetryService
     }
 
     /**
-     * Read all stations from GitHub repository
+     * Read all stations.
+     *
+     * From raw.githubusercontent.com first: the API allows 60 calls an hour
+     * per IP without a token, shared by every device behind one address, and
+     * the page showed 0 stations once that ran out. The API is the fallback.
+     * A failed read is remembered for a few minutes so page views do not keep
+     * asking, and the last good list is shown meanwhile.
      */
     public function readStations(): ?array
     {
-        $cacheKey = "github_stations_{$this->repo}_{$this->file}";
-        
-        return Cache::remember($cacheKey, 1800, function () {
-            try {
-                $url = $this->baseUrl . $this->repo . '/contents/' . $this->file;
-                
-                $headers = [
-                    'Accept' => 'application/vnd.github.v3+json',
-                    'User-Agent' => UserAgentService::forExternalApi(),
-                ];
-                
-                $response = Http::withHeaders($headers)->get($url);
-                
-                if (!$response->successful()) {
-                    Log::warning('Failed to read stations from GitHub', [
-                        'status' => $response->status(),
-                        'repo' => $this->repo,
-                        'file' => $this->file,
-                    ]);
-                    return null;
-                }
-                
-                $data = $response->json();
-                
-                if (!isset($data['content'])) {
-                    return null;
-                }
-                
-                // Decode base64 content
-                $content = base64_decode($data['content'], true);
-                if ($content === false) {
-                    Log::error('Failed to decode GitHub file content');
-                    return null;
-                }
-                
-                $stations = json_decode($content, true);
-                
-                if (!is_array($stations) || !isset($stations['stations'])) {
-                    return ['stations' => [], 'last_updated' => null];
-                }
-                
-                return $stations;
-            } catch (\Exception $e) {
-                Log::error('Exception reading stations from GitHub', [
-                    'error' => $e->getMessage(),
-                    'repo' => $this->repo,
-                ]);
+        $key = "github_stations_{$this->repo}_{$this->file}";
+
+        $cached = Cache::get($key);
+        if ($cached !== null) {
+            return $cached;
+        }
+        if (Cache::has("{$key}_failed")) {
+            return Cache::get("{$key}_last_good");
+        }
+
+        $stations = $this->readRaw() ?? $this->readApi();
+        if ($stations === null) {
+            Cache::put("{$key}_failed", true, now()->addMinutes(5));
+
+            return Cache::get("{$key}_last_good");
+        }
+
+        Cache::put($key, $stations, now()->addMinutes(30));
+        Cache::forever("{$key}_last_good", $stations);
+
+        return $stations;
+    }
+
+    private function readRaw(): ?array
+    {
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['User-Agent' => UserAgentService::forExternalApi()])
+                ->get("https://raw.githubusercontent.com/{$this->repo}/HEAD/{$this->file}");
+
+            if (!$response->successful()) {
+                Log::info('Could not read stations from raw GitHub', ['status' => $response->status(), 'repo' => $this->repo]);
+
                 return null;
             }
-        });
+
+            return $this->stationsFrom($response->body());
+        } catch (\Exception $e) {
+            Log::info('Exception reading stations from raw GitHub', ['error' => $e->getMessage()]);
+
+            return null;
+        }
+    }
+
+    private function readApi(): ?array
+    {
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'Accept' => 'application/vnd.github.v3+json',
+                    'User-Agent' => UserAgentService::forExternalApi(),
+                ])
+                ->get($this->baseUrl . $this->repo . '/contents/' . $this->file);
+
+            if (!$response->successful()) {
+                Log::warning('Failed to read stations from GitHub', [
+                    'status' => $response->status(),
+                    'repo' => $this->repo,
+                    'file' => $this->file,
+                ]);
+
+                return null;
+            }
+
+            $content = base64_decode((string) ($response->json('content') ?? ''), true);
+
+            return $content === false || $content === '' ? null : $this->stationsFrom($content);
+        } catch (\Exception $e) {
+            Log::error('Exception reading stations from GitHub', ['error' => $e->getMessage(), 'repo' => $this->repo]);
+
+            return null;
+        }
+    }
+
+    private function stationsFrom(string $json): ?array
+    {
+        $data = json_decode($json, true);
+        if (!is_array($data)) {
+            return null;
+        }
+
+        return isset($data['stations']) && is_array($data['stations'])
+            ? $data
+            : ['stations' => [], 'last_updated' => null];
     }
 
     /**
