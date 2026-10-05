@@ -17,8 +17,10 @@ namespace App\Support;
  * and wraps every value as time/unit/value. The kind travels with the name it
  * arrived under, and nothing is renamed across the two.
  *
- * Push kinds are from aioecowitt, the parser Home Assistant uses. Cloud names,
- * kinds and the voltage thresholds are from CumulusMX's Ecowitt cloud station.
+ * Push kinds are from aioecowitt, the parser Home Assistant uses. Cloud names
+ * and kinds are from Ecowitt's API v3 doc
+ * (https://doc.ecowitt.net/web/#/apiv3en?page_id=17), checked against a
+ * captured response. The voltage thresholds are from CumulusMX.
  *
  * Every Ecowitt path stores through fromPush() or normalise(), and both
  * dashboards read through classify(), so there is one answer everywhere.
@@ -62,10 +64,8 @@ final class BatteryStatus
         't_rh_p_sensor' => ['Indoor Sensor', 'flag'],
         'outdoor_t_rh_sensor' => ['Temperature/Humidity Sensor', 'flag'],
         'sensor_array' => ['Outdoor Sensor Array', 'flag'],
-        // A level, as in push. CumulusMX treats it as a flag, but a captured
-        // cloud response from a healthy WH57 reads 4.
         'lightning_sensor' => ['Lightning Sensor', 'level'],
-        'aqi_combo_sensor' => ['Air Quality Combo Sensor', 'flag'],
+        'aqi_combo_sensor' => ['Air Quality Combo Sensor', 'level'],
         'console' => ['Console', 'volts', self::TWO_CELL],
         'ws1900_console' => ['Console', 'volts', self::SINGLE_CELL],
         'ws1800_console' => ['Console', 'volts', self::SINGLE_CELL],
@@ -98,8 +98,8 @@ final class BatteryStatus
         ['/^ldsbatt_?(\d+)$/', 'lds', 'Water Level Sensor', 'volts', self::SINGLE_CELL],
         // cloud
         ['/^temp_humidity_sensor_ch(\d+)$/', 'temps', 'Temperature/Humidity Sensor', 'flag'],
-        ['/^pm25_sensor_ch(\d+)$/', 'pm25', 'PM2.5 Sensor', 'flag'],
-        ['/^water_leak_sensor_ch(\d+)$/', 'leak', 'Leak Sensor', 'flag'],
+        ['/^pm25_sensor_ch(\d+)$/', 'pm25', 'PM2.5 Sensor', 'level'],
+        ['/^water_leak_sensor_ch(\d+)$/', 'leak', 'Leak Sensor', 'level'],
         ['/^soilmoisture_sensor_ch(\d+)$/', 'soil', 'Soil Sensor', 'volts', self::SINGLE_CELL],
         ['/^soilmoisture_ec_sensor_ch(\d+)$/', 'soil', 'Soil EC Sensor', 'volts', self::SINGLE_CELL],
         ['/^temperature_sensor_ch(\d+)$/', 'temps', 'Temperature Probe', 'volts', self::SINGLE_CELL],
