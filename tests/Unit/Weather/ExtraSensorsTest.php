@@ -82,6 +82,18 @@ class ExtraSensorsTest extends TestCase
         $this->assertTrue($sensors['water_quality']['shortage']);
     }
 
+    /** WN34 probes on the cloud are temp_chN, in °F by default. */
+    public function test_cloud_temperature_probes(): void
+    {
+        $sensors = ExtraSensors::fromCloud(['temp_ch2' => ['temperature' => $this->wrap('84.2', 'ºF')]]);
+
+        $this->assertSame([2 => 29.0], $sensors['probes']);
+        $this->assertContains(
+            ['label' => 'Temperature probe', 'channel' => 2, 'value' => 29.0, 'unit' => '°C', 'kind' => 'temp'],
+            ExtraSensors::lines($sensors)
+        );
+    }
+
     public function test_a_station_without_them_gets_nothing(): void
     {
         $this->assertSame([], ExtraSensors::fromPush(['tempf' => '68.0']));

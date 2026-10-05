@@ -985,6 +985,8 @@
                     'Soil moisture',
                     'Soil temperature',
                     'Water depth',
+                    'Temperature probe',
+                    'Rain sensor',
                     'Wetness',
                     'Wet',
                     'Dry',

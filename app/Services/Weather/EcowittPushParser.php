@@ -124,6 +124,10 @@ class EcowittPushParser
             if (isset($raw["leaf_wetness{$i}"])) {
                 $data["leaf_wetness_{$i}"] = (int) $raw["leaf_wetness{$i}"];
             }
+            // What a GW2000A sends (ecowitt2mqtt's payload_gw2000a_1, aioecowitt).
+            if (isset($raw["leafwetness_ch{$i}"])) {
+                $data["leaf_wetness_{$i}"] = (int) $raw["leafwetness_ch{$i}"];
+            }
         }
 
         for ($i = 1; $i <= 4; $i++) {

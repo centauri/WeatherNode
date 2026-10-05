@@ -47,7 +47,7 @@ class EcowittBackfill
             'black_globe_temperature', 'wetness_status', 'wqt01',
         ];
         for ($i = 1; $i <= 8; $i++) {
-            array_push($groups, "temp_and_humidity_ch{$i}", "soil_ch{$i}", "leaf_ch{$i}");
+            array_push($groups, "temp_and_humidity_ch{$i}", "soil_ch{$i}", "leaf_ch{$i}", "temp_ch{$i}");
         }
         for ($i = 1; $i <= 4; $i++) {
             array_push($groups, "pm25_ch{$i}", "ch_lds{$i}");

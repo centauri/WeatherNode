@@ -11,6 +11,8 @@ use App\Services\Weather\Normalization\UnitConverter;
  *   bgt, wbgt      WN38 black globe and wet bulb globe temperature, °C
  *   soil_ec        WH52 soil moisture (%), temperature (°C) and EC (µS/cm), per channel
  *   water_level    LDS depth and air gap (mm) and heater count, per channel
+ *   probes         WN34 temperature probes, °C, per channel
+ *   raining        whether a WS90's piezo gauge is wet right now
  *   wetness        wetness status, true when wet
  *   water_quality  WQT01: ec, tds, cod, toc, turbidity, co2, and leak/shortage/dirty alarms
  *
@@ -35,6 +37,18 @@ final class ExtraSensors
                 'ec' => self::integer($raw["soil_ec{$i}"] ?? null),
             ]);
         }
+
+        for ($i = 1; $i <= 8; $i++) {
+            $out['probes'][$i] = self::celsius($raw["tf_ch{$i}c"] ?? null, false) ?? self::celsius($raw["tf_ch{$i}"] ?? null, true);
+        }
+
+        // A WS90 sends Wet/Dry, or 1/0 on some firmware.
+        $state = strtolower(trim((string) ($raw['srain_piezo'] ?? '')));
+        $out['raining'] = match ($state) {
+            'wet', '1' => true,
+            'dry', '0' => false,
+            default => null,
+        };
 
         for ($i = 1; $i <= 4; $i++) {
             $out['water_level'][$i] = self::filled([
@@ -63,6 +77,10 @@ final class ExtraSensors
                 'temperature' => self::cloudCelsius($channel['temperature'] ?? null),
                 'ec' => self::integer(self::value($channel['ec'] ?? null)),
             ]);
+        }
+
+        for ($i = 1; $i <= 8; $i++) {
+            $out['probes'][$i] = self::cloudCelsius($data["temp_ch{$i}"]['temperature'] ?? null);
         }
 
         for ($i = 1; $i <= 4; $i++) {
@@ -119,10 +137,17 @@ final class ExtraSensors
             $add('Soil temperature', $soil['temperature'] ?? null, '°C', 'temp', (int) $channel);
         }
 
+        foreach ($sensors['probes'] ?? [] as $channel => $temperature) {
+            $add('Temperature probe', $temperature, '°C', 'temp', (int) $channel);
+        }
+
         foreach ($sensors['water_level'] ?? [] as $channel => $level) {
             $add('Water depth', $level['depth'] ?? null, 'mm', 'number', (int) $channel);
         }
 
+        if (isset($sensors['raining'])) {
+            $add('Rain sensor', $sensors['raining'] ? 'Wet' : 'Dry', '', 'state');
+        }
         if (isset($sensors['wetness'])) {
             $add('Wetness', $sensors['wetness'] ? 'Wet' : 'Dry', '', 'state');
         }
@@ -207,7 +232,7 @@ final class ExtraSensors
 
     private static function clean(array $out): array
     {
-        foreach (['soil_ec', 'water_level'] as $group) {
+        foreach (['soil_ec', 'water_level', 'probes'] as $group) {
             $out[$group] = array_filter($out[$group] ?? [], fn ($v) => $v !== null);
         }
 
