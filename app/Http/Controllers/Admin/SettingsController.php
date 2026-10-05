@@ -112,7 +112,7 @@ class SettingsController extends Controller
         ],
         'ecowitt' => [
             'label' => 'Ecowitt',
-            'description' => 'Ecowitt local push or cloud API settings',
+            'description' => 'Ecowitt and other Fine Offset stations, such as Froggit, Sainlogic and Misol',
             'icon' => 'key',
             'color' => 'green',
             'category' => 'datasources',

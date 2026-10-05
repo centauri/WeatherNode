@@ -51,6 +51,18 @@ class EcowittSettingsPageTest extends TestCase
             ->assertSee('name="ecowitt_soil8_label"', false);
     }
 
+    /** Fine Offset sells the same stations under many names; owners of those should find this page. */
+    public function test_the_page_says_which_brands_it_covers(): void
+    {
+        $this->actingAs($this->admin())->get(route('admin.settings.group', 'ecowitt'))
+            ->assertSee('Fine Offset')
+            ->assertSee('Froggit')
+            ->assertSee('Sainlogic');
+
+        $this->actingAs($this->admin())->get(route('admin.settings.index'))
+            ->assertSee('Froggit');
+    }
+
     /** These were never read by anything. */
     public function test_settings_that_did_nothing_are_gone(): void
     {
