@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [2026.10.1] - 2026-10-07
+
+- New live data source: Netatmo. Read your own Netatmo station, or a public station you marked as favorite on weathermap.netatmo.com, so it works without Netatmo hardware too. Connect it on the new Netatmo settings page with a free app from dev.netatmo.com
+- New live data source: Wunderground upload (push). WeeWX, Meteobridge and many consoles can now upload straight to WeatherNode at `/api/wu/receive`. The Live Data Source page shows the address, the station key, the last upload and the WeeWX settings to copy
+- New guide for connecting more than 70 station models through WeeWX
+- The admin dashboard card now shows the live data source you use, not always Ecowitt. It shows whether data is coming in and the last error the fetch saw
+- The dashboard battery card shows one short line per sensor, with icons, and battery names are translated in every language. The admin battery tiles use the same icons and wrap long names (#131)
+- Fix readings never being saved when File Path is a web address, such as the realtime.txt WeeWX writes on a Raspberry Pi. Test Connection said it worked
+- Fix realtime.txt values the station does not have showing as 0, such as 0 °C indoors. Fix a UV index over 10 showing as a tenth of its value for Cumulus and WeeWX
+- File Path now shows an example that fits each local data source instead of the Ecowitt file
+- Water sections that are switched off no longer show a tab, and are left out of the sitemap
+- The Ecowitt page says it also covers Fine Offset stations sold under other names
+- German translation updates, thanks to @Trashwarez (#140)
+- If you install by hand, run `php artisan migrate` after updating. Docker and the built-in updater do this for you
+
 ## [2026.10.0] - 2026-10-05
 
 - WS90 and WS85 rain is now recorded from the piezo gauge. Auto picks the right gauge, and the Ecowitt page lets you choose one (#132)
