@@ -3362,30 +3362,41 @@ function weatherDashboard() {
                     return entry.label ? t(entry.label) : key;
                 },
 
-                getBatteryIcon(key, entry) {
-                    if (!entry || typeof entry !== 'object') return '❓';
-                    if (entry.state === 'unknown') return '❓';
-                    if (entry.state === 'low' || entry.state === 'medium') return '🪫';
-                    if (entry.status === 'Mains') return '🔌';
-                    if (key === 'haptic_array_capacitor' || key === 'ws85cap_volt') return '⚡';
-                    return '🔋';
+                // One short value per sensor, the same width in every language:
+                // volts when there are any, a check mark when a sensor without
+                // volts is fine, nothing for mains (the plug says it), and a word
+                // only when something needs attention. A low voltage stays the
+                // number in red; the word is in the title and aria-label.
+                batteryValue(entry) {
+                    if (!entry || typeof entry !== 'object') return t('Unknown');
+                    if (entry.type === 'volts') return `${entry.value} V`;
+                    if (entry.status === 'Mains') return '';
+                    if (entry.state === 'good') return '✓';
+                    return t(entry.status);
                 },
 
-                getBatteryStatus(key, entry) {
-                    if (!entry || typeof entry !== 'object') {
-                        return { text: t('Unknown'), class: 'text-gray-400' };
-                    }
+                batteryStatusText(entry) {
+                    return t(entry?.status || 'Unknown');
+                },
 
-                    const text = entry.type === 'volts'
-                        ? `${t(entry.status)} (${entry.value} V)`
-                        : t(entry.status);
-                    const cls = {
+                batteryTone(entry) {
+                    return {
                         good: 'text-data-green-400',
                         medium: 'text-data-yellow-400',
                         low: 'text-data-red-400',
-                    }[entry.state] || 'text-gray-400';
+                    }[entry?.state] || 'text-gray-400';
+                },
 
-                    return { text, class: cls };
+                // Width of the charge bar inside the battery icon (12 = full).
+                batteryFill(entry) {
+                    const pct = entry?.percentage ?? { good: 100, medium: 50, low: 20 }[entry?.state] ?? 0;
+                    return Math.max(1.5, Math.min(12, (pct / 100) * 12));
+                },
+
+                batterySummary() {
+                    const low = Object.values(this.batteryStatus || {}).filter((e) => e?.state === 'low').length;
+                    // "Low (2)" reuses the status word, so no language needs plural forms.
+                    return { low, text: low > 0 ? `${t('Low')} (${low})` : t('All good') };
                 },
 
 	                clearWeatherEffectContainers() {

@@ -197,4 +197,54 @@ class BatteryStatusTest extends TestCase
         $this->assertSame([], BatteryStatus::classify(''));
         $this->assertSame([], BatteryStatus::fromPush(['tempf' => '68.0']));
     }
+
+    /** The dashboard draws a capacitor as a capacitor, not as a battery. */
+    public function test_each_entry_says_which_icon_it_needs(): void
+    {
+        $classified = BatteryStatus::classify([
+            'haptic_array_battery' => 3.12,
+            'haptic_array_capacitor' => 5.3,
+            'ws85cap_volt' => 4.1,
+            'pm25_sensor_ch1' => ['time' => '1', 'unit' => '', 'value' => '6'],
+            'wh65batt' => 0,
+        ]);
+
+        $this->assertSame('battery', $classified['haptic_array_battery']['icon']);
+        $this->assertSame('capacitor', $classified['haptic_array_capacitor']['icon']);
+        $this->assertSame('capacitor', $classified['ws85cap_volt']['icon']);
+        $this->assertSame('mains', $classified['pm25_sensor_ch1']['icon']);
+        $this->assertSame('battery', $classified['wh65batt']['icon']);
+    }
+
+    /** Short enough to fit one line of the dashboard card. */
+    public function test_the_ws90_labels_are_short(): void
+    {
+        $classified = BatteryStatus::classify(['haptic_array_battery' => 3.12, 'haptic_array_capacitor' => 5.3]);
+
+        $this->assertSame('WS90 batteries', $classified['haptic_array_battery']['label']);
+        $this->assertSame('WS90 capacitor', $classified['haptic_array_capacitor']['label']);
+    }
+
+    /** Every label and status, so the dashboard can translate all of them. */
+    public function test_it_lists_every_string_to_translate(): void
+    {
+        $strings = BatteryStatus::translatable();
+
+        foreach (['WS90 batteries', 'Lightning Sensor (WH57)', 'Lightning Sensor', 'PM2.5 Sensor', 'Leak Sensor', 'Low', 'Good', 'Moderate', 'Mains', 'Unknown'] as $string) {
+            $this->assertContains($string, $strings);
+        }
+    }
+
+    /**
+     * A healthy OK/low sensor says Good, like a level sensor. "OK" was looked
+     * up as the generic OK, which Spanish translates as "De acuerdo." (Agreed).
+     */
+    public function test_a_healthy_flag_sensor_says_good(): void
+    {
+        $classified = BatteryStatus::classify(['wh65batt' => 0, 'wh26batt' => 1]);
+
+        $this->assertSame('Good', $classified['wh65batt']['status']);
+        $this->assertSame('Low', $classified['wh26batt']['status']);
+        $this->assertNotContains('OK', BatteryStatus::translatable());
+    }
 }

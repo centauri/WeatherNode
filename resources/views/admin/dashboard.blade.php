@@ -190,43 +190,24 @@
         @if(count($batteryStatus) > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @foreach($batteryStatus as $battery)
-                    <div class="flex items-center justify-between p-3 rounded-lg 
-                        @if($battery['state'] === 'good') bg-green-50 dark:bg-green-900/20
-                        @elseif($battery['state'] === 'medium') bg-yellow-50 dark:bg-yellow-900/20
-                        @elseif($battery['state'] === 'unknown') bg-gray-50 dark:bg-gray-700/30
-                        @else bg-red-50 dark:bg-red-900/20
-                        @endif">
-                        <div class="flex items-center">
-                            <div class="w-8 h-4 rounded border-2 relative
-                                @if($battery['state'] === 'good') border-green-500
-                                @elseif($battery['state'] === 'medium') border-yellow-500
-                                @elseif($battery['state'] === 'unknown') border-gray-400
-                                @else border-red-500
-                                @endif">
-                                <div class="absolute inset-0.5 rounded-sm 
-                                    @if($battery['state'] === 'good') bg-green-500
-                                    @elseif($battery['state'] === 'medium') bg-yellow-500
-                                    @elseif($battery['state'] === 'unknown') bg-gray-400
-                                    @else bg-red-500
-                                    @endif" 
-                                    style="width: {{ max(10, $battery['percentage'] - 10) }}%"></div>
-                                <div class="absolute -right-1 top-1/2 -translate-y-1/2 w-0.5 h-2 rounded-r
-                                    @if($battery['state'] === 'good') bg-green-500
-                                    @elseif($battery['state'] === 'medium') bg-yellow-500
-                                    @elseif($battery['state'] === 'unknown') bg-gray-400
-                                    @else bg-red-500
-                                    @endif"></div>
-                            </div>
-                            <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ $battery['name'] }}</span>
-                        </div>
-                        <span class="text-sm font-semibold 
-                            @if($battery['state'] === 'good') text-green-600 dark:text-green-400
-                            @elseif($battery['state'] === 'medium') text-yellow-600 dark:text-yellow-400
-                            @elseif($battery['state'] === 'unknown') text-gray-500 dark:text-gray-400
-                            @else text-red-600 dark:text-red-400
-                            @endif">
-                            {{ $battery['display'] }}
+                    @php
+                        $tone = match ($battery['state']) {
+                            'good' => ['bg-green-50 dark:bg-green-900/20', 'text-green-500', 'text-green-600 dark:text-green-400'],
+                            'medium' => ['bg-yellow-50 dark:bg-yellow-900/20', 'text-yellow-500', 'text-yellow-600 dark:text-yellow-400'],
+                            'unknown' => ['bg-gray-50 dark:bg-gray-700/30', 'text-gray-400', 'text-gray-500 dark:text-gray-400'],
+                            default => ['bg-red-50 dark:bg-red-900/20', 'text-red-500', 'text-red-600 dark:text-red-400'],
+                        };
+                    @endphp
+                    {{-- Name above, status below: the tiles are narrow, and long names
+                         (German, Greek, Polish) then wrap between words only. --}}
+                    <div class="flex items-center gap-3 p-3 rounded-lg {{ $tone[0] }}">
+                        <span class="shrink-0 {{ $tone[1] }}">
+                            <x-battery-icon :icon="$battery['icon']" :percentage="$battery['percentage']" class="w-6 h-6" />
                         </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 break-words">{{ $battery['name'] }}</p>
+                            <p class="text-sm font-semibold {{ $tone[2] }}">{{ $battery['display'] }}</p>
+                        </div>
                     </div>
                 @endforeach
             </div>
