@@ -159,6 +159,13 @@ class SettingsController extends Controller
             'color' => 'teal',
             'category' => 'datasources',
         ],
+        'netatmo' => [
+            'label' => 'Netatmo',
+            'description' => 'Netatmo weather station, your own or a favorite',
+            'icon' => 'wifi',
+            'color' => 'cyan',
+            'category' => 'datasources',
+        ],
         'weatherflow' => [
             'label' => 'WeatherFlow',
             'description' => 'WeatherFlow Tempest station settings',
@@ -533,6 +540,7 @@ class SettingsController extends Controller
             'timezones' => $timezones,
             'radarFutureFrameProviders' => $radarFutureFrameProviders,
             'ecowitt' => $group === 'ecowitt' ? EcowittSettingsController::pageData() : null,
+            'netatmo' => $group === 'netatmo' ? NetatmoSettingsController::pageData() : null,
         ]);
     }
 
@@ -643,6 +651,10 @@ class SettingsController extends Controller
     {
         if ($group === 'ecowitt') {
             return app(EcowittSettingsController::class)->save($request);
+        }
+
+        if ($group === 'netatmo') {
+            return app(NetatmoSettingsController::class)->save($request);
         }
 
         if ($group === 'aviation') {
@@ -1709,6 +1721,28 @@ class SettingsController extends Controller
     /**
      * Test API connection.
      */
+    /** Connected, and the chosen station answers. */
+    private static function netatmoTest(): array
+    {
+        $client = app(\App\Services\Weather\NetatmoClient::class);
+        if (!$client->connected()) {
+            return ['success' => false, 'message' => 'Not connected to Netatmo yet. Use Connect Netatmo on the Netatmo page.'];
+        }
+
+        $station = $client->station();
+        if ($station === null) {
+            $error = $client->lastError();
+            return ['success' => false, 'message' => $error !== '' ? $error : 'Netatmo returned no station. Pick one on the Netatmo page.'];
+        }
+
+        $data = app(\App\Services\Weather\NetatmoParser::class)->parse($station);
+        $name = (string) ($station['station_name'] ?? 'your station');
+
+        return isset($data['temperature']) || isset($data['temperature_indoor'])
+            ? ['success' => true, 'message' => "Netatmo returned data for {$name}."]
+            : ['success' => false, 'message' => "Netatmo answered, but {$name} has no readings right now."];
+    }
+
     public function testApi(Request $request)
     {
         try {
@@ -1860,6 +1894,11 @@ class SettingsController extends Controller
                         break;
                     }
 
+                    if ($format === 'netatmo') {
+                        $result = self::netatmoTest();
+                        break;
+                    }
+
                     if ($format === 'AWapi') {
                         $svc = app(\App\Services\Weather\Sources\AmbientWeatherAdapter::class);
                         $data = $svc->fetch();
@@ -1924,6 +1963,10 @@ class SettingsController extends Controller
                     $result = $data
                         ? ['success' => true, 'message' => 'WeatherFlow connection successful!']
                         : ['success' => false, 'message' => 'No data returned. For public stations leave API token blank. For your own or a private station, use a token from tempestwx.com → Settings → Data Authorizations. Check storage/logs/laravel.log for the API response if it keeps failing.'];
+                    break;
+
+                case 'netatmo':
+                    $result = self::netatmoTest();
                     break;
 
                 case 'ambient':

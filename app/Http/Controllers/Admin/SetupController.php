@@ -36,6 +36,7 @@ class SetupController extends Controller
         'weatherlink' => 'weatherlink',
         'AWapi' => 'ambient',
         'wf' => 'weatherflow',
+        'netatmo' => 'netatmo',
     ];
 
     /**
@@ -182,6 +183,7 @@ class SetupController extends Controller
         'weatherlink' => 'davis',
         'AWapi' => 'ambient',
         'wf' => 'weatherflow',
+        'netatmo' => 'netatmo',
     ];
 
     /**
