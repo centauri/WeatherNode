@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Support\BatteryStatus;
+use App\Support\LiveSource;
 use App\Http\Controllers\Controller;
 use App\Models\WeatherReading;
 use App\Models\DailySummary;
@@ -53,6 +54,8 @@ class DashboardController extends Controller
         $telemetryService = app(\App\Services\Telemetry\TelemetryService::class);
         $telemetryData = $telemetryService->collectStationData();
 
+        $liveSource = LiveSource::card();
+
         return view('admin.dashboard', compact(
             'stats',
             'recentReadings',
@@ -61,7 +64,8 @@ class DashboardController extends Controller
             'stationInfo',
             'telemetryEnabled',
             'telemetryLastUpdated',
-            'telemetryData'
+            'telemetryData',
+            'liveSource'
         ));
     }
 

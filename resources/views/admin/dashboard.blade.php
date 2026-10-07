@@ -346,26 +346,60 @@
         </div>
     </div>
 
-    <!-- Ecowitt Endpoint Info -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+    <!-- Live Data Source -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6" data-live-source="{{ $liveSource['format'] }}">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">📥 {{ __('Live Data Source') }}</h2>
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{{ $liveSource['name'] }}</p>
         @php
-            $ecowittSecureMode = (bool) \App\Models\Setting::getValue('ecowitt.secure_mode', false);
-            $ecowittSecureToken = trim((string) \App\Models\Setting::getValue('ecowitt.secure_token', ''));
-            $ecowittPath = '/api/ecowitt/receive' . (($ecowittSecureMode && $ecowittSecureToken !== '') ? '/' . $ecowittSecureToken : '');
+            $health = $liveSource['health'];
+            [$healthText, $healthClass, $healthDot] = match ($health['state']) {
+                'ok' => [__('Receiving data'), 'bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-200', 'bg-green-500'],
+                'late' => [__('Data is late'), 'bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200', 'bg-amber-500'],
+                default => [__('No data coming in'), 'bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-200', 'bg-red-500'],
+            };
         @endphp
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📥 {{ __('Ecowitt Data Endpoint') }}</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            {{ __('Configure your Ecowitt device to push data to:') }}
-        </p>
-        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 font-mono text-sm break-all">
-            {{ url($ecowittPath) }}
+        <div class="mb-4 rounded-lg px-3 py-2 text-sm {{ $healthClass }}" data-live-health="{{ $health['state'] }}">
+            <p class="flex items-center gap-2 font-medium">
+                <span class="inline-block w-2 h-2 rounded-full flex-shrink-0 {{ $healthDot }}"></span>
+                {{ $healthText }}
+                <span class="font-normal opacity-80">
+                    · {{ $health['lastReading'] ? __('Last reading :time', ['time' => $health['lastReading']->diffForHumans()]) : __('No readings yet') }}
+                </span>
+            </p>
+            @if($health['error'])
+                <p class="mt-1 text-xs break-words" data-live-error>
+                    {{ __('Last error (:time):', ['time' => $health['error']['at']->diffForHumans()]) }}
+                    <span class="font-mono">{{ $health['error']['message'] }}</span>
+                </p>
+            @endif
         </div>
-        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-            <strong>{{ __('Protocol') }}:</strong> Ecowitt (HTTP POST)<br>
-            <strong>{{ __('Path') }}:</strong> {{ $ecowittPath }}<br>
-            <strong>{{ __('Secure Mode') }}:</strong> {{ $ecowittSecureMode ? __('Enabled') : __('Disabled') }}<br>
-            <strong>{{ __('Interval') }}:</strong> {{ __('60 seconds recommended') }}
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+            @if($liveSource['kind'] === 'push')
+                {{ __('Set your station to send its data to:') }}
+            @elseif($liveSource['kind'] === 'file')
+                {{ __('WeatherNode reads the live data from:') }}
+            @else
+                {{ __('WeatherNode fetches the live data from :source every minute.', ['source' => $liveSource['name']]) }}
+            @endif
         </p>
+        @if($liveSource['kind'] !== 'fetch')
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 font-mono text-sm break-all">
+                {{ $liveSource['address'] !== '' ? $liveSource['address'] : __('Not set') }}
+            </div>
+        @endif
+        @if($liveSource['details'])
+            <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                @foreach($liveSource['details'] as $label => $value)
+                    <strong>{{ $label }}:</strong> <span class="break-all">{{ $value }}</span><br>
+                @endforeach
+            </p>
+        @endif
+        <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            @if($liveSource['settingsGroup'] !== 'livedata')
+                <a href="{{ route('admin.settings.group', $liveSource['settingsGroup']) }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ __(':source settings', ['source' => $liveSource['name']]) }}</a>
+            @endif
+            <a href="{{ route('admin.settings.group', 'livedata') }}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ __('Change live data source') }}</a>
+        </div>
     </div>
 </div>
 
@@ -374,7 +408,7 @@
     <h2 class="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-4">{{ __('Recent Weather Readings') }}</h2>
     
     @if($recentReadings->isEmpty())
-        <p class="text-gray-500 dark:text-gray-400">{{ __('No weather readings yet. Configure your Ecowitt API to start collecting data.') }}</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ __('No weather readings yet. Set up your live data source to start collecting data.') }}</p>
     @else
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

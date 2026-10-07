@@ -16,7 +16,6 @@ use App\Services\Weather\Sources\WeatherLinkV1Adapter;
 use App\Services\Weather\Sources\WundergroundAdapter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use App\Models\Setting;
 
 class FetchWeatherData extends Command
@@ -66,6 +65,7 @@ class FetchWeatherData extends Command
         if (!$data) {
             $hasError = true;
             $this->error('Failed to fetch data from configured source after ' . $maxAttempts . ' attempts.');
+            \App\Support\LiveSource::recordError($format, $errorMessage ?? 'The source sent no data.');
             
             // Alert user about persistent failure
             $this->sendAlert('Weather data fetch failed', [
@@ -86,6 +86,7 @@ class FetchWeatherData extends Command
         if ($this->option('save')) {
             if ($fromDb) {
                 // ecoLcl with receive (push): data already in DB, only update summary/records
+                $this->clearErrorState($format);
                 $this->updateDailySummary($reading);
                 $this->checkClimateRecords($reading);
                 return Command::SUCCESS;
@@ -142,6 +143,7 @@ class FetchWeatherData extends Command
                     $hasError = true;
                     $this->error("Failed to save reading: {$e->getMessage()}");
                     Log::error('Weather save error', ['error' => $e->getMessage()]);
+                    \App\Support\LiveSource::recordError($format, 'Saving the reading failed: ' . $e->getMessage());
                     
                     // Alert on save failure
                     $this->sendAlert('Weather data save failed', [
@@ -594,7 +596,6 @@ class FetchWeatherData extends Command
      */
     private function clearErrorState(string $format): void
     {
-        $errorKey = "weather_fetch_error_{$format}";
-        Cache::forget($errorKey);
+        \App\Support\LiveSource::clearError();
     }
 }
