@@ -8,6 +8,9 @@
     $fetchMode = \App\Models\Setting::getValue('livedata.fetch_mode', 'file');
     $filePath = \App\Models\Setting::getValue('livedata.file_path', './ecowitt/ecco_lcl.arr');
     $apiUrl = \App\Models\Setting::getValue('livedata.api_url', '');
+    $wuPushKey = \App\Support\WuPush::stationKey();
+    $wuPushUrl = \App\Support\WuPush::url();
+    $wuPushLast = \App\Support\WuPush::lastReceived();
 
     // An example file for each local format. The Ecowitt file is the shipped
     // default and means nothing to these formats, so it is not shown for them.
@@ -91,6 +94,7 @@
                         <option value="ecoLcl" {{ $format === 'ecoLcl' ? 'selected' : '' }}>{{ __('Ecowitt Local (push)') }}</option>
                         <option value="ecowittAPI" {{ $format === 'ecowittAPI' ? 'selected' : '' }}>{{ __('Ecowitt Cloud API') }}</option>
                         <option value="wu" {{ $format === 'wu' ? 'selected' : '' }}>{{ __('Weather Underground') }}</option>
+                        <option value="wuPush" {{ $format === 'wuPush' ? 'selected' : '' }}>{{ __('Wunderground upload (push)') }}</option>
                         <option value="DWL" {{ $format === 'DWL' ? 'selected' : '' }}>{{ __('WeatherLink Cloud v1') }}</option>
                         <option value="DWL_v2api" {{ $format === 'DWL_v2api' ? 'selected' : '' }}>{{ __('WeatherLink Cloud v2') }}</option>
                         <option value="DWL_v2api_demo" {{ $format === 'DWL_v2api_demo' ? 'selected' : '' }}>{{ __('WeatherLink Cloud v2 (Demo Mode)') }}</option>
@@ -260,6 +264,43 @@
                 </div>
             </div>
 
+            {{-- Wunderground upload (push) Configuration --}}
+            <div class="p-5" id="source-wuPush-config" style="display: {{ $format === 'wuPush' ? 'block' : 'none' }};">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ __('Wunderground upload') }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">{{ __('WeeWX, Meteobridge and many consoles can upload to a Wunderground-style address of your choosing. Point them here instead of at Wunderground.') }}</p>
+                @if($wuPushKey === '')
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                        {{ __('Click Save Changes to make your station key.') }}
+                    </div>
+                @else
+                    <dl class="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2 text-sm">
+                        <dt class="text-gray-500 dark:text-gray-400">{{ __('Upload address') }}</dt>
+                        <dd class="font-mono break-all text-gray-900 dark:text-white">{{ $wuPushUrl }}</dd>
+                        <dt class="text-gray-500 dark:text-gray-400">{{ __('Station ID') }}</dt>
+                        <dd class="text-gray-900 dark:text-white">{{ __('Anything you like') }}</dd>
+                        <dt class="text-gray-500 dark:text-gray-400">{{ __('Station key') }}</dt>
+                        <dd class="font-mono break-all text-gray-900 dark:text-white">{{ $wuPushKey }}</dd>
+                        <dt class="text-gray-500 dark:text-gray-400">{{ __('Last upload') }}</dt>
+                        <dd class="text-gray-900 dark:text-white">{{ $wuPushLast ? $wuPushLast->diffForHumans() : __('Nothing received yet') }}</dd>
+                    </dl>
+                    <p class="mt-4 text-sm text-gray-600 dark:text-gray-300">{{ __('For WeeWX, add this to weewx.conf and restart WeeWX:') }}</p>
+                    <pre class="mt-2 p-3 rounded-lg bg-gray-100 dark:bg-gray-900 text-xs text-gray-800 dark:text-gray-200 overflow-x-auto">[StdRESTful]
+    [[Wunderground]]
+        enable = true
+        station = weathernode
+        password = {{ $wuPushKey }}
+        rapidfire = true
+        server_url = {{ $wuPushUrl }}</pre>
+                    <label class="mt-4 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" name="wupush_new_key" value="1" class="rounded border-gray-300 dark:border-gray-600">
+                        {{ __('Make a new station key when I save. The old key stops working.') }}
+                    </label>
+                @endif
+                <p class="mt-4 text-xs">
+                    <a href="https://github.com/centauri/WeatherNode/blob/main/docs/WEEWX.md" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium">{{ __('How to set up WeeWX') }}</a>
+                </p>
+            </div>
+
             {{-- Ambient Weather Configuration --}}
             <div class="p-5" id="source-AWapi-config" style="display: {{ $format === 'AWapi' ? 'block' : 'none' }};">
                 <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -389,6 +430,7 @@
         'DWL_v2api_demo': document.getElementById('source-DWL_v2api_demo-config'),
         'wf': document.getElementById('source-wf-config'),
         'AWapi': document.getElementById('source-AWapi-config'),
+        'wuPush': document.getElementById('source-wuPush-config'),
     };
     
     const localConfig = document.getElementById('source-local-config');

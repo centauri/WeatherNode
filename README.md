@@ -87,7 +87,7 @@ Detailed admin operations live in [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 
 🌡️ Live station data
 
-- Live station readings from Ecowitt, WeatherFlow, WeatherLink, Ambient Weather, Wunderground, and local file sources. More than 70 other station models work through [WeeWX](docs/WEEWX.md).
+- Live station readings from Ecowitt, WeatherFlow, WeatherLink, Ambient Weather, Wunderground, and local file sources. More than 70 other station models work through [WeeWX](docs/WEEWX.md). WeeWX, Meteobridge and many consoles can also push readings in the Weather Underground upload format.
 - Per card timestamps so you see when each data source last updated.
 - Sensor health detection and OFFLINE badges when a source goes stale.
 - Optional alert notifications when fetching or saving fails.

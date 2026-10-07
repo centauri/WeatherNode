@@ -237,4 +237,43 @@ class SettingsLiveDataTest extends TestCase
         $this->assertMatchesRegularExpression('#id="livedata_file_path"\s+value="/srv/wd/clientraw.txt"#', $response->getContent());
         $response->assertSee('placeholder="/path/to/clientraw.txt"', false);
     }
+
+    public function test_choosing_wunderground_upload_makes_a_station_key_and_shows_it(): void
+    {
+        $admin = $this->adminUser();
+        $this->actingAs($admin)->post(route('admin.settings.update', 'livedata'), [
+            '_token' => csrf_token(),
+            'livedata_format' => 'wuPush',
+        ])->assertRedirect(route('admin.settings.group', 'livedata'));
+
+        $key = \App\Support\WuPush::stationKey();
+        $this->assertSame(32, strlen($key));
+
+        $page = $this->actingAs($admin)->get(route('admin.settings.group', 'livedata'));
+        $page->assertSee($key, false);
+        $page->assertSee('/api/wu/receive', false);
+        $page->assertSee('server_url', false);
+
+        // Saving again keeps the key, so the uploader keeps working.
+        $this->actingAs($admin)->post(route('admin.settings.update', 'livedata'), [
+            '_token' => csrf_token(),
+            'livedata_format' => 'wuPush',
+        ]);
+        $this->assertSame($key, \App\Support\WuPush::stationKey());
+    }
+
+    public function test_a_new_station_key_replaces_the_old_one_on_request(): void
+    {
+        $admin = $this->adminUser();
+        Setting::setValue('livedata.format', 'wuPush', 'select', 'livedata');
+        Setting::setValue('wupush.station_key', 'old-key', 'string', 'livedata');
+
+        $this->actingAs($admin)->post(route('admin.settings.update', 'livedata'), [
+            '_token' => csrf_token(),
+            'livedata_format' => 'wuPush',
+            'wupush_new_key' => '1',
+        ]);
+
+        $this->assertNotSame('old-key', \App\Support\WuPush::stationKey());
+    }
 }
