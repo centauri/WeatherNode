@@ -556,6 +556,9 @@ Route::prefix('admin')
         Route::post('/settings/ecowitt/stations', [\App\Http\Controllers\Admin\EcowittSettingsController::class, 'stations'])->name('settings.ecowitt.stations');
         Route::get('/settings/ecowitt/status', [\App\Http\Controllers\Admin\EcowittSettingsController::class, 'status'])->name('settings.ecowitt.status');
         Route::post('/settings/ecowitt/backfill', [\App\Http\Controllers\Admin\EcowittSettingsController::class, 'backfill'])->name('settings.ecowitt.backfill');
+        Route::get('/settings/netatmo/connect', [\App\Http\Controllers\Admin\NetatmoSettingsController::class, 'connect'])->name('settings.netatmo.connect');
+        Route::get('/settings/netatmo/callback', [\App\Http\Controllers\Admin\NetatmoSettingsController::class, 'callback'])->name('settings.netatmo.callback');
+        Route::post('/settings/netatmo/disconnect', [\App\Http\Controllers\Admin\NetatmoSettingsController::class, 'disconnect'])->name('settings.netatmo.disconnect');
         Route::post('/settings/nlg/models', [SettingsController::class, 'fetchNlgModels'])->name('settings.nlg.models');
         Route::post('/settings/history/sync', [SettingsController::class, 'syncHistory'])->name('settings.history.sync');
         Route::post('/settings/history/wu-sync', [SettingsController::class, 'syncWundergroundHistory'])->name('settings.history.wu-sync');

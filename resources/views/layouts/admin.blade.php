@@ -274,7 +274,7 @@
                 </details>
 
                 <!-- DATA SOURCES -->
-                <details class="sidebar-section" {{ request()->is('admin/settings/ecowitt') || request()->is('admin/settings/wunderground') || request()->is('admin/settings/weatherflow') || request()->is('admin/settings/weatherlink') || request()->is('admin/settings/ambient') || request()->is('admin/settings/openweathermap') || request()->is('admin/settings/yrno') || request()->is('admin/settings/wxsim') || request()->is('admin/settings/environment_canada') || request()->is('admin/settings/airquality') || request()->is('admin/settings/pollen') || request()->is('admin/settings/aviation') || request()->is('admin/settings/tide') || request()->is('admin/settings/waves') || request()->is('admin/settings/rivers') || request()->is('admin/settings/opendata') || request()->is('admin/settings/aemet') || request()->is('admin/settings/dwd') ? 'open' : '' }}>
+                <details class="sidebar-section" {{ request()->is('admin/settings/ecowitt') || request()->is('admin/settings/wunderground') || request()->is('admin/settings/weatherflow') || request()->is('admin/settings/weatherlink') || request()->is('admin/settings/ambient') || request()->is('admin/settings/netatmo') || request()->is('admin/settings/openweathermap') || request()->is('admin/settings/yrno') || request()->is('admin/settings/wxsim') || request()->is('admin/settings/environment_canada') || request()->is('admin/settings/airquality') || request()->is('admin/settings/pollen') || request()->is('admin/settings/aviation') || request()->is('admin/settings/tide') || request()->is('admin/settings/waves') || request()->is('admin/settings/rivers') || request()->is('admin/settings/opendata') || request()->is('admin/settings/aemet') || request()->is('admin/settings/dwd') ? 'open' : '' }}>
                     <summary class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider cursor-pointer flex items-center justify-between hover:text-slate-300">
                         {{ __('Data Sources') }}
                         <svg class="w-4 h-4 sidebar-chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,6 +363,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21h.01"/>
                             </svg>
                             <span>{{ __('Ambient Weather') }}</span>
+                        </a>
+                        <a href="{{ route('admin.settings.group', 'netatmo') }}"
+                           class="flex items-center space-x-2 px-3 py-1.5 rounded-lg {{ request()->is('admin/settings/netatmo') ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.07 12.93a10 10 0 0113.86 0"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.11 15.97a6 6 0 017.78 0"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.15 19.01a2 2 0 012.7 0"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21h.01"/>
+                            </svg>
+                            <span>{{ __('Netatmo') }}</span>
                         </a>
                         <a href="{{ route('admin.settings.group', 'airquality') }}"
                            class="flex items-center space-x-2 px-3 py-1.5 rounded-lg {{ request()->is('admin/settings/airquality') ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700' }}">

@@ -394,6 +394,17 @@ class FetchWeatherData extends Command
             return $ambient->fetch();
         }
 
+        // Netatmo stations send about every ten minutes. The same reading
+        // again is already stored, so only the summary is left to do.
+        if ($format === \App\Services\Weather\Sources\NetatmoAdapter::FORMAT) {
+            $data = app(\App\Services\Weather\Sources\NetatmoAdapter::class)->fetch();
+            $last = $data !== null ? WeatherReading::mostRecent() : null;
+            if ($last !== null && $last->recorded_at->equalTo($data['recorded_at'])) {
+                return ['__from_db' => true, '__reading' => $last];
+            }
+            return $data;
+        }
+
         if ($format === 'DWL') {
             return $weatherLinkV1->fetch();
         }
@@ -434,7 +445,7 @@ class FetchWeatherData extends Command
             return $writer->store($data);
         }
 
-        if (in_array($format, ['wu', 'wf', 'AWapi', 'DWL', 'DWL_v2api', 'DWL_v2api_demo'], true)) {
+        if (in_array($format, ['wu', 'wf', 'AWapi', 'netatmo', 'DWL', 'DWL_v2api', 'DWL_v2api_demo'], true)) {
             return $writer->store($data);
         }
 

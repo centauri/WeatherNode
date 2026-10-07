@@ -100,6 +100,7 @@
                         <option value="DWL_v2api_demo" {{ $format === 'DWL_v2api_demo' ? 'selected' : '' }}>{{ __('WeatherLink Cloud v2 (Demo Mode)') }}</option>
                         <option value="wf" {{ $format === 'wf' ? 'selected' : '' }}>{{ __('WeatherFlow') }}</option>
                         <option value="AWapi" {{ $format === 'AWapi' ? 'selected' : '' }}>{{ __('Ambient Weather API') }}</option>
+                        <option value="netatmo" {{ $format === 'netatmo' ? 'selected' : '' }}>{{ __('Netatmo') }}</option>
                         <option value="cumulus" {{ $format === 'cumulus' ? 'selected' : '' }}>{{ __('Cumulus') }}</option>
                         <option value="weewx" {{ $format === 'weewx' ? 'selected' : '' }}>{{ __('WeeWX') }}</option>
                         <option value="weathercat" {{ $format === 'weathercat' ? 'selected' : '' }}>{{ __('WeatherCat') }}</option>
@@ -301,6 +302,20 @@
                 </p>
             </div>
 
+            {{-- Netatmo Configuration --}}
+            <div class="p-5" id="source-netatmo-config" style="display: {{ $format === 'netatmo' ? 'block' : 'none' }};">
+                <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                    <p class="font-semibold mb-1">{{ __('Configure Netatmo') }}</p>
+                    <p class="mb-2">{{ __('Connect your Netatmo account and pick a station on the Netatmo settings page.') }}</p>
+                    <a href="{{ route('admin.settings.group', 'netatmo') }}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium">
+                        {{ __('Go to Netatmo Settings') }}
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
             {{-- Ambient Weather Configuration --}}
             <div class="p-5" id="source-AWapi-config" style="display: {{ $format === 'AWapi' ? 'block' : 'none' }};">
                 <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -431,6 +446,7 @@
         'wf': document.getElementById('source-wf-config'),
         'AWapi': document.getElementById('source-AWapi-config'),
         'wuPush': document.getElementById('source-wuPush-config'),
+        'netatmo': document.getElementById('source-netatmo-config'),
     };
     
     const localConfig = document.getElementById('source-local-config');
@@ -459,7 +475,7 @@
     }
     
     // Sources that only show info/link (no form fields)
-    const infoOnlySources = ['ecowittAPI', 'wu', 'DWL', 'DWL_v2api', 'wf', 'AWapi'];
+    const infoOnlySources = ['ecowittAPI', 'wu', 'DWL', 'DWL_v2api', 'wf', 'AWapi', 'netatmo'];
 
     function updateVisibility() {
         const format = formatSelect.value;

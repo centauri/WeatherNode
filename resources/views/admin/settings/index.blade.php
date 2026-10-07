@@ -131,7 +131,7 @@
     @foreach($groups as $groupKey => $group)
         @php
             $count = isset($settings[$groupKey]) ? $settings[$groupKey]->count() : 0;
-            $hasApiKeys = in_array($groupKey, ['ecowitt', 'wunderground', 'weatherflow', 'weatherlink', 'ambient', 'openweathermap', 'airquality', 'aviation']);
+            $hasApiKeys = in_array($groupKey, ['ecowitt', 'wunderground', 'weatherflow', 'weatherlink', 'ambient', 'netatmo', 'openweathermap', 'airquality', 'aviation']);
             $configured = true;
             if ($hasApiKeys && isset($settings[$groupKey])) {
                 foreach ($settings[$groupKey] as $s) {
@@ -402,6 +402,7 @@ function closeModal() {
         'weatherflow' => __('WeatherFlow'),
         'weatherlink' => __('WeatherLink'),
         'ambient' => __('Ambient Weather'),
+        'netatmo' => __('Netatmo'),
         'yrno' => __('Yr.no'),
         'waqi' => __('Air Quality'),
         'checkwx' => __('Aviation / METAR'),

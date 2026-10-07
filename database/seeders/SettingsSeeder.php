@@ -28,7 +28,7 @@ class SettingsSeeder extends Seeder
             ['key' => 'station.server_url', 'value' => '', 'type' => 'string', 'group' => 'station', 'description' => 'Public URL of this weather site (leave empty to use APP_URL)'],
 
             // ===== Live Data Source =====
-            ['key' => 'livedata.format', 'value' => 'ecoLcl', 'type' => 'select', 'group' => 'livedata', 'description' => 'Primary live data format/source', 'options' => 'ecoLcl:Ecowitt Local (push),ecowittAPI:Ecowitt Cloud API,wu:Weather Underground,wuPush:Wunderground upload (push),cumulus:Cumulus,weewx:WeeWX,weathercat:WeatherCat,DWL:WeatherLink Cloud v1,DWL_v2api:WeatherLink Cloud v2,DWL_v2api_demo:WeatherLink Cloud v2 (Demo Mode),meteohub:Meteohub,wswin:WSWIN,weatherlink:WeatherLink Local,wifilogger:WiFiLogger,MB_rt:Meteobridge (realtime.txt),wf:WeatherFlow,AWapi:Ambient Weather API,wd:Weather Display'],
+            ['key' => 'livedata.format', 'value' => 'ecoLcl', 'type' => 'select', 'group' => 'livedata', 'description' => 'Primary live data format/source', 'options' => 'ecoLcl:Ecowitt Local (push),ecowittAPI:Ecowitt Cloud API,wu:Weather Underground,wuPush:Wunderground upload (push),cumulus:Cumulus,weewx:WeeWX,weathercat:WeatherCat,DWL:WeatherLink Cloud v1,DWL_v2api:WeatherLink Cloud v2,DWL_v2api_demo:WeatherLink Cloud v2 (Demo Mode),meteohub:Meteohub,wswin:WSWIN,weatherlink:WeatherLink Local,wifilogger:WiFiLogger,MB_rt:Meteobridge (realtime.txt),wf:WeatherFlow,AWapi:Ambient Weather API,netatmo:Netatmo,wd:Weather Display'],
             ['key' => 'livedata.fetch_mode', 'value' => 'file', 'type' => 'select', 'group' => 'livedata', 'description' => 'How to fetch local live data', 'options' => 'file:Local file,local_api:Local API URL'],
             ['key' => 'livedata.file_path', 'value' => './ecowitt/ecco_lcl.arr', 'type' => 'string', 'group' => 'livedata', 'description' => 'Path to live data file (if applicable)'],
             ['key' => 'livedata.api_url', 'value' => '', 'type' => 'string', 'group' => 'livedata', 'description' => 'Local API URL for live data (if applicable)'],
@@ -287,6 +287,13 @@ class SettingsSeeder extends Seeder
             ['key' => 'ambient.api_key', 'value' => '', 'type' => 'encrypted', 'group' => 'ambient', 'description' => 'Ambient Weather API Key'],
             ['key' => 'ambient.application_key', 'value' => '', 'type' => 'encrypted', 'group' => 'ambient', 'description' => 'Ambient Weather Application Key'],
             ['key' => 'ambient.mac_address', 'value' => '', 'type' => 'string', 'group' => 'ambient', 'description' => 'Ambient Weather device MAC'],
+            ['key' => 'netatmo.client_id', 'value' => '', 'type' => 'string', 'group' => 'netatmo', 'description' => 'Client ID of your Netatmo app'],
+            ['key' => 'netatmo.client_secret', 'value' => '', 'type' => 'encrypted', 'group' => 'netatmo', 'description' => 'Client secret of your Netatmo app'],
+            ['key' => 'netatmo.refresh_token', 'value' => '', 'type' => 'encrypted', 'group' => 'netatmo', 'description' => 'Netatmo refresh token (changes on every refresh)'],
+            ['key' => 'netatmo.access_token', 'value' => '', 'type' => 'encrypted', 'group' => 'netatmo', 'description' => 'Netatmo access token'],
+            ['key' => 'netatmo.access_expires_at', 'value' => '', 'type' => 'string', 'group' => 'netatmo', 'description' => 'When the Netatmo access token expires (Unix time)'],
+            ['key' => 'netatmo.device_id', 'value' => '', 'type' => 'string', 'group' => 'netatmo', 'description' => 'Netatmo station to read (empty: the first one)'],
+            ['key' => 'netatmo.last_error', 'value' => '', 'type' => 'string', 'group' => 'netatmo', 'description' => 'Last Netatmo error'],
 
             // ===== Davis WeatherLink =====
             ['key' => 'weatherlink.enabled', 'value' => '0', 'type' => 'boolean', 'group' => 'weatherlink', 'description' => 'Enable Davis WeatherLink Cloud'],
