@@ -385,7 +385,14 @@
                 $name = is_array($val) && ($val['label'] ?? '') !== ''
                     ? __($val['label']) . (($val['channel'] ?? null) !== null ? ' ' . $val['channel'] : '')
                     : (string) $key;
-                $lines[] = $name . ': ' . (is_array($val) ? __($val['status'] ?? 'Unknown') : (string) $val);
+                // The same short value as the card: volts when there are any, else the status.
+                $value = match (true) {
+                    !is_array($val) => (string) $val,
+                    ($val['type'] ?? '') === 'volts' => $val['value'] . ' V' . (($val['state'] ?? '') === 'low' ? ' (' . __('Low') . ')' : ''),
+                    ($val['state'] ?? '') === 'good' => __($val['status'] ?? 'OK'),
+                    default => __($val['status'] ?? 'Unknown'),
+                };
+                $lines[] = $name . ': ' . $value;
             }
             $ssrHybridCards[] = ['id' => 'battery', 'title' => __('Battery Status'), 'lines' => $lines ?: [__('No battery data')]];
         }
@@ -1000,35 +1007,12 @@
                     'Leak',
                     'Water shortage',
                     'Dirty',
-                    // Battery labels and statuses from App\Support\BatteryStatus (#131).
-                    'Indoor Sensor (WH25)',
-                    'Temperature/Humidity Sensor (WH26)',
-                    'CO2 Sensor (WH45)',
-                    'Console',
-                    'Rain Sensor (WH40)',
-                    'Solar/Wind Sensor (WH68)',
-                    'Ultrasonic Wind Sensor (WH80)',
-                    'WS85 Sensor Array',
-                    'WS85 Solar Capacitor',
-                    'Black Globe Thermometer (WN38)',
-                    'Sensor (WN20)',
-                    'Indoor Sensor',
-                    'Outdoor Sensor Array',
-                    'Lightning Sensor',
-                    'Air Quality Combo Sensor',
-                    'Ultrasonic Wind Sensor',
-                    'Rain Sensor',
-                    'Black Globe Thermometer',
-                    'WS90 Batteries (AA)',
-                    'WS90 Solar Capacitor',
-                    'Soil EC Sensor',
-                    'Temperature Probe',
-                    'Leaf Wetness Sensor',
-                    'Water Level Sensor',
-                    'OK',
-                    'Mains',
+                    // Battery card summary (#131). The labels and statuses come from
+                    // App\Support\BatteryStatus::translatable(), added below.
+                    'All good',
                 ];
 
+        $dashboardI18nKeys = array_merge($dashboardI18nKeys, \App\Support\BatteryStatus::translatable());
         $dashboardI18n = [];
         foreach ($dashboardI18nKeys as $dashboardI18nKey) {
             $dashboardI18n[$dashboardI18nKey] = __($dashboardI18nKey);
@@ -3845,20 +3829,44 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
                         </svg>
                     </div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-semibold">🔋 {{ __('Battery Status') }}</h3>
-                        <span class="text-xs text-ui-muted">{{ __('Sensor status') }}</span>
+                    <div class="flex flex-wrap items-center justify-between mb-4 gap-x-2 gap-y-1">
+                        <h3 class="font-semibold whitespace-nowrap">🔋 {{ __('Battery Status') }}</h3>
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
+                              :class="batterySummary().low > 0 ? 'bg-red-500/15 text-data-red-400' : 'bg-green-500/15 text-data-green-400'"
+                              x-text="batterySummary().text"></span>
                     </div>
-                    <div class="space-y-2 text-sm">
+                    {{-- One line per sensor (#131): the icon's colour carries the state, the
+                         right side shows volts when there are any, and Low is spelled out. --}}
+                    <div class="space-y-1 text-sm">
                         <template x-for="(value, key) in batteryStatus" :key="key">
-                            <div class="flex justify-between items-center py-1 border-b border-ui-line/5 last:border-0">
-                                <span class="text-ui-muted flex items-center gap-2">
-                                    <span x-text="getBatteryIcon(key, value)"></span>
-                                    <span x-text="getBatteryLabel(key, value)"></span>
+                            <div class="flex items-center gap-2 py-1 border-b border-ui-line/5 last:border-0">
+                                <span class="shrink-0" :class="batteryTone(value)">
+                                    <template x-if="value?.icon === 'capacitor'">
+                                        <svg data-battery-icon="capacitor" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                                            <path d="M2 12h7M15 12h7M9 5v14M15 5v14"/>
+                                        </svg>
+                                    </template>
+                                    <template x-if="value?.icon === 'mains'">
+                                        <svg data-battery-icon="mains" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v4"/>
+                                        </svg>
+                                    </template>
+                                    <template x-if="value?.icon !== 'capacitor' && value?.icon !== 'mains'">
+                                        <svg data-battery-icon="battery" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                                            <rect x="2" y="7" width="17" height="10" rx="2"/>
+                                            <path d="M21 10.5v3" stroke-linecap="round"/>
+                                            <rect x="4.5" y="9.5" height="5" rx="0.5" fill="currentColor" stroke="none" :width="batteryFill(value)"/>
+                                        </svg>
+                                    </template>
                                 </span>
-                                <span class="font-medium" 
-                                      :class="getBatteryStatus(key, value).class"
-                                      x-text="getBatteryStatus(key, value).text"></span>
+                                <span class="min-w-0 flex-1 truncate text-ui-muted"
+                                      :title="getBatteryLabel(key, value)"
+                                      x-text="getBatteryLabel(key, value)"></span>
+                                <span class="shrink-0 font-medium tabular-nums whitespace-nowrap"
+                                      :class="value?.state === 'low' ? 'text-data-red-400' : 'text-ui-fg'"
+                                      :title="batteryStatusText(value)"
+                                      :aria-label="(batteryStatusText(value) + ' ' + batteryValue(value)).trim()"
+                                      x-text="batteryValue(value)"></span>
                             </div>
                         </template>
                     </div>
