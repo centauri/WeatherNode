@@ -119,7 +119,8 @@ class FetchWeatherData extends Command
                 }
 
                 if ($shouldSave) {
-                    $this->warn("⚠️  Saving stale data (source file {$sourceStatus['age_minutes']} minutes old)");
+                    $age = $sourceStatus['age_minutes'] ?? '?';
+                    $this->warn("⚠️  Saving stale data (source file {$age} minutes old)");
                 } else {
                     $this->warn('⚠️  Skipping duplicate reading (same timestamp as recent reading)');
                 }
@@ -465,6 +466,11 @@ class FetchWeatherData extends Command
                 }
             }
             return ['stale' => false, 'error' => true, 'error_message' => 'File path not configured'];
+        }
+
+        // A web address is fetched like an API, there is no file to check.
+        if (str_starts_with($filePath, 'http://') || str_starts_with($filePath, 'https://')) {
+            return ['stale' => false, 'error' => false];
         }
 
         // Resolve path
