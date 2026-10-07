@@ -64,6 +64,7 @@ setup for your situation (VPS, shared hosting, or Docker), then follow [DEPLOYME
 
 - Admin guide, [ADMIN_GUIDE.md](ADMIN_GUIDE.md). Use this if you run the site.
 - User guide, [USER_GUIDE.md](USER_GUIDE.md). Use this if you visit the site.
+- WeeWX guide, [docs/WEEWX.md](docs/WEEWX.md). Use this to connect a station WeatherNode does not support directly.
 - **Hosting guide (start here to choose a setup), [HOSTING.md](HOSTING.md)**
 - Deployment guide (step-by-step install), [DEPLOYMENT.md](DEPLOYMENT.md)
 - Shared hosting quickstart (no server npm), [SHARED_HOSTING_QUICKSTART.md](SHARED_HOSTING_QUICKSTART.md)
@@ -86,7 +87,7 @@ Detailed admin operations live in [ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 
 🌡️ Live station data
 
-- Live station readings from Ecowitt, WeatherFlow, WeatherLink, Ambient Weather, Wunderground, and local file sources.
+- Live station readings from Ecowitt, WeatherFlow, WeatherLink, Ambient Weather, Wunderground, and local file sources. More than 70 other station models work through [WeeWX](docs/WEEWX.md).
 - Per card timestamps so you see when each data source last updated.
 - Sensor health detection and OFFLINE badges when a source goes stale.
 - Optional alert notifications when fetching or saving fails.
