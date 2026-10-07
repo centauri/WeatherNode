@@ -1827,6 +1827,16 @@ class SettingsController extends Controller
                         break;
                     }
 
+                    if ($format === \App\Support\WuPush::FORMAT) {
+                        $last = \App\Support\WuPush::lastReceived();
+                        $result = $last === null
+                            ? ['success' => false, 'message' => 'Nothing received yet. Check the address and station key in your uploader.']
+                            : ($last->diffInMinutes(now()) <= 10
+                                ? ['success' => true, 'message' => 'Last upload ' . (int) $last->diffInMinutes(now()) . ' min ago.']
+                                : ['success' => false, 'message' => 'Last upload ' . (int) $last->diffInMinutes(now()) . ' min ago (stale).']);
+                        break;
+                    }
+
                     if ($format === 'ecowittAPI') {
                         $result = EcowittSettingsController::testConnection();
                         break;
@@ -3059,6 +3069,11 @@ class SettingsController extends Controller
         
         // Save the format
         Setting::setValue('livedata.format', $format, 'select', 'livedata');
+
+        if ($format === \App\Support\WuPush::FORMAT
+            && (\App\Support\WuPush::stationKey() === '' || $request->boolean('wupush_new_key'))) {
+            \App\Support\WuPush::makeStationKey();
+        }
         
         // Handle fetch mode and file/api URL (for local file sources)
         if ($request->has('livedata_fetch_mode')) {

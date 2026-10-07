@@ -406,6 +406,12 @@ class FetchWeatherData extends Command
             return $weatherLink->fetch();
         }
 
+        // Wunderground uploads are stored as they arrive; only the summary is left to do.
+        if ($format === \App\Support\WuPush::FORMAT) {
+            $reading = WeatherReading::mostRecent();
+            return $reading !== null ? ['__from_db' => true, '__reading' => $reading] : null;
+        }
+
         // ecoLcl: try file/API first; when using receive (push) only, fall back to latest from DB
         if ($format === 'ecoLcl') {
             $data = $ecowitt->fetchRealTimeData();

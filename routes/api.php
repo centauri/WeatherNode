@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\WeatherController;
 use App\Http\Controllers\Api\EcowittController;
+use App\Http\Controllers\Api\WuPushController;
 use App\Http\Controllers\Api\DataController;
 use App\Http\Controllers\Api\TelemetryController;
 use App\Http\Controllers\Api\TileProxyController;
@@ -30,6 +31,17 @@ Route::post('/ecowitt/receive/{token?}', [EcowittController::class, 'receive'])
     ->where('token', '[A-Za-z0-9_-]+')
     ->withoutMiddleware('api.key');
 Route::get('/ecowitt/status', [EcowittController::class, 'status']);
+
+/*
+|--------------------------------------------------------------------------
+| Weather Underground format receiver
+|--------------------------------------------------------------------------
+| WeeWX, Meteobridge and many consoles can upload to a Wunderground-style
+| address of your choosing. The station key goes in the PASSWORD field.
+| URL: https://yourdomain.com/api/wu/receive
+*/
+Route::match(['get', 'post'], '/wu/receive', [WuPushController::class, 'receive'])
+    ->withoutMiddleware('api.key');
 
 // Weather API: same api.key middleware as other API routes; frontend sends key via window.Meteo.apiHeaders()
 Route::prefix('weather')->group(function () {

@@ -50,7 +50,7 @@ The `api_key` query parameter is accepted only for these image endpoints, where 
 
 Do not put a private key in a URL. URLs are commonly stored in browser history, access logs, and monitoring tools.
 
-`POST /api/ecowitt/receive/{token?}` is the only endpoint that does not use a WeatherNode API key. It has its own receiver security settings.
+`POST /api/ecowitt/receive/{token?}` and `/api/wu/receive` are the only endpoints that do not use a WeatherNode API key. They have their own receiver security settings.
 
 ## Rate limits
 
@@ -322,6 +322,30 @@ The receiver returns plain text:
 | 400 | `Invalid data` | The payload did not contain a usable reading |
 | 403 | Plain-text reason | Token, passkey, source IP, or station filter rejected the push |
 | 503 | Plain-text reason | Secure receiver settings are incomplete |
+
+### Wunderground upload receiver
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| GET | `/api/wu/receive` | Receiver | Receive an upload in the Weather Underground format (POST works too) |
+
+WeeWX, Meteobridge and many consoles can upload in the Weather Underground format to an address of your choosing. Pick **Wunderground upload (push)** as the live data source and save. The Live Data Source page then shows the address and a station key. Senders put the key in the `PASSWORD` field. The station `ID` can be anything.
+
+```text
+https://weather.example.com/api/wu/receive?ID=weathernode&PASSWORD=YOUR_STATION_KEY&dateutc=now&tempf=54.1&humidity=81&baromin=29.92&windspeedmph=8.5&winddir=225&dailyrainin=0.12
+```
+
+Supported fields include `tempf`, `dewptf`, `humidity`, `baromin`, `windspeedmph`, `windgustmph`, `winddir`, `rainin` (rain in the last hour), `dailyrainin`, `solarradiation`, `UV`, `indoortempf`, `indoorhumidity`, soil, leaf wetness and `AqPM2.5`. A value of `-9999` means the sensor has no value. WeatherNode converts the US units to metric and saves at most one reading every 55 seconds, so rapidfire uploads every few seconds are fine.
+
+The receiver returns plain text, the way Weather Underground does:
+
+| Status | Response | Meaning |
+| --- | --- | --- |
+| 200 | `success` | Upload accepted |
+| 400 | `invalid data: no tempf` | The upload had no temperature |
+| 401 | `ERROR: wrong station key` | The `PASSWORD` did not match the station key |
+| 403 | `ERROR: ...` | Wunderground upload is not the live data source |
+| 503 | `ERROR: ...` | No station key yet. Save the Live Data Source page first |
 
 ## Integration examples
 
