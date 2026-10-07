@@ -56,7 +56,7 @@ final class BatteryStatus
         'wh68batt' => ['Solar/Wind Sensor (WH68)', 'volts', self::SINGLE_CELL],
         'wh80batt' => ['Ultrasonic Wind Sensor (WH80)', 'volts', self::SINGLE_CELL],
         'wh85batt' => ['WS85 Sensor Array', 'volts', self::SINGLE_CELL],
-        'ws85cap_volt' => ['WS85 Solar Capacitor', 'volts', self::CAPACITOR],
+        'ws85cap_volt' => ['WS85 capacitor', 'volts', self::CAPACITOR],
         'bgtbatt' => ['Black Globe Thermometer (WN38)', 'volts', self::SINGLE_CELL],
         'wn20batt' => ['Sensor (WN20)', 'volts', self::SINGLE_CELL],
 
@@ -75,8 +75,8 @@ final class BatteryStatus
         'bgt_sensor' => ['Black Globe Thermometer', 'volts', self::SINGLE_CELL],
 
         // ── both: the WS90, stored under its cloud names on every path ────
-        'haptic_array_battery' => ['WS90 Batteries (AA)', 'volts', self::TWO_CELL],
-        'haptic_array_capacitor' => ['WS90 Solar Capacitor', 'volts', self::CAPACITOR],
+        'haptic_array_battery' => ['WS90 batteries', 'volts', self::TWO_CELL],
+        'haptic_array_capacitor' => ['WS90 capacitor', 'volts', self::CAPACITOR],
     ];
 
     /**
@@ -110,6 +110,9 @@ final class BatteryStatus
      * Push names that arrive under one name and are stored under another, so
      * a WS90 reads the same whichever way its data comes in (#129).
      */
+    /** Solar capacitors: they hold a charge but are not batteries. */
+    private const CAPACITORS = ['haptic_array_capacitor', 'ws85cap_volt'];
+
     private const PUSH_RENAMES = [
         'wh90batt' => 'haptic_array_battery',
         'ws90cap_volt' => 'haptic_array_capacitor',
@@ -182,7 +185,10 @@ final class BatteryStatus
      * cached payload: label and status are English source strings for the
      * page to translate.
      *
-     * @return array<string, array{key: string, label: string, channel: ?string, family: ?string, type: string, value: int|float, unit: string, state: string, status: string, percentage: ?int}>
+     * icon is what the dashboard draws: a battery, a capacitor, or a plug for
+     * a sensor on mains power.
+     *
+     * @return array<string, array{key: string, label: string, channel: ?string, family: ?string, type: string, value: int|float, unit: string, state: string, status: string, percentage: ?int, icon: string}>
      */
     public static function classify(mixed $raw): array
     {
@@ -190,11 +196,29 @@ final class BatteryStatus
 
         foreach (self::normalise($raw) as $key => $value) {
             $spec = self::spec($key) ?? self::guess($value);
-            $out[$key] = ['key' => $key] + $spec + ['value' => $value] + self::judge($spec, $value);
+            $judged = self::judge($spec, $value);
+            $out[$key] = ['key' => $key] + $spec + ['value' => $value] + $judged + [
+                'icon' => match (true) {
+                    in_array($key, self::CAPACITORS, true) => 'capacitor',
+                    $judged['status'] === 'Mains' => 'mains',
+                    default => 'battery',
+                },
+            ];
             unset($out[$key]['source']);
         }
 
         return $out;
+    }
+
+    /** Every label and status this class can hand out, for the page to translate. */
+    public static function translatable(): array
+    {
+        $strings = array_column(self::SENSORS, 0);
+        foreach (self::CHANNELS as $channel) {
+            $strings[] = $channel[2];
+        }
+
+        return array_values(array_unique([...$strings, 'OK', 'Low', 'Good', 'Moderate', 'Mains', 'Unknown']));
     }
 
     /** True when any of the given sensors reported, under either naming. */
