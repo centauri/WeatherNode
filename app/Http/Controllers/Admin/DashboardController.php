@@ -96,6 +96,7 @@ class DashboardController extends Controller
                     default => 50,
                 },
                 'display' => $display,
+                'icon' => $battery['icon'],
             ];
         }
 

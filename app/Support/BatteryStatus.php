@@ -9,7 +9,7 @@ namespace App\Support;
  *
  * Sensors use one of three kinds, and which one depends on the sensor:
  *
- *   flag   0 is fine, 1 is low
+ *   flag   0 is fine, 1 is low (shown as Good or Low)
  *   level  0 to 5, higher is better; 6 means it runs on mains power
  *   volts  a real voltage, low below a threshold for that battery
  *
@@ -218,7 +218,7 @@ final class BatteryStatus
             $strings[] = $channel[2];
         }
 
-        return array_values(array_unique([...$strings, 'OK', 'Low', 'Good', 'Moderate', 'Mains', 'Unknown']));
+        return array_values(array_unique([...$strings, 'Low', 'Good', 'Moderate', 'Mains', 'Unknown']));
     }
 
     /** True when any of the given sensors reported, under either naming. */
@@ -299,7 +299,9 @@ final class BatteryStatus
     {
         $result = match ($spec['type']) {
             'flag' => $value == 0
-                ? ['good', 'OK', 100]
+                // Good, like a level sensor: "OK" was translated as the generic
+                // OK, which Spanish renders as "De acuerdo." (Agreed).
+                ? ['good', 'Good', 100]
                 : ['low', 'Low', 20],
             'level' => match (true) {
                 $value >= 6 => ['good', 'Mains', 100],

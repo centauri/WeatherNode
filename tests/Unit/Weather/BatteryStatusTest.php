@@ -230,8 +230,21 @@ class BatteryStatusTest extends TestCase
     {
         $strings = BatteryStatus::translatable();
 
-        foreach (['WS90 batteries', 'Lightning Sensor (WH57)', 'Lightning Sensor', 'PM2.5 Sensor', 'Leak Sensor', 'OK', 'Low', 'Good', 'Moderate', 'Mains', 'Unknown'] as $string) {
+        foreach (['WS90 batteries', 'Lightning Sensor (WH57)', 'Lightning Sensor', 'PM2.5 Sensor', 'Leak Sensor', 'Low', 'Good', 'Moderate', 'Mains', 'Unknown'] as $string) {
             $this->assertContains($string, $strings);
         }
+    }
+
+    /**
+     * A healthy OK/low sensor says Good, like a level sensor. "OK" was looked
+     * up as the generic OK, which Spanish translates as "De acuerdo." (Agreed).
+     */
+    public function test_a_healthy_flag_sensor_says_good(): void
+    {
+        $classified = BatteryStatus::classify(['wh65batt' => 0, 'wh26batt' => 1]);
+
+        $this->assertSame('Good', $classified['wh65batt']['status']);
+        $this->assertSame('Low', $classified['wh26batt']['status']);
+        $this->assertNotContains('OK', BatteryStatus::translatable());
     }
 }
