@@ -57,7 +57,7 @@ class RealtimeTxtParser
 
         $pressure = $this->convertPressure($this->getFloat($parts, 10), $baroUnits);
 
-        $uv = $this->normalizeUv($this->getFloat($parts, 43));
+        $uv = $this->normalizeUv($this->getFloat($parts, 43), $format);
         $solar = $this->getFloat($parts, 45);
         // Cumulus realtime.txt field 56 (1-based) = SunshineHours so far today.
         $solarHours = $this->getFloat($parts, 55);
@@ -141,10 +141,16 @@ class RealtimeTxtParser
         return Carbon::create($year, $month, $day, (int) $hour, (int) $minute, (int) $secondTime);
     }
 
-    private function normalizeUv(?float $value): ?float
+    private function normalizeUv(?float $value, string $format): ?float
     {
         if ($value === null) {
             return null;
+        }
+
+        // Cumulus and WeeWX (crt) write the plain UV index, so 11 or more is a
+        // real reading. The divide-by-ten guess is kept for the other formats.
+        if (in_array($format, ['cumulus', 'weewx'], true)) {
+            return $value;
         }
 
         if ($value > 10) {
@@ -222,7 +228,8 @@ class RealtimeTxtParser
         }
 
         $value = trim((string) $parts[$index]);
-        if ($value === '' || $value === '---' || $value === '--' || strtolower($value) === 'n/a') {
+        // WeeWX (crt) writes NULL for a value it does not have.
+        if ($value === '' || $value === '---' || $value === '--' || in_array(strtolower($value), ['n/a', 'null'], true)) {
             return null;
         }
 
