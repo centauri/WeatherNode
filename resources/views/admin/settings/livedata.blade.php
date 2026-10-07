@@ -8,6 +8,34 @@
     $fetchMode = \App\Models\Setting::getValue('livedata.fetch_mode', 'file');
     $filePath = \App\Models\Setting::getValue('livedata.file_path', './ecowitt/ecco_lcl.arr');
     $apiUrl = \App\Models\Setting::getValue('livedata.api_url', '');
+
+    // An example file for each local format. The Ecowitt file is the shipped
+    // default and means nothing to these formats, so it is not shown for them.
+    $ecowittDefaultPath = './ecowitt/ecco_lcl.arr';
+    $realtimeExample = [
+        'placeholder' => '/path/to/realtime.txt',
+        'hint' => __('Path or web address of your realtime.txt file, for example /path/to/realtime.txt or http://192.168.1.10/realtime.txt'),
+    ];
+    $clientrawExample = [
+        'placeholder' => '/path/to/clientraw.txt',
+        'hint' => __('Path or web address of your clientraw.txt file, for example /path/to/clientraw.txt or http://192.168.1.10/clientraw.txt'),
+    ];
+    $localFileExamples = [
+        'cumulus' => $realtimeExample,
+        'weewx' => [
+            'placeholder' => '/var/tmp/realtime.txt',
+            'hint' => __('Path or web address of the realtime.txt that WeeWX writes, for example /var/tmp/realtime.txt or http://raspberrypi.local/weewx/realtime.txt'),
+        ],
+        'weathercat' => $realtimeExample,
+        'meteohub' => $clientrawExample,
+        'wswin' => $clientrawExample,
+        'weatherlink' => $realtimeExample,
+        'wifilogger' => $realtimeExample,
+        'MB_rt' => $realtimeExample,
+        'wd' => $clientrawExample,
+    ];
+    $localFileExample = $localFileExamples[$format] ?? $realtimeExample;
+    $shownFilePath = isset($localFileExamples[$format]) && $filePath === $ecowittDefaultPath ? '' : $filePath;
     
     
     // WeatherLink demo mode requires API key (only API credential allowed on livedata page)
@@ -269,13 +297,17 @@
                     </div>
                     <div id="local-file-config" style="display: {{ $fetchMode === 'file' ? 'block' : 'none' }};">
                         <label for="livedata_file_path" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">{{ __('File Path') }}</label>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('Path to the live data file (e.g., ./realtime.txt or /path/to/file.txt)') }}</p>
+                        <p id="livedata_file_path_hint" class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ $localFileExample['hint'] }}</p>
                         <input type="text"
                                name="livedata_file_path"
                                id="livedata_file_path"
-                               value="{{ $filePath }}"
+                               value="{{ $shownFilePath }}"
+                               data-saved="{{ $filePath }}"
                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
-                               placeholder="./realtime.txt" />
+                               placeholder="{{ $localFileExample['placeholder'] }}" />
+                        <p id="livedata_weewx_guide" class="mt-2 text-xs" style="display: {{ $format === 'weewx' ? 'block' : 'none' }};">
+                            <a href="https://github.com/centauri/WeatherNode/blob/main/docs/WEEWX.md" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium">{{ __('How to set up WeeWX') }}</a>
+                        </p>
                     </div>
                     <div id="local-api-config" style="display: {{ $fetchMode === 'local_api' ? 'block' : 'none' }};">
                         <label for="livedata_api_url" class="block text-sm font-medium text-gray-900 dark:text-white mb-2">{{ __('API URL') }}</label>
@@ -364,6 +396,25 @@
     const localApiConfig = document.getElementById('local-api-config');
     
     const localSources = ['cumulus', 'weewx', 'weathercat', 'meteohub', 'wswin', 'weatherlink', 'wifilogger', 'MB_rt', 'wd'];
+    const localFileExamples = @json($localFileExamples);
+    const ecowittDefaultPath = @json($ecowittDefaultPath);
+    const filePathInput = document.getElementById('livedata_file_path');
+    const filePathHint = document.getElementById('livedata_file_path_hint');
+    const weewxGuide = document.getElementById('livedata_weewx_guide');
+
+    function updateLocalFileExample() {
+        const format = formatSelect.value;
+        const example = localFileExamples[format];
+        if (!example || !filePathInput) {
+            // Back on Ecowitt: put its saved path back so saving keeps it.
+            if (filePathInput && filePathInput.value === '') filePathInput.value = filePathInput.dataset.saved || '';
+            return;
+        }
+        filePathInput.placeholder = example.placeholder;
+        if (filePathHint) filePathHint.textContent = example.hint;
+        if (weewxGuide) weewxGuide.style.display = format === 'weewx' ? 'block' : 'none';
+        if (filePathInput.value === ecowittDefaultPath) filePathInput.value = '';
+    }
     
     // Sources that only show info/link (no form fields)
     const infoOnlySources = ['ecowittAPI', 'wu', 'DWL', 'DWL_v2api', 'wf', 'AWapi'];
@@ -392,6 +443,7 @@
     }
 
     formatSelect?.addEventListener('change', updateVisibility);
+    formatSelect?.addEventListener('change', updateLocalFileExample);
     fetchModeSelect?.addEventListener('change', updateLocalConfigVisibility);
 
     // Test connection

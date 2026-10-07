@@ -212,4 +212,29 @@ class SettingsLiveDataTest extends TestCase
         $this->assertSame($applicationKeyCiphertext, Setting::findOrFail('ambient.application_key')->value);
         $this->assertSame('AA:BB:CC:DD:EE:FF', Setting::getValue('ambient.mac_address'));
     }
+
+    /** The shipped Ecowitt default meant nothing to WeeWX and looked like a real setting. */
+    public function test_weewx_shows_its_own_example_instead_of_the_ecowitt_file(): void
+    {
+        Setting::setValue('livedata.format', 'weewx', 'select', 'livedata');
+        Setting::setValue('livedata.file_path', './ecowitt/ecco_lcl.arr', 'string', 'livedata');
+
+        $response = $this->actingAs($this->adminUser())->get(route('admin.settings.group', 'livedata'));
+
+        $this->assertMatchesRegularExpression('/id="livedata_file_path"\s+value=""/', $response->getContent());
+        $response->assertSee('placeholder="/var/tmp/realtime.txt"', false);
+        $response->assertSee('http://raspberrypi.local/weewx/realtime.txt', false);
+        $response->assertSee('docs/WEEWX.md', false);
+    }
+
+    public function test_weather_display_asks_for_clientraw_and_keeps_a_real_path(): void
+    {
+        Setting::setValue('livedata.format', 'wd', 'select', 'livedata');
+        Setting::setValue('livedata.file_path', '/srv/wd/clientraw.txt', 'string', 'livedata');
+
+        $response = $this->actingAs($this->adminUser())->get(route('admin.settings.group', 'livedata'));
+
+        $this->assertMatchesRegularExpression('#id="livedata_file_path"\s+value="/srv/wd/clientraw.txt"#', $response->getContent());
+        $response->assertSee('placeholder="/path/to/clientraw.txt"', false);
+    }
 }
