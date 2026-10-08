@@ -21,7 +21,7 @@
 
     // ── Unit system ───────────────────────────────────────────────────────────
     $isImperial    = ($activeUnits ?? 'metric') === 'imperial';
-    $datumLabel    = ($source ?? '') === 'rws' ? 'NAP' : 'MSL';
+    $datumLabel    = $tideData['datum'] ?? (($source ?? '') === 'rws' ? 'NAP' : 'MSL');
     $unitLabel     = $isImperial ? 'ft' : 'cm';
     $levelDecimals = $isImperial ? 2 : 0;
     $toUnit        = fn(?float $cm): ?float => $cm !== null
@@ -50,6 +50,7 @@
     $trendIcon          = match($trend) { 'rising' => '↑', 'falling' => '↓', default => '→' };
     $trendClass         = match($trend) { 'rising' => 'text-data-cyan-400', 'falling' => 'text-data-blue-400', default => 'text-ui-muted' };
     $nowMs              = now()->timestamp * 1000;
+    $hasForecast        = collect($tideData['series'] ?? [])->contains(fn($p) => $p['timestamp_unix'] > $nowMs);
 
     $upcoming = collect($tideData['tides'] ?? [])
         ->filter(fn($t) => $t['timestamp_unix'] >= $nowMs)
@@ -59,7 +60,7 @@
     $groupedTides = $upcoming->groupBy(fn($t) => Carbon::parse($t['timestamp'])->format('Y-m-d'))->take(3);
 
     $chartSeries = collect($tideData['series'] ?? [])
-        ->filter(fn($p) => $p['timestamp_unix'] >= ($nowMs - 12 * 3_600_000)
+        ->filter(fn($p) => $p['timestamp_unix'] >= ($nowMs - ($hasForecast ? 12 : 48) * 3_600_000)
                         && $p['timestamp_unix'] <= ($nowMs + 48 * 3_600_000))
         ->values()
         ->map(fn($p) => array_merge($p, ['value' => $toUnit($p['value'])]))
@@ -216,6 +217,7 @@
                 </div>
             </div>
 
+            @if($hasForecast)
             <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
                 <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Next High Tide') }}</div>
                 @if($nextHigh)
@@ -263,6 +265,15 @@
                 </div>
                 <div class="text-xs text-ui-muted mt-2">{{ __('high minus low') }}</div>
             </div>
+            @elseif(($tideData['water_temp_c'] ?? null) !== null)
+            <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
+                <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Water temperature') }}</div>
+                <div class="flex items-end gap-1">
+                    <span class="text-3xl font-bold text-ui-fg">{{ number_format($toSstUnit($tideData['water_temp_c']), $sstDecimals) }}</span>
+                    <span class="text-ui-muted mb-1 text-sm">{{ $sstUnit }}</span>
+                </div>
+            </div>
+            @endif
 
         </div>
 
@@ -275,6 +286,7 @@
         </div>
 
         {{-- 3-day tide table --}}
+        @if($hasForecast)
         <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
             <h2 class="font-semibold text-ui-fg mb-4">{{ __('Tide Forecast') }}</h2>
 
@@ -317,12 +329,16 @@
                 <p class="text-ui-muted">{{ __('No upcoming tide data available.') }}</p>
             @endforelse
         </div>
+        @endif
 
         {{-- Datum explanation + attribution --}}
         <div class="bg-ui-deep/40 rounded-2xl p-5 border border-ui-line/5 text-sm text-ui-muted">
             @if(($source ?? 'rws') === 'rws')
                 <h3 class="font-semibold text-ui-secondary mb-2">{{ __('About NAP') }}</h3>
                 <p class="mb-2">{{ __('nap_explanation') }}</p>
+            @elseif($datumLabel === 'EH2000')
+                <h3 class="font-semibold text-ui-secondary mb-2">{{ __('About EH2000') }}</h3>
+                <p class="mb-2">{{ __('EH2000 is the Estonian height system, referenced to Normaal Amsterdams Peil like other European height systems. Sea level is measured from its zero.') }}</p>
             @else
                 <h3 class="font-semibold text-ui-secondary mb-2">{{ __('About MSL') }}</h3>
                 <p class="mb-2">{{ __('msl_explanation') }}</p>

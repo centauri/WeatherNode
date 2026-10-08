@@ -159,6 +159,14 @@ XML;
         $this->assertNull(KaurObservations::waterBodyName(null, '---'));
     }
 
+    public function test_sea_level_stations_are_the_coastal_gauges(): void
+    {
+        $catalog = KaurObservations::seaLevelStations(KaurObservations::parse(self::XML)['stations']);
+
+        $this->assertSame(['ee86094'], array_keys($catalog));
+        $this->assertSame('Pirita', $catalog['ee86094']['name']);
+    }
+
     // ---- defaults ---------------------------------------------------------
 
     public function test_nearest_orders_by_distance_from_the_station(): void
@@ -182,12 +190,23 @@ XML;
         ], $history['ee41107']);
     }
 
-    public function test_remember_ignores_coastal_gauges_and_missing_levels(): void
+    public function test_remember_skips_stations_without_the_field(): void
     {
         $snapshot = $this->snapshot(1000, ['ee41107' => null]);
-        $snapshot['stations']['ee86094'] = ['water_level_cm' => 5.0, 'water_level_eh2000_cm' => 24.0];
+        $snapshot['stations']['ee86094'] = ['water_level_cm' => null, 'water_level_eh2000_cm' => 24.0];
 
         $this->assertSame([], KaurObservations::remember([], $snapshot));
+    }
+
+    public function test_remember_can_record_sea_level(): void
+    {
+        $snapshot = $this->snapshot(1000, ['ee41107' => 92.0]);
+        $snapshot['stations']['ee86094'] = ['water_level_cm' => null, 'water_level_eh2000_cm' => 24.0];
+
+        $this->assertSame(
+            ['ee86094' => [['timestamp_unix' => 1_000_000, 'value' => 24.0]]],
+            KaurObservations::remember([], $snapshot, 'water_level_eh2000_cm'),
+        );
     }
 
     public function test_remember_forgets_points_older_than_the_window(): void

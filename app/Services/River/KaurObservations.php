@@ -90,6 +90,33 @@ class KaurObservations
     }
 
     /**
+     * Coastal gauges: a level against EH2000.
+     *
+     * @param  array<string, array>  $stations  From parse()
+     * @return array<string, array{name: string, latitude: float|null, longitude: float|null}>
+     */
+    public static function seaLevelStations(array $stations): array
+    {
+        $catalog = [];
+
+        foreach ($stations as $code => $station) {
+            if ($station['water_level_eh2000_cm'] === null) {
+                continue;
+            }
+
+            $catalog[$code] = [
+                'name' => $station['name'],
+                'latitude' => $station['latitude'],
+                'longitude' => $station['longitude'],
+            ];
+        }
+
+        uasort($catalog, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        return $catalog;
+    }
+
+    /**
      * River or lake name from a hydrology API row, with "j." spelled out as "jõgi".
      */
     public static function waterBodyName(?string $waterBody, ?string $basin): ?string
@@ -127,13 +154,13 @@ class KaurObservations
     }
 
     /**
-     * Add a snapshot to the history, once per snapshot timestamp.
+     * Add a snapshot's $field to the history, once per snapshot timestamp.
      *
      * @param  array<string, list<array{timestamp_unix: int, value: float}>>  $history
      * @param  array{timestamp: int|null, stations: array<string, array>}  $snapshot
      * @return array<string, list<array{timestamp_unix: int, value: float}>>
      */
-    public static function remember(array $history, array $snapshot): array
+    public static function remember(array $history, array $snapshot, string $field = 'water_level_cm'): array
     {
         $at = $snapshot['timestamp'];
         if ($at === null) {
@@ -143,8 +170,8 @@ class KaurObservations
         $cutoffMs = $atMs - self::HISTORY_HOURS * 3_600_000;
 
         foreach ($snapshot['stations'] as $code => $station) {
-            $level = $station['water_level_cm'];
-            if ($level === null || $station['water_level_eh2000_cm'] !== null) {
+            $level = $station[$field];
+            if ($level === null) {
                 continue;
             }
 
