@@ -34,11 +34,6 @@ class AstronomyFreshnessHealthTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Astronomy is polled hourly and the health check runs at :00 before the
-     * poll does, so it sees data from the previous hour's run, usually a few
-     * seconds over 60 minutes old. That is on schedule, not offline.
-     */
     public function test_data_from_the_previous_hourly_run_is_not_stale(): void
     {
         $this->writtenMinutesAgo(61);

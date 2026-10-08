@@ -242,10 +242,6 @@ class CheckSensorHealth extends Command
 
     private function checkAstronomyData()
     {
-        // Polled hourly, and this check runs at :00 ahead of the poll, so a
-        // 60 minute threshold flagged data from the previous run as soon as it
-        // was a few seconds past the hour. 150 allows one missed or late run
-        // and still catches a poller that has stopped.
         $this->healthStatus['astronomy'] = $this->freshness('astronomy_sun', Cache::get('astronomy_sun'), 150);
     }
 
