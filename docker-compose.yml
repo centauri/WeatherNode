@@ -77,9 +77,8 @@ services:
       - storage_data:/var/www/html/storage
       - cache_data:/var/www/html/bootstrap/cache
       - db_data:/var/lib/weathernode
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - "while true; do php /var/www/html/artisan schedule:run --no-interaction; sleep 60; done"
+    entrypoint: ["php", "/var/www/html/artisan"]
+    command: ["schedule:work", "--no-interaction"]
     # Optional: when using MySQL
     # depends_on:
     #   mysql:

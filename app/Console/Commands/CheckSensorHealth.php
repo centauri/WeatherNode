@@ -242,7 +242,7 @@ class CheckSensorHealth extends Command
 
     private function checkAstronomyData()
     {
-        $this->healthStatus['astronomy'] = $this->freshness('astronomy_sun', Cache::get('astronomy_sun'));
+        $this->healthStatus['astronomy'] = $this->freshness('astronomy_sun', Cache::get('astronomy_sun'), 65);
     }
 
     private function checkAuroraData()
