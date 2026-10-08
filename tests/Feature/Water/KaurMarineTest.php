@@ -25,6 +25,8 @@ class KaurMarineTest extends TestCase
 
     private array $kaiaRuns = [];
 
+    private bool $kaiaDown = false;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -36,7 +38,7 @@ class KaurMarineTest extends TestCase
 
         Http::fake([
             'www.ilmateenistus.ee/*' => fn () => Http::response($this->observations(), 200),
-            'avaandmed.keskkonnaportaal.ee/api/lists/active/items/query' => fn () => Http::response(['documents' => array_map(fn ($run, $id) => [
+            'avaandmed.keskkonnaportaal.ee/api/lists/active/items/query' => fn () => $this->kaiaDown ? Http::response('', 503) : Http::response(['documents' => array_map(fn ($run, $id) => [
                 'id' => $id,
                 'metadata' => ['RMTitle' => 'swan_'.gmdate('YmdH', $run).'.nc'],
                 'fileMetadata' => [['id' => 1, 'name' => 'swan_'.gmdate('YmdH', $run).'.nc', 'size' => strlen($this->swanFile($run))]],
@@ -256,6 +258,36 @@ XML;
         Http::assertSent(fn ($request) => str_ends_with($request->url(), '/items/2/files/1'));
         Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/items/1/files/1'));
         $this->assertCount(1, Http::recorded(fn ($request) => str_contains($request->url(), '/files/')));
+    }
+
+    public function test_refresh_removes_abandoned_downloads(): void
+    {
+        $directory = dirname(app(KaurSwanForecast::class)->path());
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        $abandoned = $directory.'/kaur-swan-abandoned';
+        $inProgress = $directory.'/kaur-swan-inprogress';
+        file_put_contents($abandoned, 'partial');
+        file_put_contents($inProgress, 'partial');
+        touch($abandoned, time() - 2 * 3600);
+
+        app(KaurSwanForecast::class)->refresh();
+
+        $this->assertFileDoesNotExist($abandoned);
+        $this->assertFileExists($inProgress);
+        unlink($inProgress);
+    }
+
+    public function test_a_failed_refresh_still_polls_the_stored_forecast(): void
+    {
+        $this->storeSwanFile();
+        $this->kaiaDown = true;
+
+        $this->artisan('weather:poll-external', ['--source' => 'waves', '--force' => true])->assertSuccessful();
+
+        $cached = Cache::get('waves_'.round(59.437, 2).'_'.round(24.745, 2));
+        $this->assertSame(0.51, $cached['current_wave_height_m'] ?? null);
     }
 
     public function test_saving_the_source_clears_the_cached_marine_data(): void

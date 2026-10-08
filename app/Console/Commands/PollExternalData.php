@@ -1380,7 +1380,12 @@ class PollExternalData extends Command
         try {
             $service = \App\Services\Wave\WaveServiceFactory::make();
             if (method_exists($service, 'refreshForecast')) {
-                $service->refreshForecast();
+                try {
+                    $service->refreshForecast();
+                } catch (\Throwable $e) {
+                    $this->warn("   Forecast refresh failed: {$e->getMessage()} (using stored forecast)");
+                    Log::warning('Wave forecast refresh failed', ['error' => $e->getMessage()]);
+                }
             }
             $data    = $service->fetch();
 

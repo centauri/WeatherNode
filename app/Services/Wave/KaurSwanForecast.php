@@ -24,6 +24,8 @@ class KaurSwanForecast
 
     private const MAX_CELL_DISTANCE_KM = 25;
 
+    private const ABANDONED_DOWNLOAD_SECONDS = 3600;
+
     public function path(): string
     {
         return storage_path('app/kaur-swan.nc');
@@ -33,6 +35,7 @@ class KaurSwanForecast
     public function refresh(): void
     {
         Cache::lock('kaur_swan_download', 600)->get(function () {
+            $this->removeAbandonedDownloads();
             $run = $this->newestRun();
             if ($run === null || $this->cachedRunTime() >= $run['time']) {
                 return;
@@ -185,6 +188,16 @@ class KaurSwanForecast
         }
 
         return null;
+    }
+
+    /** Partial downloads left by a process killed mid-transfer. */
+    private function removeAbandonedDownloads(): void
+    {
+        foreach (glob(dirname($this->path()).'/kaur-swan-*') ?: [] as $file) {
+            if (is_file($file) && filemtime($file) < time() - self::ABANDONED_DOWNLOAD_SECONDS) {
+                unlink($file);
+            }
+        }
     }
 
     private function download(array $run): void
