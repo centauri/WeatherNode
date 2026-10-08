@@ -73,6 +73,44 @@
             </div>
         </div>
 
+        {{-- Source --}}
+        @php
+            $waveSource = \App\Services\Wave\WaveServiceFactory::source();
+            $kaurStationCode = (string) Setting::getValue('waves.kaur_station_code', '');
+            $kaurStations = $waveSource === 'kaur' ? app(\App\Services\Wave\KaurMarineService::class)->seaTemperatureStations() : [];
+        @endphp
+        <div class="bg-gray-800/50 rounded-2xl p-6 border border-white/10 mb-6">
+            <h2 class="font-semibold text-white mb-4">{{ __('Data source') }}</h2>
+            <div class="space-y-3">
+                <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="radio" name="waves_source" value="open_meteo" class="mt-1 accent-blue-500" {{ $waveSource === 'open_meteo' ? 'checked' : '' }}>
+                    <span>
+                        <span class="block text-sm font-medium text-white">Open-Meteo Marine</span>
+                        <span class="block text-xs text-gray-400">{{ __('Global model. Waves with swell, and a sea surface temperature forecast.') }}</span>
+                    </span>
+                </label>
+                <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="radio" name="waves_source" value="kaur" class="mt-1 accent-blue-500" {{ $waveSource === 'kaur' ? 'checked' : '' }}>
+                    <span>
+                        <span class="block text-sm font-medium text-white">Keskkonnaagentuur</span>
+                        <span class="block text-xs text-gray-400">{{ __('Estonian waters. Waves from the SWAN model without a swell split, and sea temperature measured at a coastal gauge. The wave forecast downloads with the hourly poll.') }}</span>
+                    </span>
+                </label>
+            </div>
+            @if($waveSource === 'kaur')
+                <div class="mt-4">
+                    <label for="waves_kaur_station_code" class="block text-xs text-gray-500 uppercase tracking-wider mb-2">{{ __('Sea temperature gauge') }}</label>
+                    <select name="waves_kaur_station_code" id="waves_kaur_station_code"
+                            class="w-full px-4 py-2 rounded-xl bg-gray-900/40 border border-white/10 text-white">
+                        <option value="">{{ __('Nearest to the data location') }}</option>
+                        @foreach($kaurStations as $code => $station)
+                            <option value="{{ $code }}" {{ $kaurStationCode === $code ? 'selected' : '' }}>{{ $station['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+        </div>
+
         {{-- Location --}}
         <div class="bg-gray-800/50 rounded-2xl p-6 border border-white/10 mb-6">
             <h2 class="font-semibold text-white mb-4">{{ __('Data location') }}</h2>

@@ -25,7 +25,7 @@ class WaterController extends Controller
 
         if (!$data) {
             try {
-                $data = app(OpenMeteoWaveService::class)->fetch();
+                $data = \App\Services\Wave\WaveServiceFactory::make()->fetch();
                 if ($data && !empty($data['wave_series'])) {
                     Cache::put("waves_{$lat}_{$lon}", $data, now()->addHours(2));
                 } else {

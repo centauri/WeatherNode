@@ -1378,7 +1378,10 @@ class PollExternalData extends Command
         $this->line('〰 Polling Wave & Sea Temperature data (Open-Meteo Marine)...');
 
         try {
-            $service = app(OpenMeteoWaveService::class);
+            $service = \App\Services\Wave\WaveServiceFactory::make();
+            if (method_exists($service, 'refreshForecast')) {
+                $service->refreshForecast();
+            }
             $data    = $service->fetch();
 
             if ($data && !empty($data['wave_series'])) {

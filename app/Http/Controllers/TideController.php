@@ -59,7 +59,7 @@ class TideController extends Controller
             $waveData = Cache::get("waves_{$lat}_{$lon}");
             if (!$waveData) {
                 try {
-                    $waveData = app(OpenMeteoWaveService::class)->fetch();
+                    $waveData = \App\Services\Wave\WaveServiceFactory::make()->fetch();
                     if ($waveData && !empty($waveData['wave_series'])) {
                         Cache::put("waves_{$lat}_{$lon}", $waveData, now()->addHours(2));
                     } else {

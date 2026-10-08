@@ -2947,6 +2947,16 @@ class SettingsController extends Controller
             $value = trim((string) $request->input("marine_{$part}", ''));
             Setting::setValue("marine.{$part}", $value, 'string', 'marine');
         }
+
+        $source = (string) $request->input('waves_source', \App\Services\Wave\WaveServiceFactory::DEFAULT_SOURCE);
+        if (! isset(\App\Services\Wave\WaveServiceFactory::SOURCES[$source])) {
+            $source = \App\Services\Wave\WaveServiceFactory::DEFAULT_SOURCE;
+        }
+        Setting::setValue('waves.source', $source, 'string', 'waves');
+        if ($request->has('waves_kaur_station_code')) {
+            Setting::setValue('waves.kaur_station_code', trim((string) $request->input('waves_kaur_station_code')), 'string', 'waves');
+        }
+        Cache::forget('waves_'.round((float) Setting::latitude(), 2).'_'.round((float) Setting::longitude(), 2));
     }
 
     /**
