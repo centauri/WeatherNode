@@ -786,7 +786,7 @@ class SettingsController extends Controller
                 }
                 return redirect()
                     ->route('admin.settings.group', $group)
-                    ->with('success', 'Station list refreshed from RWS catalog.');
+                    ->with('success', 'Station list refreshed.');
             }
             $this->updateRiversSettings($request);
             $this->clearSettingsCache();
@@ -2995,6 +2995,7 @@ class SettingsController extends Controller
                 ];
             }
             Setting::setValue("rivers.{$providerId}.custom_stations", json_encode($custom), 'string', 'rivers');
+            Cache::forget(\App\Services\River\RiverProviderRegistry::cacheKey($providerId));
         }
     }
 

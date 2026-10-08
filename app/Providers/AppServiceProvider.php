@@ -172,6 +172,7 @@ class AppServiceProvider extends ServiceProvider
         // Implemented providers
         OpenDataProviderRegistry::register(new KnmiProvider());
         OpenDataProviderRegistry::register(new AemetProvider());
+        OpenDataProviderRegistry::register(new \App\Services\OpenData\KaurProvider());
 
         // Placeholder providers (coming soon)
         OpenDataProviderRegistry::register(new MetOfficeProvider());

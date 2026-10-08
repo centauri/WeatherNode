@@ -70,8 +70,36 @@ class RiverProviderRegistry
             'catalog_service'  => RwsStationCatalogService::class,
             'station_search'   => true,   // whether the admin UI shows the station combobox
             'status'           => 'active',
+            'default_stations' => RijkswaterstaatRiverService::DEFAULT_STATIONS,
+            'source_url'       => 'https://waterinfo.rws.nl',
+        ],
+        'kaur' => [
+            'id'               => 'kaur',
+            'name'             => 'Keskkonnaagentuur',
+            'short'            => 'KAUR',
+            'flag'             => '🇪🇪',
+            'country'          => 'Estonia',
+            'description'      => 'Hourly river and lake gauge levels (cm above gauge zero) and water temperature from the Estonian Environment Agency.',
+            'api_key_required' => false,
+            'service'          => KaurRiverService::class,
+            'catalog_service'  => KaurStationCatalogService::class,
+            'station_search'   => true,
+            'custom_stations'  => false,
+            'status'           => 'active',
+            'source_url'       => 'https://keskkonnaportaal.ee/et/avaandmed/hudroloogilise-seire-andmestik',
         ],
     ];
+
+    /** Stations used until the admin picks some. */
+    public static function defaultStations(string $providerId): array
+    {
+        $provider = self::PROVIDERS[$providerId] ?? [];
+        if (isset($provider['service']) && method_exists($provider['service'], 'defaultStations')) {
+            return app($provider['service'])->defaultStations();
+        }
+
+        return $provider['default_stations'] ?? [];
+    }
 
     /** Return only fully implemented (deployable) providers. */
     public static function active(): array

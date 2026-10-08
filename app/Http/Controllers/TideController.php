@@ -85,14 +85,14 @@ class TideController extends Controller
 
             // Selected stations
             $stationsRaw = RiverProviderRegistry::getSetting(
-                $providerId, 'stations', RijkswaterstaatRiverService::DEFAULT_STATIONS
+                $providerId, 'stations', \App\Services\River\RiverProviderRegistry::defaultStations($providerId)
             );
             $selected = is_string($stationsRaw)
-                ? (json_decode($stationsRaw, true) ?? RijkswaterstaatRiverService::DEFAULT_STATIONS)
-                : ($stationsRaw ?? RijkswaterstaatRiverService::DEFAULT_STATIONS);
+                ? (json_decode($stationsRaw, true) ?? \App\Services\River\RiverProviderRegistry::defaultStations($providerId))
+                : ($stationsRaw ?? \App\Services\River\RiverProviderRegistry::defaultStations($providerId));
             $selected = array_values(array_filter((array) $selected, fn ($v) => is_string($v) && !is_numeric($v) && $v !== ''));
             if (empty($selected)) {
-                $selected = RijkswaterstaatRiverService::DEFAULT_STATIONS;
+                $selected = \App\Services\River\RiverProviderRegistry::defaultStations($providerId);
             }
 
             // Catalog metadata (if provider has a catalog service)

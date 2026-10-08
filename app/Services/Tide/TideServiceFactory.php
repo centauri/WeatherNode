@@ -16,6 +16,7 @@ class TideServiceFactory
         'rws'        => RijkswaterstaatSource::class,
         'open_meteo' => OpenMeteoMarineSource::class,
         'marea'      => MareaSource::class,
+        'kaur'       => KaurSeaLevelSource::class,
 
         // ── Placeholders (coming soon) ────────────────────────────────────────
         'ea'         => EnvironmentAgencySource::class,
