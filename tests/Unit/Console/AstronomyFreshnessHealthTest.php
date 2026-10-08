@@ -41,16 +41,9 @@ class AstronomyFreshnessHealthTest extends TestCase
         $this->assertFalse($this->health()['is_stale']);
     }
 
-    public function test_one_missed_hourly_run_is_not_stale(): void
+    public function test_a_missed_hourly_run_is_stale(): void
     {
-        $this->writtenMinutesAgo(125);
-
-        $this->assertFalse($this->health()['is_stale']);
-    }
-
-    public function test_a_poller_that_has_stopped_is_stale(): void
-    {
-        $this->writtenMinutesAgo(155);
+        $this->writtenMinutesAgo(66);
 
         $this->assertTrue($this->health()['is_stale']);
     }
