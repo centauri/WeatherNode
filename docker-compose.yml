@@ -77,9 +77,12 @@ services:
       - storage_data:/var/www/html/storage
       - cache_data:/var/www/html/bootstrap/cache
       - db_data:/var/lib/weathernode
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - "while true; do php /var/www/html/artisan schedule:run --no-interaction; sleep 60; done"
+    # schedule:work starts schedule:run at the top of every minute. A
+    # `sleep 60` loop starts each run a little later than the last, by however
+    # long the run took, until a whole minute is skipped along with every task
+    # due in it. Skipping :00 skips every hourly task.
+    entrypoint: ["php", "/var/www/html/artisan"]
+    command: ["schedule:work", "--no-interaction"]
     # Optional: when using MySQL
     # depends_on:
     #   mysql:
