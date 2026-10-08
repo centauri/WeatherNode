@@ -1413,6 +1413,20 @@ function precipForecast() {
                 fetch(probeUrl, { method: 'HEAD' })
                     .then(res => {
                         if (!res.ok) return;
+                        // Some "best available" WMTS layers (e.g. NASA GIBS VIIRS true
+                        // color) return a tiny, near-solid-black placeholder tile
+                        // (typically 1-2 KB) when today's mosaic hasn't finished
+                        // processing yet, even though the HTTP request itself
+                        // succeeds. A real imagery tile is virtually always larger,
+                        // so use Content-Length (when the server provides it) as a
+                        // sanity check before upgrading from yesterday's more
+                        // complete mosaic.
+                        const MIN_TILE_BYTES = 4000;
+                        const contentLength = res.headers.get('content-length');
+                        if (contentLength !== null && Number(contentLength) < MIN_TILE_BYTES) {
+                            console.info('Satellite {time_auto}: today tile looks like a placeholder, keeping yesterday', { probeUrl, contentLength });
+                            return;
+                        }
                         // swap to today
                         const todayUrl = normalizeTileUrlTemplate(probeTemplate); // {time_today} -> today
                         map.removeLayer(layer);
