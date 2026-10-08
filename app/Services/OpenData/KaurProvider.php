@@ -16,12 +16,12 @@ class KaurProvider extends BaseProvider
 
     public function getDescription(): string
     {
-        return 'Estonian Environment Agency - Open data for weather observations, river and sea level gauges, warnings, radar and climate covering Estonia.';
+        return 'Estonian Environment Agency. Provides river gauge observations and measured coastal sea levels for Estonia. Sea levels appear on the Tides tab.';
     }
 
     public function getFeatures(): array
     {
-        return ['rivers'];
+        return ['rivers', 'sea_level'];
     }
 
     public function getSettingsKey(): string
