@@ -165,7 +165,7 @@ XML;
     {
         $catalog = KaurObservations::riverStations(KaurObservations::parse(self::XML)['stations']);
 
-        $this->assertSame(['ee41107', 'ee1052'], KaurObservations::nearest($catalog, 59.413, 24.687, 2));
+        $this->assertSame(['ee41107', 'ee1052'], KaurObservations::nearest($catalog, 59.437, 24.745, 2));
     }
 
     // ---- history ----------------------------------------------------------

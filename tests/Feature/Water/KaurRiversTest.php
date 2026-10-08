@@ -23,8 +23,8 @@ class KaurRiversTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Setting::setValue('station.latitude', '59.413', 'string', 'station');
-        Setting::setValue('station.longitude', '24.6872', 'string', 'station');
+        Setting::setValue('station.latitude', '59.437', 'string', 'station');
+        Setting::setValue('station.longitude', '24.745', 'string', 'station');
         Setting::setValue('rivers.kaur.enabled', true, 'boolean', 'rivers');
     }
 
