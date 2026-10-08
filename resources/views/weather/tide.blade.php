@@ -640,18 +640,24 @@
 {{-- TAB: RIVER LEVELS                                                          --}}
 {{-- ══════════════════════════════════════════════════════════════════════════ --}}
 @if($activeTab === 'rivers')
+@php
+    $riverSources = collect(\App\Services\River\RiverProviderRegistry::active())
+        ->filter(fn ($provider, $providerId) => (bool) \App\Services\River\RiverProviderRegistry::getSetting($providerId, 'enabled', false));
+@endphp
 <div class="space-y-6">
 
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🏞 {{ __('River Levels') }}</h1>
-            <p class="text-ui-muted">{{ __('Real-time gauge measurements') }} · Rijkswaterstaat</p>
+            <p class="text-ui-muted">{{ __('Real-time gauge measurements') }} · {{ $riverSources->pluck('name')->implode(', ') }}</p>
         </div>
         <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
-            <a href="https://waterinfo.rws.nl" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Rijkswaterstaat</a>
+            @foreach($riverSources as $riverSource)
+                <a href="{{ $riverSource['source_url'] }}" target="_blank" rel="noopener"
+                   class="text-data-blue-400 hover:underline">{{ $riverSource['name'] }}</a>@if(!$loop->last),@endif
+            @endforeach
         </div>
     </div>
 
@@ -709,7 +715,7 @@
                         <span class="text-3xl font-bold text-ui-fg">
                             {{ $riverLevel !== null ? number_format($riverLevel, 0) : '--' }}
                         </span>
-                        <span class="text-ui-muted mb-1 text-sm">cm NAP</span>
+                        <span class="text-ui-muted mb-1 text-sm">cm {{ __($station['datum'] ?? 'NAP') }}</span>
                     </div>
                     <div class="mt-2 flex items-center justify-between">
                         <div class="text-sm {{ $riverTrendClass }} font-medium">
@@ -725,6 +731,11 @@
                             {{ $riverStatusLabel }}
                         </span>
                     </div>
+                    @if(($station['water_temp_c'] ?? null) !== null)
+                        <div class="mt-2 text-sm text-ui-secondary">
+                            {{ __('Water temperature') }}: {{ number_format($toSstUnit($station['water_temp_c']), $sstDecimals) }} {{ $sstUnit }}
+                        </div>
+                    @endif
                     @if($riverUpdatedAt)
                         <div class="mt-2 text-xs text-ui-subtle">{{ __('Updated') }} {{ $riverUpdatedAt }}</div>
                     @endif
@@ -735,8 +746,10 @@
         {{-- Attribution --}}
         <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('River level data provided by') }}
-            <a href="https://waterinfo.rws.nl" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Rijkswaterstaat WaterWebservices</a>
+            @foreach($riverSources as $riverSource)
+                <a href="{{ $riverSource['source_url'] }}" target="_blank" rel="noopener"
+                   class="text-data-blue-400 hover:underline">{{ $riverSource['name'] }}</a>@if(!$loop->last),@endif
+            @endforeach
             — {{ __('real-time gauge measurements') }}.
         </div>
 
