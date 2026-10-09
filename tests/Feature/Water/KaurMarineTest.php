@@ -305,14 +305,38 @@ XML;
         $this->assertNull(Cache::get($key));
     }
 
+    public function test_the_gauge_selector_only_shows_with_kaur_picked(): void
+    {
+        Setting::setValue('waves.source', 'open_meteo', 'string', 'waves');
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get(route('admin.settings.group', 'waves'))
+            ->assertOk()
+            ->assertSeeInOrder(['x-show="source === \'kaur\'"', 'Save to choose the sea temperature gauge'], false)
+            ->assertDontSee('id="waves_kaur_station_code"', false);
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'ilmateenistus.ee') || str_contains($request->url(), 'keskkonnaportaal.ee'));
+    }
+
+    public function test_each_provider_card_describes_its_own_data(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get(route('admin.settings.group', 'waves'))
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Open-Meteo Marine', 'Wind Waves vs Swell', 'open-meteo.com/en/docs/marine-weather-api',
+                'Keskkonnaagentuur', 'No swell split', 'ilma-mudelprognoosid',
+            ], false)
+            ->assertDontSee('Data from Open-Meteo Marine');
+    }
+
     public function test_the_admin_lists_coastal_gauges_for_kaur(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
 
         $this->actingAs($admin)->get(route('admin.settings.group', 'waves'))
             ->assertOk()
-            ->assertSee('Sea temperature gauge')
-            ->assertSee('Pirita')
+            ->assertSeeInOrder(['x-show="source === \'kaur\'"', 'Sea temperature gauge', 'Pirita'], false)
             ->assertDontSee('>Keila<', false);
     }
 }
