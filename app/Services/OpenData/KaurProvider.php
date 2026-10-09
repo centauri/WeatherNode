@@ -16,12 +16,12 @@ class KaurProvider extends BaseProvider
 
     public function getDescription(): string
     {
-        return 'Estonian Environment Agency. Provides river gauge observations and measured coastal sea levels for Estonia. Sea levels appear on the Tides tab.';
+        return 'Estonian Environment Agency. River gauge levels, measured coastal sea level and sea temperature, and the SWAN wave forecast for Estonian waters, on the Water page.';
     }
 
     public function getFeatures(): array
     {
-        return ['rivers', 'sea_level'];
+        return ['rivers', 'sea_level', 'waves', 'sea_temperature'];
     }
 
     public function getSettingsKey(): string

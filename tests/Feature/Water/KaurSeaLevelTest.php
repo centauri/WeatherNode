@@ -99,4 +99,31 @@ XML;
             ->assertSee('Pirita (ee86094)')
             ->assertDontSee('(ee41107)');
     }
+
+    public function test_the_station_block_follows_the_picked_source(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->get(route('admin.settings.group', 'tide'))
+            ->assertOk()
+            ->assertSee('x-model="source"', false)
+            ->assertSeeInOrder([
+                'x-show="source !== \'kaur\'"', 'Save to see the station and other settings for the chosen source.',
+                ':disabled="source !== \'kaur\'"', 'Pirita (ee86094)',
+            ], false);
+    }
+
+    public function test_switching_source_without_station_fields_keeps_the_kaur_station(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)->post(route('admin.settings.update', 'tide'), [
+            'tide_enabled' => '1',
+            'tide_source' => 'open_meteo',
+        ])->assertRedirect();
+
+        $this->assertSame('open_meteo', Setting::getValue('tide.source'));
+        $this->assertSame('ee86094', Setting::getValue('tide.kaur_station_code'));
+        $this->assertNull(Setting::getValue('tide.open_meteo_station_code'));
+    }
 }

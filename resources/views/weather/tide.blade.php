@@ -86,6 +86,13 @@
     $beaufortState = $waveData['beaufort_sea_state']          ?? 0;
     $beaufortKey   = $waveData['beaufort_label_key']          ?? 'wave_beaufort_0';
     $waveLoc       = $waveData['location']                    ?? '';
+    $sstLoc        = $waveData['sst_location']                ?? $waveLoc;
+    $hasSwell      = $waveData['has_swell']                   ?? true;
+    $waveSourceName = $waveData['wave_source_name'] ?? 'Open-Meteo Marine';
+    $waveSourceUrl  = $waveData['wave_source_url']  ?? 'https://open-meteo.com/en/docs/marine-weather-api';
+    $sstSourceName  = $waveData['sst_source_name']  ?? 'Open-Meteo Marine';
+    $sstSourceUrl   = $waveData['sst_source_url']   ?? 'https://open-meteo.com/en/docs/marine-weather-api';
+    $sstHasForecast = collect($waveData['sst_series'] ?? [])->contains(fn($p) => $p['timestamp_unix'] > $nowMs);
 
     $waveCardinal  = $waveDir !== null ? OpenMeteoWaveService::degreesToCardinal($waveDir) : '--';
     $swellCardinal = $swellDir !== null ? OpenMeteoWaveService::degreesToCardinal($swellDir) : '--';
@@ -98,7 +105,7 @@
         ->toArray();
 
     $sstSeries = collect($waveData['sst_series'] ?? [])
-        ->filter(fn($p) => $p['timestamp_unix'] >= ($nowMs - 12 * 3_600_000)
+        ->filter(fn($p) => $p['timestamp_unix'] >= ($nowMs - ($sstHasForecast ? 12 : 48) * 3_600_000)
                         && $p['timestamp_unix'] <= ($nowMs + 120 * 3_600_000))
         ->values()
         ->map(fn($p) => array_merge($p, ['value' => $toSstUnit($p['value'])]))
@@ -388,8 +395,8 @@
         </div>
         <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
-            <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
+            <a href="{{ $waveSourceUrl }}" target="_blank" rel="noopener"
+               class="text-data-blue-400 hover:underline">{{ $waveSourceName }}</a>
         </div>
     </div>
 
@@ -428,7 +435,7 @@
                     </span>
                     <span class="text-ui-muted mb-1 text-sm">s</span>
                 </div>
-                <div class="mt-2 text-xs text-ui-subtle">{{ __('mean period') }}</div>
+                <div class="mt-2 text-xs text-ui-subtle">{{ __($waveData['wave_period_label'] ?? 'mean period') }}</div>
             </div>
 
             <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
@@ -448,6 +455,7 @@
                 </div>
             </div>
 
+            @if($hasSwell)
             <div class="bg-weather-card rounded-2xl p-5 border border-ui-line/10">
                 <div class="text-xs text-ui-muted uppercase tracking-wider mb-2">{{ __('Swell Height') }}</div>
                 <div class="flex items-end gap-1">
@@ -460,6 +468,7 @@
                     <div class="mt-2 text-xs text-ui-subtle">{{ number_format($swellPeriod, 0) }} s {{ __('period') }}</div>
                 @endif
             </div>
+            @endif
 
         </div>
 
@@ -472,6 +481,7 @@
         </div>
 
         {{-- Wind wave vs swell breakdown --}}
+        @if($hasSwell)
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <div class="bg-blue-950/30 rounded-2xl p-5 border border-blue-900/30">
@@ -520,13 +530,14 @@
             </div>
 
         </div>
+        @endif
 
         {{-- Attribution --}}
         <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('Wave data provided by') }}
-            <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
-            — {{ __('free, model-based, global coverage') }}.
+            <a href="{{ $waveSourceUrl }}" target="_blank" rel="noopener"
+               class="text-data-blue-400 hover:underline">{{ $waveSourceName }}</a>@if(! isset($waveData['wave_source_name']))
+            — {{ __('free, model-based, global coverage') }}@endif.
         </div>
 
         {{-- About waves (scientific) --}}
@@ -559,14 +570,14 @@
         <div>
             <h1 class="text-2xl md:text-3xl font-bold">🌡 {{ __('Sea Surface Temperature') }}</h1>
             <p class="text-ui-muted">
-                {{ $waveLoc }}
+                {{ $sstLoc }}
                 @if($waveData)· {{ __('Updated') }} {{ $waveUpdatedAt }}@endif
             </p>
         </div>
         <div class="text-right text-sm text-ui-subtle">
             {{ __('Data source') }}:
-            <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
+            <a href="{{ $sstSourceUrl }}" target="_blank" rel="noopener"
+               class="text-data-blue-400 hover:underline">{{ $sstSourceName }}</a>
         </div>
     </div>
 
@@ -600,7 +611,7 @@
 
                 {{-- 5-day sparkline --}}
                 <div class="w-full sm:w-72 flex-shrink-0">
-                    <div class="text-xs text-ui-muted mb-2">{{ __('5-day trend') }}</div>
+                    <div class="text-xs text-ui-muted mb-2">{{ $sstHasForecast ? __('5-day trend') : __('Measured readings') }}</div>
                     <div id="sst-chart" style="min-height:140px;"></div>
                 </div>
             </div>
@@ -628,9 +639,9 @@
         {{-- Attribution --}}
         <div class="bg-ui-deep/40 rounded-2xl p-4 border border-ui-line/5 text-sm text-ui-muted">
             {{ __('Sea temperature data provided by') }}
-            <a href="https://open-meteo.com/en/docs/marine-weather-api" target="_blank" rel="noopener"
-               class="text-data-blue-400 hover:underline">Open-Meteo Marine</a>
-            — {{ __('free, model-based, global coverage') }}.
+            <a href="{{ $sstSourceUrl }}" target="_blank" rel="noopener"
+               class="text-data-blue-400 hover:underline">{{ $sstSourceName }}</a>@if(! isset($waveData['sst_source_name']))
+            — {{ __('free, model-based, global coverage') }}@endif.
         </div>
 
         {{-- About sea temperature (scientific) --}}

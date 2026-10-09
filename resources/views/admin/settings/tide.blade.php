@@ -64,7 +64,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.settings.update', 'tide') }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.settings.update', 'tide') }}" method="POST" class="space-y-6" x-data="{ source: '{{ $source }}' }">
         @csrf
 
         {{-- ── Enable toggle ────────────────────────────────────────────── --}}
@@ -97,7 +97,7 @@
                                   {{ $source === $key
                                       ? 'border-cyan-500 bg-cyan-900/20'
                                       : 'border-gray-600 bg-gray-700/30 hover:border-gray-500' }}">
-                        <input type="radio" name="tide_source" value="{{ $key }}"
+                        <input type="radio" name="tide_source" value="{{ $key }}" x-model="source"
                                {{ $source === $key ? 'checked' : '' }}
                                class="mt-1 accent-cyan-500">
                         <div class="flex-1 min-w-0">
@@ -144,7 +144,12 @@
             </div>
         </div>
 
+        <div x-show="source !== '{{ $source }}'" x-cloak class="bg-gray-800/50 rounded-xl border border-gray-700 p-6 text-sm text-gray-400">
+            {{ __('Save to see the station and other settings for the chosen source.') }}
+        </div>
+
         {{-- ── Station (only for station-based sources) ────────────────── --}}
+        <fieldset x-show="source === '{{ $source }}'" :disabled="source !== '{{ $source }}'" class="min-w-0">
         @if($isStationBased && !empty($stations))
         <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
             <h2 class="text-lg font-semibold text-white mb-3">{{ __('Station') }}</h2>
@@ -189,7 +194,9 @@
             </p>
         </div>
         @endif
+        </fieldset>
 
+        <div x-show="source === '{{ $source }}'" class="space-y-6">
         {{-- ── API key (Marea) ──────────────────────────────────────────── --}}
         @if($source === 'marea')
         <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
@@ -235,6 +242,7 @@
             </div>
         </div>
         @endif
+        </div>
 
         {{-- ── Dashboard widget ─────────────────────────────────────────── --}}
         <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-6">
